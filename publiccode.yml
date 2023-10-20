@@ -3,8 +3,9 @@
 # More info at https://github.com/italia/publiccode.yml
 
 publiccodeYmlVersion: '0.2'
-name: GISA Sicurezza alimentare e veterinaria
+name: GISA Campania - Sicurezza alimentare e veterinaria
 url: 'https://github.com/regione-campania/Gisa_Sicurezza_alimentare_e_veterinaria'
+landingURL: 'https://sca.gisacampania.it/'
 releaseDate: '2020-05-10'
 
 platforms:
@@ -195,3 +196,17 @@ it:
     cie: true
     pagopa: true
     spid: true
+usedBy:
+  - Regione Campania
+  - Regione Valle D'Aosta
+  - Regione Friuli Venezia Giulia
+  - IZSM Portici
+  - ARPAC
+  - ASL NA1 Centro
+  - ASL NA2 Nord
+  - ASL NA3 Sud
+  - ASL AV
+  - ASL BN
+  - ASL CE
+  - ASL SA
+logo: 'https://raw.githubusercontent.com/regione-campania/Gisa_Sicurezza_alimentare_e_veterinaria/master/GisaLOGO.png'
