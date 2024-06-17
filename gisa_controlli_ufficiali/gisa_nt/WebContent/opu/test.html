@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Dialog Box Witout Close Button</title>
+<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.1/themes/base/jquery-ui.css">
+<script src="javascript/jquery-1.9.1.js"></script>
+<script src="http://code.jquery.com/ui/1.10.1/jquery-ui.js"></script>
+
+</head>
+<body>
+<button id="dialog_trigger">open the dialog</button>
+<div id="dialog" style="display:none;" title="Dialog Title"><iframe frameborder="0" scrolling="no" width="700" height="700" src="http://google.about.com/b/2013/04/01/google-nose.htm"></iframe></div>
+<script>
+$( "#dialog_trigger" ).click(function() {
+$( "#dialog" ).dialog( "open" );
+});
+$("#dialog").dialog({
+    autoOpen: false,
+    position: 'center' ,
+    title: 'EDIT',
+    draggable: false,
+    width : 800,
+    height : 700, 
+    resizable : true,
+    modal : true,
+});
+
+
+</script>
+</body>
+</html>

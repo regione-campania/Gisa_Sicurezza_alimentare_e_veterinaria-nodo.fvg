@@ -5,29 +5,37 @@
 publiccodeYmlVersion: '0.2'
 name: GISA Campania - Sicurezza alimentare e veterinaria
 url: 'https://github.com/regione-campania/Gisa_Sicurezza_alimentare_e_veterinaria'
-landingURL: 'https://sca.gisacampania.it/'
-releaseDate: '2020-05-10'
-
+landingURL: 'https://gisasca.regione.campania.it'
+releaseDate: '2024-06-07'
 platforms:
   - web
-
 categories:
   - document-management
   - data-collection
   - data-visualization
   - data-analytics
   - customer-service-and-support
-
+ 
 developmentStatus: stable
 
 softwareType: standalone/web
 
+dependsOn:
+  open:
+    - name: Apache Tomcat
+      optional: false
+      version: '9.0.73'
+    - name: PostgreSQL
+      optional: false
+      version: '15.x'
+    - name: OpenJDK
+      optional: false
+      version: 1.8.0_372
+
 description:
   it:
     genericName: Gestionale
-    shortDescription: |-
-      Ecosistema software regionale per Sanità Veterinaria E Sicurezza
-      Alimentare
+  
     longDescription: |2+
            
 
@@ -162,40 +170,55 @@ description:
       - Operatore Settore Alimentare per autovalutazione
 
       - Direttore Sanitario Canile
-
+    shortDescription: |-
+      Ecosistema software regionale per Sanità Veterinaria e Sicurezza
+      Alimentare
+      
     features:
       - Gestione Integrata Notifiche Sanitarie
       - Gestione della programmazione DPAR e DPAT
       - Gestione Controlli Ufficiali
       - Gestione Allerte Alimentari
-      - 'Registro Trasgressori e Gestione degli illeciti amministrativi '
+      - Registro Trasgressori e Gestione degli illeciti amministrativi
       - Registro Macellazioni
       - Cooperazione Applicativa tra ecosistema GISA e Sistemi Nazionali
 legal:
+  authorsFile: |-
+    https://github.com/regione-campania/Gisa_Sicurezza_alimentare_e_veterinaria/master/Copyrights.txt
   license: AGPL-3.0-only
+  mainCopyrightOwner: Regione Campania
+  repoOwner: Regione Campania
 
 maintenance:
   type: contract
   contractors:
     - name: ' US srl'
-      until: '2025-12-31'
+      until: '2025-06-30'
   contacts:
     - affiliation: Regione Campania
       email: cinzia.matonti@regione.campania.it
       name: Cinzia Matonti
-
 localisation:
   availableLanguages:
     - it
   localisationReady: false
+
 it:
-  riuso:
-    codiceIPA: r_campan
+  conforme:
+    misureMinimeSicurezza: true
+  countryExtensionVersion: '0.2'
   piattaforme:
     anpr: false
     cie: true
     pagopa: true
     spid: true
+  riuso:
+    codiceIPA: r_campan
+
+
+
+
+
 usedBy:
   - Regione Campania
   - Regione Valle D'Aosta

@@ -1,0 +1,86 @@
+@CHARSET "ISO-8859-1";
+
+/*tr:hover { background: #ffff00 !important; }*/ 
+
+.row1 {
+	background: #EDEDED;
+}
+.row0 {
+	background: #f8f8f8;
+}
+.editField{
+  background-color : #ffff99;
+  border-top-style:none;
+  border-left: none;
+  border-right: none;
+  border-bottom-color:#000000;
+  border-bottom-style:solid;
+}
+
+input:disabled {
+  background-color: threedlightshadow;
+  cursor: default;
+}
+input[readonly]
+{
+   background-color: threedlightshadow;
+    cursor: default;
+}
+textarea:disabled {
+  background-color: threedlightshadow;
+   cursor: default;
+}
+
+
+.layout{
+  border-top-style:none;
+  border-left: none;
+  border-right: none;
+  border-bottom-color:#000000;
+  background-color : transparent;
+}
+
+.green {
+	background-color : #00CC33 !important;
+}
+.orange {
+	background-color : #ffb973!important;
+}
+.red {
+	background-color : #ff0000 !important;
+}
+.annullata1 {
+	 background-image: url('images/annullato.png');
+     background-repeat: repeat-x;
+}
+
+.annullata2 {
+	background-color : #ff0000 !important;
+}
+
+
+
+table.details2  {
+color: #333;
+font-family: Helvetica, Arial, sans-serif;
+border-collapse: collapse; 
+border-spacing: 0;
+}
+table.details2 td, table.details2 th {
+border: 1px solid black; /* No more visible border */
+height: 30px;
+text-align: center;
+}
+table.details2 th {
+background: #DFDFDF;  /* Darken header a bit */
+}
+table.details2 td {
+/*background: #FAFAFA;*/
+text-align: middle;
+vertical-align: middle;
+}
+
+
+
+
+

@@ -1,0 +1,152 @@
+
+<head>
+<style>
+
+  body {
+  color: #333;
+  background: #fcfcfc;
+  font-family: 'Raleway', sans-serif;
+  overflow-x: hidden;
+}
+
+.faq-header{
+  font-size: 42px;
+  font-weight: bold;
+  border-bottom: 1px dotted #ccc;
+  padding: 24px;
+}
+
+.panel-ext {
+  font-size: 20px;
+  padding: 24px; 
+  }
+
+.faq-content {
+  margin: 0 auto;
+}
+
+.faq-question {
+  padding: 20px 0;
+  border-bottom: 1px dotted #ccc;
+}
+
+.panel-title {
+  font-size: 24px;
+  font-weight: bold;
+  width: 100%;
+  position: relative;
+  margin: 0;
+  padding: 10px 10px 0 48px;
+  display: block;
+  cursor: pointer;
+}
+
+.index {
+  font-size: 31px;
+  font-weight: bold;
+  margin-left: 20px;
+  margin-top: 24px;
+  }
+
+.panel-content {
+  font-size: 20px;
+  padding: 0px 14px;
+  margin: 0 40px;
+  height: 0;
+  overflow: hidden;
+  z-index: -1;
+  position: relative;
+  opacity: 0;
+  -webkit-transition: .4s ease;
+  -moz-transition: .4s ease;
+  -o-transition: .4s ease;
+  transition: .4s ease;
+}
+
+.panel:checked ~ .panel-content{
+  height: auto;
+  opacity: 1;
+  padding: 14px;
+  z-index: 0;
+}
+
+.plus {
+  position: absolute;
+  margin-left: 20px;
+  margin-top: 4px;
+  z-index: 5;
+  font-size: 42px;
+  line-height: 100%;
+  -webkit-user-select: none;    
+  -moz-user-select: none;
+  -ms-user-select: none;
+  -o-user-select: none;
+  user-select: none;
+  -webkit-transition: .2s ease;
+  -moz-transition: .2s ease;
+  -o-transition: .2s ease;
+  transition: .2s ease;
+}
+
+.panel:checked ~ .plus {
+  -webkit-transform: rotate(45deg);
+  -moz-transform: rotate(45deg);
+  -o-transform: rotate(45deg);
+  transform: rotate(45deg);
+}
+
+.panel {
+  display: none;
+}
+
+</style>
+</head>
+
+<div class="faq-header">Guida Utente</div>
+
+<div class="panel-ext"> <img src="images/PDF Logo.png" alt="PDF Logo" style="width:25px;height:31px;"> &nbsp; QUI VA IL PDF DELLA GUIDA COMPLETA </div>
+
+<div class="panel-ext" align="justify"> <abbr title="Gestione Integrata di Servizi e Attivit&agrave;"><b>GISA</b> </abbr> &egrave; una piattaforma online mediante la quale funzionari e amministrativi regionali possono effettuare diverse operazioni, dall&#180;inserimento di un controllo ufficiale verso una determinata azienda alla gestione delle sanzioni inoltrate verso i trasgressori.<br>
+Questa guida si propone come uno strumento atto alla comprensione delle funzionalit&agrave; di GISA e alla facilitazione della navigazione sulla piattaforma.<br>
+Va fatto notare che questa guida &egrave; impostata secondo una descrizione seriale delle varie funzionalit&agrave;, e non in ordine di importanza; si consiglia dunque di consultare l&#180;indice per trovare rapidamente le informazioni desiderate.<br></div>
+
+<br>
+<hr>
+
+<div class="faq-content">
+
+<div class="index"> Indice </div>
+ 
+  <div class="faq-question">
+    <input id="q1" type="checkbox" class="panel">
+    <div class="plus">+</div>
+    <label for="q1" class="panel-title">1. Login SPID/CIE</label>
+    <div class="panel-content"> <img src="images/PDF Logo.png" alt="PDF Logo" style="width:25px;height:31px;"> &nbsp; <a href="chapters/Capitolo1Login.pdf" target="_blank">Visualizza PDF</a> </div>
+	</div>
+  </div>
+  
+  <div class="faq-question">
+    <input id="q2" type="checkbox" class="panel">
+    <div class="plus">+</div>
+    <label for="q2" class="panel-title">2. Home</label>
+    <div class="panel-content"> 2.1 Segnalazioni <br> 2.2 Ricerca CU AMR <br> 2.3 Ricerca CU acquacoltura <br> 2.4 Gestione norme sanzioni <br> 2.5 Associazione esiti campioni <br> 2.6 Ricerca capo <br> <br>
+    <img src="images/PDF Logo.png" alt="PDF Logo" style="width:25px;height:31px;"> &nbsp; <a href="chapters/Capitolo2Home.pdf" target="_blank">Visualizza PDF</a> </div>
+  </div>
+  
+    <div class="faq-question">
+    <input id="q3" type="checkbox" class="panel">
+    <div class="plus">+</div>
+    <label for="q3" class="panel-title">3. Anagrafica stabilimenti</label>
+    <div class="panel-content"> 3.1 Ricerca e altre funzionalit&agrave; <br> 3.2 Scheda impresa <br> 3.3 Gestione dati aggiuntivi <br> 3.4 Appendice <br> <br>
+	<img src="images/PDF Logo.png" alt="PDF Logo" style="width:25px;height:31px;"> &nbsp; <a href="chapters/Capitolo3AnagraficaStabilimenti.pdf" target="_blank">Visualizza PDF</a></div>
+  </div>
+  
+      <div class="faq-question">
+    <input id="q4" type="checkbox" class="panel">
+    <div class="plus">+</div>
+    <label for="q4" class="panel-title">4. Pratiche SUAP 2.0</label>
+    <div class="panel-content"> 4.1 Gestione da cavaliere "Pratiche SUAP 2.0" <br> 4.2 Gestione da cavaliere "Anagrafica stabilimenti" <br> 4.3 Appendice - Incompatibilit&agrave; fra linee <br> <br>
+	<img src="images/PDF Logo.png" alt="PDF Logo" style="width:25px;height:31px;"> &nbsp; <a href="chapters/Capitolo4PraticheSUAP.pdf" target="_blank">Visualizza PDF</a></div>
+  </div>
+  
+</div>

@@ -1,0 +1,175 @@
+<a name="flussodocumentale"></a>
+<h3 id="flussodocumentale">Gestione Richieste (Sviluppo Software)</h3>
+
+La funzionalit&agrave; &egrave; accessibile dal cavaliere "Gestione Richieste" agli utenti abilitati (Ditta Informatica, ORSA e Regione) e consente di gestire il flusso delle attivit&agrave; di sviluppo.<br/><br/>
+<img src="./images/devdoc/gestione_richieste.png" width="496" height="310" /><br/><br/>
+
+<h4>Tipologia di moduli</h4>
+
+<br/>
+
+Una richiesta pu&ograve; essere composta dai seguenti tipi di modulo:
+
+<ul>
+<li>Modulo A: Richieste Regionali</li>
+<li>Modulo B: Requisiti</li>
+<li>Modulo C: Proposte implementazioni</li>
+<li>Modulo CH: Chiarimenti</li>
+<li>Modulo D: Affidamenti</li>
+<li>Altri allegati generici</li>
+</ul>
+
+<br/>
+
+A seguito di una nuova richiesta, la Regione allega un modulo A iniziale che viene poi formalizzato in un modulo B, la Ditta Informatica produce a questo punto una o pi&ugrave; revisioni del modulo C (ed eventuali moduli CH) da sottoporre al referente che li valida tramite il modulo D dopo il quale vengono avviati gli sviluppi.<br/><br/>
+
+<h4>Stati</h4>
+
+<br/>
+
+Una richiesta può trovarsi nei seguenti stati: <br/> <br/>
+
+<table style="border-collapse: collapse" cellpadding="10" cellspacing="10">
+<tr><th style="border: 1px solid black">Stato</th><th style="border: 1px solid black">Spiegazione</th><th style="border: 1px solid black">Chi può settarlo</th></tr>
+<tr>
+<td  style="border: 1px solid black">APERTO</td>
+<td  style="border: 1px solid black">Stato di default di una richiesta appena inserita.</td>
+<td  style="border: 1px solid black">Regione (automaticamente inserendo la richiesta)<br/>Ditta Informatica</td>
+</tr>
+
+<tr>
+<td  style="border: 1px solid black">STANDBY</td>
+<td  style="border: 1px solid black">La richiesta &egrave; stata messa in pausa.</td>
+<td  style="border: 1px solid black">Ditta Informatica</td>
+</tr>
+
+<tr>
+<td  style="border: 1px solid black">CONSEGNATO</td>
+<td  style="border: 1px solid black">Sviluppi e test interni sono terminati e la funzionalit&agrave; &egrave; stata messa a disposizione per il collaudo esterno.</td>
+<td  style="border: 1px solid black">Ditta Informatica</td>
+</tr>
+
+<tr>
+<td  style="border: 1px solid black">COLLAUDATO</td>
+<td  style="border: 1px solid black">Il collaudo esterno &egrave; terminato con esito positivo.</td>
+<td  style="border: 1px solid black">Referente della richiesta</td>
+</tr>
+
+<tr>
+<td  style="border: 1px solid black">ANNULLATO</td>
+<td  style="border: 1px solid black">La richiesta &egrave; stata annullata.</td>
+<td  style="border: 1px solid black">Ditta Informatica</td>
+</tr>
+
+<tr>
+<td  style="border: 1px solid black">CHIARIMENTI IN CORSO</td>
+<td  style="border: 1px solid black">Sono in corso dei chiarimenti tra la ditta e il referente.</td>
+<td  style="border: 1px solid black">Ditta Informatica</td>
+</tr>
+
+
+</table>
+
+<br/>
+
+Il possibile flusso degli stati &egrave;: <br/>
+
+<ul>
+<li>APERTO -> CONSEGNATO (Possibile solo se presenti i moduli C e D)</li>
+<li>APERTO -> STANDBY</li>
+<li>APERTO -> ANNULLATO</li>
+
+<li>CONSEGNATO -> COLLAUDATO  (Possibile solo se presenti i moduli C e D)</li>
+
+<li>STANDBY -> APERTO</li>
+<li>ANNULLATO -> APERTO</li>
+
+</ul> 
+
+ <br/>
+
+<h4>Gestione dei referenti</h4>
+
+<br/>
+
+In fase di inserimento di una nuova richiesta andr&agrave; indicato il referente, ossia la persona con cui la Ditta Informatica si interfaccer&agrave; come responsabile. <br/>
+La lista di referenti (selezionabili tra il personale regionale e ORSA/OEV) potr&agrave; essere modificata on-demand. <br/><br/>
+
+<img src="./images/devdoc/aggiungi_referente.png" width="496" height="310" /><br/><br/>
+
+Il referente potr&agrave; essere modificato (da ORSA/OEV o Regione) nella pagina di dettaglio della richiesta finch&egrave; essa non si trova nello stato <i>CONSEGNATO</i> o <i>COLLAUDATO</i>. <br/><br/>
+
+<img src="./images/devdoc/modifica_referente.png" width="496" height="310" /><br/><br/>
+
+ 
+<h4>Settaggio della priorit&agrave;</h4> 
+
+<br/>
+
+Il Responsabile Regione potr&agrave; definire la priorit&agrave; della richiesta (che di default sar&agrave; <i>NON DEFINITA</i>). <br/>
+La priorit&agrave; potr&agrave; essere modificata nella pagina di dettaglio della richiesta finch&egrave; essa non si trova nello stato <i>CONSEGNATO</i> o <i>COLLAUDATO</i>.<br/><br/>
+
+<img src="./images/devdoc/modifica_priorita.png" width="496" height="310" /><br/><br/>
+
+ 
+<h4>Note</h4>
+
+<br/>
+
+Nel dettaglio di una richiesta sar&agrave; possibile aggiungere delle note.<br/>
+Le note saranno aggiunte in coda alle altre eventualmente presenti e riporteranno l'utente che le ha inserite. <br/>
+
+<img src="./images/devdoc/inserisci_nota.png" width="496" height="310" /><br/><br/>
+
+
+<h4>Inserimento di una nuova richiesta</h4>
+
+<br/>
+
+<img src="./images/devdoc/aggiungi_a.png" width="496" height="310" /><br/><br/>
+
+L'inserimento di una nuova richiesta &egrave; a carico della Regione ed avviene tramite il caricamento di un Modulo A, mediante il bottone giallo <i>"Aggiungi modulo A"</i>.<br/><br/>
+
+<img src="./images/devdoc_aggiunta.png" width="496" height="310" /><br/><br/>
+
+In fase di aggiunta occorre indicare:
+
+<ul>
+<li>Descrizione della richiesta</li>
+<li>Tags della richiesta (Insieme di termini riguardanti l'argomento trattato, per favorire la ricerca)</li>
+<li>File (<i>vedi paragrafo "Sintassi del nome file"</i>)</li>
+<li>Referente</li>
+</ul>
+
+<br/>
+
+<h4>Sintassi del nome file</h4>
+
+<br/>
+
+Il nome del file da allegare deve rispettare la seguente sintassi:<br/>
+
+<strong>Modulo</strong> <i>[Lettera identificativa del modulo]</i> <strong>[Progressivo della richiesta]</strong> <br/><br/>
+
+Es. <br/><br/> 
+
+<strong>Modulo</strong><i>A</i><strong>045</strong>.pdf <br/>
+<strong>Modulo</strong>_<i>A</i> <strong>111</strong>.odt <br/>
+<strong>Modulo</strong> <i>A</i>_<strong>006</strong>.doc <br/>
+<strong>Modulo</strong>-<i>A</i>-<strong>900</strong>.pdf <br/>
+
+Dal nome del file saranno estratti il tipo di modulo ed il progressivo della richiesta.<br/><br/>
+
+Una volta generata la richiesta, essa apparir&agrave; in una riga dedicata della tabella.<br/>
+
+<img src="./images/devdoc/tabella_richieste.png" width="800" height="400" /><br/><br/>
+
+Da qui sar&agrave; possibile aggiungere i moduli B, C, CH, D tramite il link "Aggiungi" in corrispondenza della rispettiva colonna. In questo caso non sar&agrave; richiesta alcuna sintassi particolare nel nome del file.<br/>
+Sar&agrave; inoltre possibile applicare dei filtri per facilitare la ricerca.
+
+
+<br/><br/>
+
+
+
+

@@ -1,0 +1,149 @@
+<a name="registricaricoscarico"></a>
+<h3 id="registricaricoscarico">Registri Carico e Scarico</h3>
+
+<p style="text-align: justify;">
+I registri sono disponibili per gli utenti abilitati su anagrafiche aventi le seguenti linee:<br/><br/>
+
+<strong>Registro Carico e Scarico Produzione Materiale Seminale</strong>
+
+<ul>
+<li>(Rif. ML8) L. 30-91 ed altre norme -> RIPRODUZIONE ANIMALE -> STABILIMENTI IN MATERIA DI RIPRODUZIONE ANIMALE CON COMMERCIALIZZAZIONE IN AMBITO NAZIONALE -> CENTRO DI PRODUZIONE EMBRIONI</li>
+<li>(Rif. ML8) L. 30-91 ed altre norme -> RIPRODUZIONE ANIMALE -> STABILIMENTI IN MATERIA DI RIPRODUZIONE ANIMALE CON COMMERCIALIZZAZIONE IN AMBITO NAZIONALE -> CENTRO DI PRODUZIONE MATERIALE SEMINALE</li>
+<li>           D.L.VO 52-2018 ED ALTRE NORME  -> RIPRODUZIONE ANIMALE -> STABILIMENTI IN MATERIA DI RIPRODUZIONE ANIMALE CON COMMERCIALIZZAZIONE IN AMBITO NAZIONALE -> CENTRO DI PRODUZIONE EMBRIONI</li>
+<li>           D.L.VO 52-2018 ED ALTRE NORME  -> RIPRODUZIONE ANIMALE -> STABILIMENTI IN MATERIA DI RIPRODUZIONE ANIMALE CON COMMERCIALIZZAZIONE IN AMBITO NAZIONALE -> CENTRO DI PRODUZIONE MATERIALE SEMINALE</li>
+</ul>
+
+<strong>Registro Carico e Scarico Recapiti</strong>
+
+<ul>
+<li>(Rif. ML8) L. 30-91 ed altre norme -> RIPRODUZIONE ANIMALE -> STABILIMENTI IN MATERIA DI RIPRODUZIONE ANIMALE CON COMMERCIALIZZAZIONE IN AMBITO NAZIONALE ->
+RECAPITI  </li>
+<li>           D.L.VO 52-2018 ED ALTRE NORME  -> RIPRODUZIONE ANIMALE -> STABILIMENTI IN MATERIA DI RIPRODUZIONE ANIMALE CON COMMERCIALIZZAZIONE IN AMBITO NAZIONALE ->
+RECAPITI  </li>
+</ul>
+</p>
+
+<img src="./images/registricaricoscarico/button.png" width="300px"/><br/>
+
+Nel caso nell'anagrafica fossero presenti entrambe le tipologie di linee, sarà richiesta un'ulteriore selezione del registro che si vuole consultare.<br/><br/>
+
+<img src="./images/registricaricoscarico/scelta.png" width="300px"/><br/>
+
+Una volta aperto il registro, sarà possibile: 
+
+<ul>
+<li>Inserire un carico</li>
+<li>Inserire uno scarico</li>
+<li>Modificare/eliminare un carico</li>
+<li>Modificare/eliminare uno scarico</li>
+<li>Consultare la giacenza</li>
+<li>Estrarre l'excel</li>
+</ul>
+
+<br/><br/>
+
+<strong>Inserimento Carico</strong><br/><br/>
+
+L'operazione di carico avviene tramite il bottone INSERISCI CARICO.<br/>
+
+<img src="./images/registricaricoscarico/buttonInserisciCarico.png" width="300px"/><br/>
+
+Sarà possibile indicare i campi richiesti con i seguenti vincoli:
+
+<ul>
+<li>Matricola Riproduttore Maschio / Femmina: Nel caso sullo stesso registro fosse già stato inserito un altro carico sulla stessa matricola, il sistema recupererà i suoi dati anagrafici (razza, specie, nome) impedendone la modifica. Nel Registro Recapiti, dove sono disponibili entrambi, è possibile indicarne soltanto una.</li>
+<li>Dosi Prodotte / Dosi Acquistate: Nel Registro Seme, dove sono disponibili entrambi, è possibile indicarne solo uno.</li>
+</ul>
+
+<br/>
+
+<img src="./images/registricaricoscarico/mascheraInserisciCarico.png" width="300px"/><br/>
+
+In fase di inserimento sarà anche generato il Numero Registrazione con la seguente sintassi:<br/><br/>
+
+Registro Seme: S; Registro Recapiti: R<br/>
+Ultime due cifre dell'anno corrente<br/>
+C (Carico)<br/>
+Progressivo<br/><br/>
+
+Es. S23C000001 <br/><br/>
+
+<strong>Inserimento Scarico</strong><br/><br/>
+
+L'operazione di scarico avviene tramite il bottone INSERISCI SCARICO sulla riga di un carico esistente.<br/>
+
+<img src="./images/registricaricoscarico/buttonInserisciScarico.png" width="300px"/><br/>
+
+Sarà possibile indicare i campi richiesti con i seguenti vincoli:
+
+<ul>
+<li>Data Vendita / Data Registrazione Uscita: Uguale o successiva a Data Produzione (Seme) / Data Registrazione Entrata (Recapiti)</li>
+<li>Dosi Vendute, Dosi Distrutte: La loro somma non può essere superiore al residuo di dosi sul carico su cui si sta effettuando lo scarico (ossia la somma di tutte le dosi prodotte/acquistate sul carico - la somma di tutte le dosi vendute/distrutte sugli altri scarichi).</li>
+</ul>
+
+<br/>
+
+<img src="./images/registricaricoscarico/mascheraInserisciScarico.png" width="300px"/><br/>
+
+In fase di inserimento sarà anche generato il Numero Registrazione con la seguente sintassi:<br/><br/>
+
+Registro Seme: S; Registro Recapiti: R<br/>
+Ultime due cifre dell'anno corrente<br/>
+S (Scarico)<br/>
+Progressivo<br/><br/>
+
+Es. R23S000001 <br/><br/>
+
+<strong>Modifica/Eliminazione Carico</strong><br/><br/>
+
+L'operazione di modifica/eliminazione carico avviene tramite il bottone MODIFICA/ELIMINA sulla riga di un carico esistente.<br/>
+
+<img src="./images/registricaricoscarico/buttonModificaCarico.png" width="300px"/><br/>
+
+Il bottone sarà disponibile solo su carichi che non presentano scarichi associati.<br/><br/>
+
+<strong>Modifica/Eliminazione Scarico</strong><br/><br/>
+
+L'operazione di modifica/eliminazione scarico avviene tramite il bottone MODIFICA/ELIMINA sulla riga di uno scarico esistente.<br/>
+
+<img src="./images/registricaricoscarico/buttonModificaScarico.png" width="300px"/><br/>
+
+Sarà possibile modificare i campi rispettando gli stessi vincoli dell'inserimento, in particolare:
+
+<ul>
+<li>Dosi Vendute, Dosi Distrutte: La loro nuova somma non può essere superiore al residuo di dosi sul carico su cui si sta effettuando lo scarico (ossia la somma di tutte le dosi prodotte/acquistate sul carico - la somma di tutte le dosi vendute/distrutte sugli altri scarichi).</li>
+</ul>
+
+<strong>Giacenza</strong><br/><br/>
+
+L'operazione di consultazione giacenza avviene tramite il bottone VISUALIZZA GIACENZA.<br/>
+
+<img src="./images/registricaricoscarico/buttonGiacenza.png" width="300px"/><br/>
+
+Il report mostrerà la giacenza per singola matricola e per singola tipologia di seme/embrione, ossia la differenza tra dosi prodotte/acquistate e dosi vendute/distrutte.<br/><br/>
+
+<img src="./images/registricaricoscarico/giacenza.png" width="300px"/><br/>
+
+<strong>Excel</strong><br/><br/>
+
+L'operazione di consultazione excel avviene tramite il bottone ESPORTA IN EXCEL dopo aver selezionato una Data Inizio ed una Data Fine.<br/><br/>
+
+<img src="./images/registricaricoscarico/buttonExcel.png" width="300px"/><br/>
+
+L'estrazione mostrerà:<br/><br/>
+
+Registro Seme<br/>
+Record di carico con Data Produzione/Acquisto uguale o superiore a Data Inizio e uguale o inferiore a Data Fine<br/>
+Record di scarico con Data Vendita uguale o superiore a Data Inizio e uguale o inferiore a Data Fine<br/><br/>
+
+Registro Recapiti<br/>
+Record di carico con Data Registrazione Entrata uguale o superiore a Data Inizio e uguale o inferiore a Data Fine<br/>
+Record di scarico con Data Registrazione Uscita uguale o superiore a Data Inizio e uguale o inferiore a Data Fine<br/><br/>
+
+
+<img src="./images/registricaricoscarico/excel.png" width="300px"/><br/>
+
+
+
+
+

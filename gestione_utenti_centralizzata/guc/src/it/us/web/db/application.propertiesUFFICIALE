@@ -1,0 +1,21 @@
+####		CONFIGURAZIONE TIMEOUT LAST LOGIN				  ####
+timeout=6
+
+########################### INVIO MAIL ############################
+mail.smtp.starttls.enable = false
+mail.smtp.auth = true
+mail.smtp.host = 192.168.10.10
+mail.smtp.port = 25
+mail.smtp.ssl.enable = false
+username = 
+password = 
+mail.smtp.ssl.protocols= 
+mail.smtp.socketFactory.class= 
+mail.smtp.socketFactory.fallback= 
+mail.smtp.from= gisacampania-noreply@regione.campania.it
+mail.cc = gisahelpdesk@usmail.it
+mail.invio.utente=si
+mail.header=
+
+############################ SITO GISA ############################
+SITO_GISA=https://gisagel.regione.campania.it

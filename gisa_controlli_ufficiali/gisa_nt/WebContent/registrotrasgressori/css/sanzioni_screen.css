@@ -1,0 +1,42 @@
+
+.tableScheda {
+  border: 1px solid #ccc;
+  border-collapse: collapse;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  table-layout: fixed;
+}
+
+.tableScheda tr {
+  border: 1px solid #ddd;
+  padding: .35em;
+}
+
+.tableScheda th,
+.tableScheda td {
+  padding: .625em;
+  text-align: center;
+  font-family: "Open Sans", sans-serif;
+  font-size: 1.25em;
+  line-height: 2.25;
+  text-transform: uppercase;
+  border: 1px solid black;
+  
+}
+
+.tableScheda th {
+  font-size: 1.25em;
+  letter-spacing: .1em;
+    background-color: #f8f8f8;
+  }
+
+
+.boxOrigineDocumento {
+ 	display:none;
+	
+}
+.boxIdDocumento {
+	 	display:none;
+
+}
