@@ -105,7 +105,7 @@ Per ogni applicativo facente parte di GISA Campania - Sicurezza alimentare e vet
   - _./gisa_controlli_ufficiali_  
   
 
-  -_./autovalutazione_
+  - _./autovalutazione_
   
 
   - _./gestione_utenti_centralizzata_      
