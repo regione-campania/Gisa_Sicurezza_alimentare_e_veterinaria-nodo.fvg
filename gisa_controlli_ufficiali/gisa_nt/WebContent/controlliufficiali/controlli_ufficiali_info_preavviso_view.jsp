@@ -8,8 +8,8 @@
 		<%if ("N".equalsIgnoreCase(TicketDetails.getFlag_preavviso()) ){%>Nessun Preavviso<%} %> 
 		<%if ("P".equalsIgnoreCase(TicketDetails.getFlag_preavviso()) ){%>Telefono<%} %>
 		<%if ("T".equalsIgnoreCase(TicketDetails.getFlag_preavviso()) ){%>Telegramma<%} %>
-		<%if ("A".equalsIgnoreCase(TicketDetails.getFlag_preavviso()) ){%>Altro<%} %>
-		</td>
+		<%if ("A".equalsIgnoreCase(TicketDetails.getFlag_preavviso()) ){%>Altro <%if (TicketDetails.getDescrizione_preavviso_ba() != null){ %> <%=TicketDetails.getDescrizione_preavviso_ba()%> <%} %> <%} %>
+		</td> 
 		</tr>
 		
 		

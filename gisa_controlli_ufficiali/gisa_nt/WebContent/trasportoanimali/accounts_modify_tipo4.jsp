@@ -353,7 +353,7 @@ function checkSubmit(form){
 	              formTest = false;
 	            }
 
-	          if (form.address2latitude.value) {
+	          if (form.address2latitude!=null) {
 	         	 //alert(!isNaN(form.address2latitude.value));
 	         		if ((orgSelected == 1)  ){
 	         			/*if ( isNaN(form.address2latitude.value)||(form.address2latitude.value < 4431788.049190) || (form.address3latitude.value > 4593983.337630)){
@@ -367,7 +367,7 @@ function checkSubmit(form){
 	         		}
 	      	 }   
 	      	 
-	      	 if (form.address2longitude.value) {
+	      	 if (form.address2longitude!=null) {
 	         	 //alert(!isNaN(form.address2longitude.value));
 	         		if ((orgSelected == 1)  ){
 	         			/*if (isNaN(form.address2longitude.value)||(form.address2longitude.value < 2417159.584320) || (form.address3longitude.value > 2587487.362260)){

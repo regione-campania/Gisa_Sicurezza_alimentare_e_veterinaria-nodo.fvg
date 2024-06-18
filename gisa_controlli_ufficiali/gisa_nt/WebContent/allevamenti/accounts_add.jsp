@@ -91,7 +91,7 @@ alert ("<%=ErroreImport%>");
 <%for (int i = 0 ; i < SpecieList.size(); i++){
   LookupElement el = (LookupElement)SpecieList.get(i);
   String chiave = "-1";
-  if (el.getChiave() > 0)
+  if (el.getCode() > 0)
   	 chiave = el.getShort_description();
   if (chiave.startsWith("0"))
 	  chiave = chiave.substring(1, chiave.length());

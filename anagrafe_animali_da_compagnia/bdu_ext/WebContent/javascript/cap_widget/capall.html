@@ -1,0 +1,151 @@
+<meta charset="utf-8" />
+<html>
+<link rel="stylesheet" href="css/easy-autocomplete.min.css" />
+<link rel="stylesheet" href="css/style.css" />
+<script src="js/jquery-1.11.2.min.js"></script>
+<script src="js/jquery.easy-autocomplete.min.js"></script>
+
+
+<body bgcolor='#ffffe6'>
+<center>
+<form id='frmAddr' onsubmit="doSubmit()">
+
+<input type="text" id="provincia" placeholder="Provincia" required/><br>
+
+<input type="text" id="comuni" placeholder="Comune" required/><br>
+
+<input type="text" id="napoli"  style="visibility:hidden; " placeholder="Strade del Comune di Napoli" class="rcorners"  autocomplete="off"/>
+
+<input type="text"   id="top"  placeholder="Toponimo" required /><br>
+
+<input type="text" id="via" placeholder="Indirizzo" class="rcorners" required autocomplete="off"/><br><br>
+
+<input type="text" id="civ" placeholder="Civico"  class="rcorners" pattern="^[A-Za-z0-9\-\s,\/]*$" required autocomplete="off" maxlength="16"/><br><br>
+
+<input type="text" id='cap'  placeholder="CAP" class="rcorners" required onkeydown="return false;" autocomplete="off"/><br><br>
+
+<button type="submit" > Prosegui </button> <br>
+</center>
+<input type="hidden" id="provinciaId" />
+<input type="hidden" id="comuneId" />
+<input type="hidden" id="topId" />
+
+</form>
+
+
+</body style="bakcground-color:'#eee';">
+</html>
+
+<script src="js/gestioneIndirizziNapoli.js"></script>
+<script src="js/province.js?rev=1"></script>
+<script src="js/comuni.js"></script>
+<script src="js/toponimi.js"></script>
+<script src="js/via.js"></script>
+<script src="resources/idToponimi.js"></script>
+<script src="resources/aslCampania.js"></script>
+
+
+
+<script>
+/* "use strict"; */
+
+$(document).ready( function(){
+    var x = aslCampania.filter( function(item){ return item.comune === addrAll.comune});
+    if(x.length == 1)
+		console.log(x[0].codiceistatasl);
+});
+
+var toponimo = sessionStorage.getItem("toponimo");
+var via = sessionStorage.getItem("via");
+var civico = sessionStorage.getItem("civico");
+var comune = sessionStorage.getItem("comune");
+var cap = sessionStorage.getItem("cap");
+var prov = sessionStorage.getItem("prov");
+var toponimoId = sessionStorage.getItem("topId");
+var comuneId = sessionStorage.getItem("comuneId");
+var provinciaId = sessionStorage.getItem("provinciaId")
+
+window.onload=function(){
+    document.getElementById('frmAddr').reset();
+    
+    var id_asl_passato = inputParams.get('flag_id_asl');
+	
+    var listaprovince = "";
+    listaprovince = "GetProvinceByAsl.do?command=Search&idAsl=" + id_asl_passato;
+    
+    var request = $.ajax({
+    	url : listaprovince,
+    	dataType : "json",
+    	async: false
+    });
+    
+    request.done(function(result) {
+    	
+    	if(result.length == 1){
+    		document.getElementById('provincia').value = result[0].label;
+    		document.getElementById('provinciaId').value = result[0].value;
+    		document.getElementById('provincia').disabled = true;
+    		document.getElementById('comuni').focus();
+    	} else {
+    		document.getElementById('provincia').focus();
+    	}
+    	
+    });
+    request.fail(function(jqXHR, textStatus) {
+    	console.log('Error');
+    	
+    });
+    
+    
+
+};
+
+
+window.onunload = function (e) {
+     //opener.callback(toponimo, toponimoId, via, civico, comune, comuneId, cap, prov,provinciaId,addrAll);
+    let urlParams = new URLSearchParams(window.location.search);
+	let callback = urlParams.get('callbackName');
+	
+	try {
+		opener.wrapper(callback,addrAll); 
+	} catch(error) {
+		alert(error);
+	}
+};
+	
+
+let addrAll = {
+    comune: "",
+    comuneId: "",
+    top: "",
+    topId: "",
+    via: "",
+    civ: "",
+    cap: "",
+    prov: "",
+    provinciaId: "",
+    aslSel: ""
+}
+
+function doSubmit() {
+    addrAll.comune=document.getElementById('comuni').value;
+    addrAll.top=document.getElementById('top').value;
+    addrAll.via=document.getElementById('via').value;
+    addrAll.civ=document.getElementById('civ').value;
+    addrAll.cap=document.getElementById('cap').value;
+    addrAll.prov=document.getElementById('provincia').value;
+    addrAll.comuneId=document.getElementById('comuneId').value;
+    addrAll.topId=document.getElementById('topId').value;
+    addrAll.provinciaId=document.getElementById('provinciaId').value;
+    
+    var x = aslCampania.filter( function(item){ return item.comune === addrAll.comune.toUpperCase()});
+    if(x.length == 1)
+		addrAll.aslSel = x[0].codiceistatasl;
+    else
+    	addrAll.aslSel = '14'
+        
+    self.close();
+    return false;
+}
+
+</script>

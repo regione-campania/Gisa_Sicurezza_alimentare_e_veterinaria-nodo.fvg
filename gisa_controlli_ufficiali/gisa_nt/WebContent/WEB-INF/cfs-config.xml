@@ -719,7 +719,21 @@
 		<forward name="ViewAllegato_Ver6_Broiler_OK" resource="/controlliufficiali/allegati/benessere/v6/allegato_broiler.jsp"
 			layout="campioni" />								
 		<forward name="ViewAllegato_Ver6_Conigli_OK" resource="/controlliufficiali/allegati/benessere/v6/allegato_conigli.jsp"
-			layout="campioni" />						
+			layout="campioni" />
+		<forward name="ViewAllegato_Ver7_Ovicaprini_OK" resource="/controlliufficiali/allegati/benessere/v7/allegato_ovicaprini.jsp"
+			layout="campioni" />	
+		<forward name="ViewAllegato_Ver7_Suini_OK" resource="/controlliufficiali/allegati/benessere/v7/allegato_suini.jsp"
+			layout="campioni" />
+		<forward name="ViewAllegato_Ver7_BoviniBufalini_OK" resource="/controlliufficiali/allegati/benessere/v7/allegato_bovini_bufalini.jsp"
+			layout="campioni" />
+		<forward name="ViewAllegato_Ver7_Vitelli_OK" resource="/controlliufficiali/allegati/benessere/v7/allegato_vitelli.jsp"
+			layout="campioni" />	
+		<forward name="ViewAllegato_Ver7_Galline_OK" resource="/controlliufficiali/allegati/benessere/v7/allegato_galline.jsp"
+			layout="campioni" />	
+		<forward name="ViewAllegato_Ver7_Tacchini_OK" resource="/controlliufficiali/allegati/benessere/v7/allegato_tacchini.jsp"
+			layout="campioni" />
+		<forward name="ViewAllegato_Ver7_AltreSpecie_OK" resource="/controlliufficiali/allegati/benessere/v7/allegato_altrespecie.jsp"
+			layout="campioni" />									
 		<forward name="ViewAllegato_Ver4_AltreSpecie_OK" resource="/controlliufficiali/allegati/benessere/v4/allegato_altrespecie.jsp"
 			layout="campioni" />
 		<forward name="ViewAllegato_Ver4_Galline_OK" resource="/controlliufficiali/allegati/benessere/v4/allegato_galline.jsp"
@@ -731,7 +745,9 @@
 		<forward name="ViewAllegato_Ver3_AltreSpecie_OK" resource="/controlliufficiali/allegati/benessere/v3/allegato_altrespecie.jsp"
 			layout="campioni" />	
 		<forward name="ViewAllegato_Ver3_Broiler_OK" resource="/controlliufficiali/allegati/benessere/v3/allegato_broiler.jsp"
-			layout="campioni" />		
+			layout="campioni" />
+		<forward name="ViewAllegato_Ver8_AltreSpecie_OK" resource="/controlliufficiali/allegati/benessere/v8/allegato_altrespecie.jsp"
+			layout="campioni" />				
 		<forward name="UpdateAllegatoOK"
 			resource="/controlliufficiali/allegati/benessere/allegato_details.jsp" layout="campioni" />
 		<forward name="InsertAllegatoOK"
@@ -763,6 +779,28 @@
 			<forward name="ViewAllegato_Bio_2022_Suini_Semib_Alta_OK" resource="/controlliufficiali/allegati/biosicurezza/2022/allegato_suini_semib_alta.jsp"
 			layout="campioni" />
 			<forward name="ViewAllegato_Bio_2022_Suini_Semib_Bassa_OK" resource="/controlliufficiali/allegati/biosicurezza/2022/allegato_suini_semib_bassa.jsp"
+			layout="campioni" />
+			<forward name="ViewAllegato_Bio_2023_Suini_Stab_Alta_OK" resource="/controlliufficiali/allegati/biosicurezza/2023/allegato_suini_stab_alta.jsp"
+			layout="campioni" />
+			<forward name="ViewAllegato_Bio_2023_Suini_Stab_Bassa_OK" resource="/controlliufficiali/allegati/biosicurezza/2023/allegato_suini_stab_bassa.jsp"
+			layout="campioni" />
+			<forward name="ViewAllegato_Bio_2023_Suini_Semib_Alta_OK" resource="/controlliufficiali/allegati/biosicurezza/2023/allegato_suini_semib_alta.jsp"
+			layout="campioni" />
+			<forward name="ViewAllegato_Bio_2023_Suini_Semib_Bassa_OK" resource="/controlliufficiali/allegati/biosicurezza/2023/allegato_suini_semib_bassa.jsp"
+			layout="campioni" />
+			<forward name="ViewAllegato_Bio_2023_Galline_OK" resource="/controlliufficiali/allegati/biosicurezza/2023/allegato_galline.jsp"
+			layout="campioni" />
+			<forward name="ViewAllegato_Bio_2023_Tacchini_OK" resource="/controlliufficiali/allegati/biosicurezza/2023/allegato_tacchini.jsp"
+			layout="campioni" />
+			<forward name="ViewAllegato_Bio_2023_Broiler_OK" resource="/controlliufficiali/allegati/biosicurezza/2023/allegato_broiler.jsp"
+			layout="campioni" />
+			<forward name="ViewAllegato_Bio_2023_Svezzamento_OK" resource="/controlliufficiali/allegati/biosicurezza/2023/allegato_svezzamento.jsp"
+			layout="campioni" />
+			<forward name="ViewAllegato_Bio_2023_Incubatoi_OK" resource="/controlliufficiali/allegati/biosicurezza/2023/allegato_incubatoi.jsp"
+			layout="campioni" />
+			<forward name="ViewAllegato_Bio_2023_Sotto250_OK" resource="/controlliufficiali/allegati/biosicurezza/2023/allegato_sotto250.jsp"
+			layout="campioni" />
+			<forward name="ViewAllegato_Bio_2023_Oltre250_OK" resource="/controlliufficiali/allegati/biosicurezza/2023/allegato_oltre250.jsp"
 			layout="campioni" />
 			<forward name="ViewAllegato_Fco_2020_OK" resource="/controlliufficiali/allegati/farmacosorveglianza/2020/allegato.jsp"
 			layout="campioni" />
@@ -52978,10 +53016,16 @@
 	
 	<action name="GestioneSorveglianza" class="org.aspcfs.modules.sorveglianza.actions.GestioneSorveglianza">
 	<forward name="ViewOK" resource="/sorveglianza/view.jsp" layout="style" />
+	<forward name="Seleziona_C_OK" resource="/sorveglianza/seleziona_c.jsp" layout="style" />
 	<forward name="Compila_B_OK" resource="/sorveglianza/allegato_b.jsp" layout="style" />
 	<forward name="Compila_C_OK" resource="/sorveglianza/allegato_c.jsp" layout="style" />
 	<forward name="Compila_D_OK" resource="/sorveglianza/allegato_d.jsp" layout="style" />
 	<forward name="Compila_E_OK" resource="/sorveglianza/allegato_e.jsp" layout="style" />
+	<forward name="Stampa_B_OK" resource="/sorveglianza/allegato_b_stampa.jsp" layout="style" />
+	<forward name="Stampa_C_OK" resource="/sorveglianza/allegato_c_stampa.jsp" layout="style" />
+	<forward name="Stampa_D_OK" resource="/sorveglianza/allegato_d_stampa.jsp" layout="style" />
+	<forward name="Stampa_E_OK" resource="/sorveglianza/allegato_e_stampa.jsp" layout="style" />
+	<forward name="Stampa_RIEPILOGO_OK" resource="/sorveglianza/stampa.jsp" layout="style" />
 	<forward name="ChiudiCUOK" resource="/sorveglianza/chiudi_cu_esito.jsp" layout="style" />
 	</action>
 	

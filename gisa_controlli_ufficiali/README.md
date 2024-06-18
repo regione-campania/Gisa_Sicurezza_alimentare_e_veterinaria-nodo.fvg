@@ -54,9 +54,7 @@ Il sistema è stato riconosciuto come **best-practice** dall'**OCSE - Organizzaz
 In ***GISA Controlli Ufficiali*** è implementato l’intero processo di attivazione, gestione e rendicontazione delle ***Allerte Alimentari*** (Figura 1).
 
 
-<p align="center">
-<img src="./docs/Aspose.Words.cf9e318a-c0df-40c2-8eee-7557ad70dba9.003">
-</p>
+![screen](./docs/Aspose.Words.cf9e318a-c0df-40c2-8eee-7557ad70dba9.003.png)
 
 
 Figura 1. Processo di **Gestione Allerte** sugli alimenti in **GISA** – **Allerte alimentari**
@@ -159,7 +157,6 @@ Più precisamente le tipologie di utenti che possono registrarsi in GISA sono le
 - **Gestore Distributori (erogatori cibi e bevande)**
 - **Operatore Settore Alimentare per autovalutazione**
 
-I Responsabili dei cantieri non necessitano della registrazione all’ecosistema GISA e possono inoltrare la notifica accedendo con SPID/CIE.
 
 Il totale stimato è di circa **11.000** utenti (peraltro in continua crescita) distribuiti variamente sui sottosistemi.
 

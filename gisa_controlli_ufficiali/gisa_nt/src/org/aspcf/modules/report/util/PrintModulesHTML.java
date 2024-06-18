@@ -1226,6 +1226,14 @@ public String executeCommandGenerateBarcode(ActionContext context){
 		   numAllegato = infoChecklist[1];
 		   specieChecklist = infoChecklist[2];
 		   
+		// Se siamo nella nuova gestione 2024, salta tutto e vai direttamente a quella
+		   
+		   if (versioneChecklist == 8)
+			   return executeCommandAddSchedaAllegato_Ver8(context);
+		   
+		   if (versioneChecklist == 7)
+			   return executeCommandAddSchedaAllegato_Ver7(context);
+		   
 		// Se siamo nella nuova gestione classyfarm, salta tutto e vai direttamente a quella
 		   if (versioneChecklist == 6)
 			   return executeCommandAddSchedaAllegato_Ver6(context);
@@ -1664,6 +1672,161 @@ public String executeCommandAddSchedaAllegato_Ver4(ActionContext context){
 	   
 	   
    }
+
+public String executeCommandAddSchedaAllegato_Ver7(ActionContext context){
+	   
+	   String url = context.getRequest().getParameter("url");
+  String orgId = context.getRequest().getParameter("orgId");
+  String idStabilimento = context.getRequest().getParameter("idStabilimento");
+	   String ticketId = context.getRequest().getParameter("idControllo");
+	   int specie = Integer.parseInt(context.getRequest().getParameter("specie"));
+	   int numAllegato = -1;
+	   int versioneChecklist = -1;
+	   int specieChecklist = -1;
+	   int codAllegato = -1;
+	   int idChkBnsModIst = -1;
+	   Connection db = null;
+	   String redirectTo = "";
+
+	   int infoChecklist [] = {-1, -1, -1, -1};
+	   
+	   try {
+		   
+		   db = this.getConnection(context);
+	
+		   infoChecklist = this.getVersioneChecklist(db, ticketId, specie);
+		   
+		   versioneChecklist = infoChecklist[0];
+		   numAllegato = infoChecklist[1];
+		   specieChecklist = infoChecklist[2];
+		   codAllegato = infoChecklist[3];
+		   
+		   if (numAllegato == 7){ //ovicaprini
+			   org.aspcf.modules.checklist_benessere.base.v7.ChecklistIstanza_Ovicaprini chk = new org.aspcf.modules.checklist_benessere.base.v7.ChecklistIstanza_Ovicaprini(db,Integer.parseInt(ticketId), codAllegato);
+			   idChkBnsModIst = chk.getIdChkBnsModIst();
+			   context.getRequest().setAttribute("ChecklistIstanza", chk);
+			   redirectTo =  "ViewAllegato_Ver"+versioneChecklist+"_Ovicaprini_OK";
+		   }
+		   
+		   if (numAllegato == 20){ //suini
+			   org.aspcf.modules.checklist_benessere.base.v7.ChecklistIstanza_Suini chk = new org.aspcf.modules.checklist_benessere.base.v7.ChecklistIstanza_Suini(db,Integer.parseInt(ticketId), codAllegato);
+			   idChkBnsModIst = chk.getIdChkBnsModIst();
+			   context.getRequest().setAttribute("ChecklistIstanza", chk);
+			   redirectTo =  "ViewAllegato_Ver"+versioneChecklist+"_Suini_OK";
+		   }
+		   
+		   if (numAllegato == 6){ //bovini bufalini
+			   org.aspcf.modules.checklist_benessere.base.v7.ChecklistIstanza_BoviniBufalini chk = new org.aspcf.modules.checklist_benessere.base.v7.ChecklistIstanza_BoviniBufalini(db,Integer.parseInt(ticketId), codAllegato);
+			   idChkBnsModIst = chk.getIdChkBnsModIst();
+			   context.getRequest().setAttribute("ChecklistIstanza", chk);
+			   redirectTo =  "ViewAllegato_Ver"+versioneChecklist+"_BoviniBufalini_OK";
+		   }
+		   
+		   if (numAllegato == 30){ //vitelli
+			   org.aspcf.modules.checklist_benessere.base.v7.ChecklistIstanza_Vitelli chk = new org.aspcf.modules.checklist_benessere.base.v7.ChecklistIstanza_Vitelli(db,Integer.parseInt(ticketId), codAllegato);
+			   idChkBnsModIst = chk.getIdChkBnsModIst();
+			   context.getRequest().setAttribute("ChecklistIstanza", chk);
+			   redirectTo =  "ViewAllegato_Ver"+versioneChecklist+"_Vitelli_OK";
+		   }
+		   
+		   if (numAllegato == 10){ //galline
+			   org.aspcf.modules.checklist_benessere.base.v7.ChecklistIstanza_Galline chk = new org.aspcf.modules.checklist_benessere.base.v7.ChecklistIstanza_Galline(db,Integer.parseInt(ticketId), codAllegato);
+			   idChkBnsModIst = chk.getIdChkBnsModIst();
+			   context.getRequest().setAttribute("ChecklistIstanza", chk);
+			   redirectTo =  "ViewAllegato_Ver"+versioneChecklist+"_Galline_OK";
+		   }
+		   
+		   if (numAllegato == 4){ //altre specie
+			   org.aspcf.modules.checklist_benessere.base.v7.ChecklistIstanza_AltreSpecie chk = new org.aspcf.modules.checklist_benessere.base.v7.ChecklistIstanza_AltreSpecie(db,Integer.parseInt(ticketId), codAllegato);
+			   idChkBnsModIst = chk.getIdChkBnsModIst();
+			   context.getRequest().setAttribute("ChecklistIstanza", chk);
+			   redirectTo =  "ViewAllegato_Ver"+versioneChecklist+"_AltreSpecie_OK";
+		   }
+		   
+		   if (numAllegato == 9){ //tacchini
+			   org.aspcf.modules.checklist_benessere.base.v7.ChecklistIstanza_Tacchini chk = new org.aspcf.modules.checklist_benessere.base.v7.ChecklistIstanza_Tacchini(db,Integer.parseInt(ticketId), codAllegato);
+			   idChkBnsModIst = chk.getIdChkBnsModIst();
+			   context.getRequest().setAttribute("ChecklistIstanza", chk);
+			   redirectTo =  "ViewAllegato_Ver"+versioneChecklist+"_Tacchini_OK";
+		   }
+		   
+		   org.aspcfs.modules.vigilanza.base.Ticket controllo = new org.aspcfs.modules.vigilanza.base.Ticket (db, Integer.parseInt(ticketId));
+		   context.getRequest().setAttribute("Ticket",controllo);
+		   
+		   ArrayList<org.aspcf.modules.checklist_benessere.base.v7.Domanda> domande = new ArrayList<org.aspcf.modules.checklist_benessere.base.v7.Domanda>();
+		   PreparedStatement pst = db.prepareStatement("select * from chk_bns_get_domande_v7(?, ?, ?, ?)");
+		   pst.setInt(1, specieChecklist);
+		   pst.setInt(2, numAllegato);
+		   pst.setInt(3, versioneChecklist);
+		   pst.setInt(4, controllo.getId());
+		   ResultSet rs = pst.executeQuery();
+		   while (rs.next()){
+			   org.aspcf.modules.checklist_benessere.base.v7.Domanda domanda = new org.aspcf.modules.checklist_benessere.base.v7.Domanda(db, rs, idChkBnsModIst); 
+			   domande.add(domanda);
+		   }
+		   context.getRequest().setAttribute("DomandeList",domande);
+
+		   
+		   org.aspcf.modules.controlliufficiali.base.Organization allevamento = null;
+		   
+		   int orgIdInt = -1;
+		   int stabIdInt = -1;
+		   
+		   try {orgIdInt = Integer.parseInt(orgId);} catch (Exception e) {}
+		   try {stabIdInt = Integer.parseInt(idStabilimento);} catch (Exception e) {}
+
+		   if (orgIdInt>0)
+			   allevamento = this.getDatiAllevamento(db,allevamento,orgIdInt,Integer.parseInt(ticketId));
+		   else if (stabIdInt>0)
+			   allevamento = this.getDatiAllevamentoOpu(db,allevamento,stabIdInt,Integer.parseInt(ticketId));
+		   
+		   context.getRequest().setAttribute("Allevamento",allevamento);
+		   
+		   AziendeZootFields fields = new AziendeZootFields();
+		   fields.queryRecord(db, Integer.parseInt(ticketId));
+		   context.getRequest().setAttribute("AzFields", fields);
+
+		  
+			 //Caricamento dei Tipi di Irregolarita': Requisito - Definizione dei requisiti
+			   String idAllegato = Integer.toString(Capitolo.getIdAllegato(db,specieChecklist, versioneChecklist));
+			   TicketList listConf = new TicketList();
+			   
+			   if (orgId!=null && !orgId.equals(""))
+				   listConf.setOrgId(orgId);
+			   else if (idStabilimento!=null && !idStabilimento.equals(""))
+				   listConf.setIdStabilimento(Integer.parseInt(idStabilimento));
+			  
+			   listConf.buildListControlli(db, orgId,ticketId);
+
+			   Iterator nonConfIterator = listConf.iterator();
+			   String esito = "";
+			   if(nonConfIterator.hasNext()) {
+
+				   esito = "NonFavorevole";
+			   }else {
+				   esito = "Favorevole";
+			   }
+			   
+			   context.getRequest().setAttribute("esito", esito);
+			   context.getRequest().setAttribute("idAlleg",idAllegato);
+			   context.getRequest().setAttribute("codice_specie",String.valueOf(specieChecklist));
+		   
+	   }catch(SQLException sql){
+		   sql.printStackTrace();
+	   }finally{
+		   this.freeConnection(context, db);
+	   }
+	   context.getRequest().setAttribute("numAllegato",String.valueOf(numAllegato));
+	   context.getRequest().setAttribute("versioneChecklist", String.valueOf(versioneChecklist));
+
+	   //if (numAllegato.equals("15")) 
+	    return redirectTo;
+	   
+	   
+	  
+	   
+	   
+}
    
 public String executeCommandAddSchedaAllegato_Ver6(ActionContext context){
 	   
@@ -1955,6 +2118,226 @@ public String executeCommandAddSchedaAllegato_Ver6(ActionContext context){
 	   
    }
    
+    public String executeCommandAddSchedaAllegato_Ver8(ActionContext context){
+	 	   
+	 	   String url = context.getRequest().getParameter("url");
+	         String orgId = context.getRequest().getParameter("orgId");
+	         String idStabilimento = context.getRequest().getParameter("idStabilimento");
+	 	   String ticketId = context.getRequest().getParameter("idControllo");
+	 	   String descrizioneAltreSpecie = context.getRequest().getParameter("descrizioneAltreSpecie");
+	 	   int specie = Integer.parseInt(context.getRequest().getParameter("specie"));
+	 	   int numAllegato = -1;
+	 	   int versioneChecklist = -1;
+	 	   int specieChecklist = -1;
+	 	   int codAllegato = -1;
+	 	   int idChkBnsModIst = -1;
+	 	   Connection db = null;
+	 	   String redirectTo = "";
+	 	   
+	 	   int infoChecklist [] = {-1, -1, -1, -1};
+	 	   
+	 	   try {
+	 		   
+	 		   db = this.getConnection(context);
+	 	
+	 		   infoChecklist = this.getVersioneChecklist(db, ticketId, specie);
+	 		   
+	 		   versioneChecklist = infoChecklist[0];
+	 		   numAllegato = infoChecklist[1];
+	 		   specieChecklist = infoChecklist[2];
+	 		   codAllegato = infoChecklist[3];
+	 		   
+	 		   if (descrizioneAltreSpecie==null && specieChecklist==-2){
+	 			   switch (specie) {
+	 			   case 139 : descrizioneAltreSpecie="FAGIANI";break;
+	 			   case 125 : descrizioneAltreSpecie="CAPRINI";break;
+	 			   case 146 : descrizioneAltreSpecie="AVICOLI MISTI";break;
+	 			   case 128 : descrizioneAltreSpecie="CONIGLI";break;
+	 			   case 129 : descrizioneAltreSpecie="BUFALINI";break;
+	 			   case 121 : descrizioneAltreSpecie="BOVINI";break;
+	 			   case 126 : descrizioneAltreSpecie="CAVALLI";break;
+	 			   case 124 : descrizioneAltreSpecie="OVINI";break;
+	 			   case 134 : descrizioneAltreSpecie="QUAGLIE";break;
+	 			   case 160 : descrizioneAltreSpecie="PESCI";break;
+	 			   }
+	 		   }
+	 		   context.getRequest().setAttribute("descrizioneAltreSpecie", descrizioneAltreSpecie);
+
+	 		 //cerco checklist esistente
+	 		   
+	 		   org.aspcf.modules.checklist_benessere.base.v8.ChecklistIstanza_AltreSpecie chk = new org.aspcf.modules.checklist_benessere.base.v8.ChecklistIstanza_AltreSpecie(db,Integer.parseInt(ticketId), codAllegato);
+	 		   idChkBnsModIst = chk.getIdChkBnsModIst();
+	 		   context.getRequest().setAttribute("ChecklistIstanza", chk);
+	 		   
+	 		   if (numAllegato == 1){
+	 			   redirectTo =  "ViewAllegato_Ver"+versioneChecklist+"_AltreSpecie_OK";
+	 		   }
+	 		
+	 		   org.aspcfs.modules.vigilanza.base.Ticket controllo = new org.aspcfs.modules.vigilanza.base.Ticket (db, Integer.parseInt(ticketId));
+	 		   context.getRequest().setAttribute("Ticket",controllo);
+	 		   
+	 		   ArrayList<org.aspcf.modules.checklist_benessere.base.v8.Domanda> domande = new ArrayList<org.aspcf.modules.checklist_benessere.base.v8.Domanda>();
+	 		   PreparedStatement pst = db.prepareStatement("select * from chk_bns_get_domande_v8(?, ?, ?, ?)");
+	 		   pst.setInt(1, specieChecklist);
+	 		   pst.setInt(2, numAllegato);
+	 		   pst.setInt(3, versioneChecklist);
+	 		   pst.setInt(4, controllo.getId());
+	 		   ResultSet rs = pst.executeQuery();
+	 		   while (rs.next()){
+	 			   org.aspcf.modules.checklist_benessere.base.v8.Domanda domanda = new org.aspcf.modules.checklist_benessere.base.v8.Domanda(db, rs, idChkBnsModIst); 
+	 			   domande.add(domanda);
+	 		   }
+	 		   context.getRequest().setAttribute("DomandeList",domande);
+
+	 		   
+	 		   org.aspcf.modules.controlliufficiali.base.Organization allevamento = null;
+	 		   
+	 		   int orgIdInt = -1;
+	 		   int stabIdInt = -1;
+	 		   
+	 		   try {orgIdInt = Integer.parseInt(orgId);} catch (Exception e) {}
+	 		   try {stabIdInt = Integer.parseInt(idStabilimento);} catch (Exception e) {}
+
+	 		   if (orgIdInt>0)
+	 			   allevamento = this.getDatiAllevamento(db,allevamento,orgIdInt,Integer.parseInt(ticketId));
+	 		   else if (stabIdInt>0)
+	 			   allevamento = this.getDatiAllevamentoOpu(db,allevamento,stabIdInt,Integer.parseInt(ticketId));
+	 		   
+	 		   context.getRequest().setAttribute("Allevamento",allevamento);
+	 		   
+	 		   AziendeZootFields fields = new AziendeZootFields();
+	 		   fields.queryRecord(db, Integer.parseInt(ticketId));
+	 		   context.getRequest().setAttribute("AzFields", fields);
+
+	 		  
+	 			 //Caricamento dei Tipi di Irregolarita': Requisito - Definizione dei requisiti
+	 			   String idAllegato = Integer.toString(Capitolo.getIdAllegato(db,specieChecklist, versioneChecklist));
+	 			   TicketList listConf = new TicketList();
+	 			   
+	 			   if (orgId!=null && !orgId.equals(""))
+	 				   listConf.setOrgId(orgId);
+	 			   else if (idStabilimento!=null && !idStabilimento.equals(""))
+	 				   listConf.setIdStabilimento(Integer.parseInt(idStabilimento));
+	 			  
+	 			   listConf.buildListControlli(db, orgId,ticketId);
+
+	 			   Iterator nonConfIterator = listConf.iterator();
+	 			   String esito = "";
+	 			   if(nonConfIterator.hasNext()) {
+
+	 				   esito = "NonFavorevole";
+	 			   }else {
+	 				   esito = "Favorevole";
+	 			   }
+	 			   
+	 			   context.getRequest().setAttribute("esito", esito);
+	 			   context.getRequest().setAttribute("idAlleg",idAllegato);
+	 			   context.getRequest().setAttribute("codice_specie",String.valueOf(specieChecklist));
+	 			   context.getRequest().setAttribute("specie",String.valueOf(specie));
+
+	 		   
+	 	   }catch(SQLException sql){
+	 		   sql.printStackTrace();
+	 	   }finally{
+	 		   this.freeConnection(context, db);
+	 	   }
+	 	   context.getRequest().setAttribute("numAllegato",String.valueOf(numAllegato));
+	 	   context.getRequest().setAttribute("versioneChecklist", String.valueOf(versioneChecklist));
+
+	 	   //if (numAllegato.equals("15")) 
+	 	    return redirectTo;
+	 	   
+	 	   
+	 	  
+	 	   
+	 	   
+	    }
+	    
+	    public String executeCommandInsertChecklistBenessere_Ver8(ActionContext context){
+	 	   
+	 	   //String url = context.getRequest().getParameter("url");
+	 	   int specie = Integer.parseInt(context.getRequest().getParameter("specie"));
+	 	   String orgId = context.getRequest().getParameter("orgId");
+	 	   String stabId = context.getRequest().getParameter("stabId");
+	 	   String ticketId = context.getRequest().getParameter("idControllo");
+	 	   String descrizioneAltreSpecie = context.getRequest().getParameter("descrizioneAltreSpecie");
+	 	   boolean bozza =  Boolean.parseBoolean(context.getRequest().getParameter("bozza"));
+	 	   int versioneChecklist = -1;
+	 	   int numAllegato = -1; 
+	 	   int specieChecklist = -1;
+	 	   int codAllegato = -1;
+
+	 	   Connection db = null;
+	 	   int infoChecklist [] = {-1, -1, -1, -1};
+	 	   
+	 	   try {
+	 		   
+	 		   db = this.getConnection(context);
+	 		   
+	 		   org.aspcfs.modules.vigilanza.base.Ticket controllo = new org.aspcfs.modules.vigilanza.base.Ticket (db, Integer.parseInt(ticketId));
+	 	       context.getRequest().setAttribute("Ticket",controllo);
+	 		   
+	 	       org.aspcf.modules.controlliufficiali.base.Organization allevamento = null;
+
+	 		   int orgIdInt = -1;
+	 		   int stabIdInt = -1;
+	 		   int ticketIdInt = -1;
+
+	 		   try {orgIdInt = Integer.parseInt(orgId);} catch (Exception e) {}
+	 		   try {stabIdInt = Integer.parseInt(stabId);} catch (Exception e) {}
+	 		   try {ticketIdInt = Integer.parseInt(ticketId);} catch (Exception e) {}
+
+	 		   if (orgIdInt>0)
+	 			   allevamento = this.getDatiAllevamento(db,allevamento,orgIdInt,Integer.parseInt(ticketId));
+	 		   else if (stabIdInt>0)
+	 			   allevamento = this.getDatiAllevamentoOpu(db,allevamento,stabIdInt,Integer.parseInt(ticketId));
+	 		   
+	 		   context.getRequest().setAttribute("Allevamento",allevamento);
+	 		
+	 		   AziendeZootFields fields = new AziendeZootFields();
+	 		   fields.queryRecord(db, Integer.parseInt(ticketId));
+	 		   
+	 		   infoChecklist = this.getVersioneChecklist(db, ticketId, specie);
+	 		   
+	 		   versioneChecklist = infoChecklist[0];
+	 		   numAllegato = infoChecklist[1];
+	 		   specieChecklist = infoChecklist[2];
+	 		   codAllegato = infoChecklist[3];
+
+	 		   boolean recordInserted = false;
+	 		   boolean isValid = false;
+	 		
+	 		   UserBean user = (UserBean) context.getSession().getAttribute("User");
+	 		   
+	 		 
+	 		   org.aspcf.modules.checklist_benessere.base.v8.ChecklistIstanza_AltreSpecie chk = new org.aspcf.modules.checklist_benessere.base.v8.ChecklistIstanza_AltreSpecie();
+	 			   chk.setOrgId(orgIdInt);
+	 			   chk.setNumAllegato(numAllegato);
+	 			   chk.setCodAllegato(codAllegato);
+	 			   chk.setIdSpecie(specie);
+	 			   chk.setIdVersione(versioneChecklist);
+	 			   chk.setIdCu(ticketIdInt);
+	 			   chk.setBozza(bozza);
+	 			   chk.setEnteredBy(getUserId(context));
+	 			   chk.recuperaDaForm(context, db);
+	 			   chk.upsert(db);
+	 		
+	 			   
+	 		   context.getRequest().setAttribute("ChecklistIstanza",chk);
+	 		   context.getRequest().setAttribute("numAllegato",String.valueOf(numAllegato));
+	 		   context.getRequest().setAttribute("versioneChecklist", String.valueOf(versioneChecklist));
+	 		   context.getRequest().setAttribute("ticketId", String.valueOf(ticketId));
+	 		   context.getRequest().setAttribute("descrizioneAltreSpecie", descrizioneAltreSpecie);
+	 		   
+
+	 	   }catch(SQLException sql){
+	 		   sql.printStackTrace();
+	 	   }finally{
+	 		   this.freeConnection(context, db);
+	 	   }
+	 	  
+	 	   return executeCommandAddSchedaAllegato_Ver8(context);
+	 }
    
 //public boolean getDataControllo(Connection db, String ticketId) {
 //	// TODO Auto-generated method stub
@@ -2081,6 +2464,12 @@ public String executeCommandInsertChecklistBenessere(ActionContext context){
 		   versioneChecklist = infoChecklist[0];
 		   numAllegato = infoChecklist[1];
 		   specieChecklist = infoChecklist[2];
+		   
+		   if (versioneChecklist == 8)
+			   return executeCommandInsertChecklistBenessere_Ver8(context);
+		   
+		   if (versioneChecklist == 7)
+			   return executeCommandInsertChecklistBenessere_Ver7(context);
 		   
 		   if (versioneChecklist == 6)
 			   return executeCommandInsertChecklistBenessere_Ver6(context);
@@ -2843,6 +3232,217 @@ public String executeCommandInsertChecklistBenessere_Ver5(ActionContext context)
 		return "UpdateAllegatoB11OK";
 	}
 		
+	public String executeCommandInsertChecklistBenessere_Ver7(ActionContext context){
+		   
+		   //String url = context.getRequest().getParameter("url");
+		   int specie = Integer.parseInt(context.getRequest().getParameter("specie"));
+		   String orgId = context.getRequest().getParameter("orgId");
+		   String stabId = context.getRequest().getParameter("stabId");
+		   String ticketId = context.getRequest().getParameter("idControllo");
+		   boolean bozza =  Boolean.parseBoolean(context.getRequest().getParameter("bozza"));
+		   int versioneChecklist = -1;
+		   int numAllegato = -1; 
+		   int specieChecklist = -1;
+		   int codAllegato = -1;
+
+		   Connection db = null;
+		   int infoChecklist [] = {-1, -1, -1, -1};
+		   
+		   try {
+			   
+			   db = this.getConnection(context);
+			   
+			   org.aspcfs.modules.vigilanza.base.Ticket controllo = new org.aspcfs.modules.vigilanza.base.Ticket (db, Integer.parseInt(ticketId));
+		       context.getRequest().setAttribute("Ticket",controllo);
+			   
+		       org.aspcf.modules.controlliufficiali.base.Organization allevamento = null;
+
+			   int orgIdInt = -1;
+			   int stabIdInt = -1;
+			   int ticketIdInt = -1;
+
+			   try {orgIdInt = Integer.parseInt(orgId);} catch (Exception e) {}
+			   try {stabIdInt = Integer.parseInt(stabId);} catch (Exception e) {}
+			   try {ticketIdInt = Integer.parseInt(ticketId);} catch (Exception e) {}
+
+			   if (orgIdInt>0)
+				   allevamento = this.getDatiAllevamento(db,allevamento,orgIdInt,Integer.parseInt(ticketId));
+			   else if (stabIdInt>0)
+				   allevamento = this.getDatiAllevamentoOpu(db,allevamento,stabIdInt,Integer.parseInt(ticketId));
+			   
+			   context.getRequest().setAttribute("Allevamento",allevamento);
+			
+			   AziendeZootFields fields = new AziendeZootFields();
+			   fields.queryRecord(db, Integer.parseInt(ticketId));
+			   
+			   infoChecklist = this.getVersioneChecklist(db, ticketId, specie);
+			   
+			   versioneChecklist = infoChecklist[0];
+			   numAllegato = infoChecklist[1];
+			   specieChecklist = infoChecklist[2];
+			   codAllegato = infoChecklist[3];
+
+			   boolean recordInserted = false;
+			   boolean isValid = false;
+			
+			   UserBean user = (UserBean) context.getSession().getAttribute("User");
+			   
+			   if (numAllegato==7){ //ovicaprini
+				   
+				   org.aspcf.modules.checklist_benessere.base.v7.ChecklistIstanza_Ovicaprini chk = new org.aspcf.modules.checklist_benessere.base.v7.ChecklistIstanza_Ovicaprini();
+				   chk.setOrgId(orgIdInt);
+				   chk.setNumAllegato(numAllegato);
+				   chk.setCodAllegato(codAllegato);
+				   chk.setIdSpecie(specie);
+				   chk.setIdVersione(versioneChecklist);
+				   chk.setIdCu(ticketIdInt);
+				   chk.setBozza(bozza);
+				   chk.setEnteredBy(getUserId(context));
+				   chk.recuperaDaForm(context, db);
+				   chk.upsert(db);
+			
+				   
+			   context.getRequest().setAttribute("ChecklistIstanza",chk);
+			   context.getRequest().setAttribute("numAllegato",String.valueOf(numAllegato));
+			   context.getRequest().setAttribute("versioneChecklist", String.valueOf(versioneChecklist));
+			   context.getRequest().setAttribute("ticketId", String.valueOf(ticketId));
+			   }
+			   
+			   if (numAllegato==20){ //suini
+				   
+				   org.aspcf.modules.checklist_benessere.base.v7.ChecklistIstanza_Suini chk = new org.aspcf.modules.checklist_benessere.base.v7.ChecklistIstanza_Suini();
+				   chk.setOrgId(orgIdInt);
+				   chk.setNumAllegato(numAllegato);
+				   chk.setCodAllegato(codAllegato);
+				   chk.setIdSpecie(specie);
+				   chk.setIdVersione(versioneChecklist);
+				   chk.setIdCu(ticketIdInt);
+				   chk.setBozza(bozza);
+				   chk.setEnteredBy(getUserId(context));
+				   chk.recuperaDaForm(context, db);
+				   chk.upsert(db);
+			
+				   
+			   context.getRequest().setAttribute("ChecklistIstanza",chk);
+			   context.getRequest().setAttribute("numAllegato",String.valueOf(numAllegato));
+			   context.getRequest().setAttribute("versioneChecklist", String.valueOf(versioneChecklist));
+			   context.getRequest().setAttribute("ticketId", String.valueOf(ticketId));
+			   }
+			   
+			   if (numAllegato==6){ //bovini bufalini
+				   
+				   org.aspcf.modules.checklist_benessere.base.v7.ChecklistIstanza_BoviniBufalini chk = new org.aspcf.modules.checklist_benessere.base.v7.ChecklistIstanza_BoviniBufalini();
+				   chk.setOrgId(orgIdInt);
+				   chk.setNumAllegato(numAllegato);
+				   chk.setCodAllegato(codAllegato);
+				   chk.setIdSpecie(specie);
+				   chk.setIdVersione(versioneChecklist);
+				   chk.setIdCu(ticketIdInt);
+				   chk.setBozza(bozza);
+				   chk.setEnteredBy(getUserId(context));
+				   chk.recuperaDaForm(context, db);
+				   chk.upsert(db);
+			
+				   
+			   context.getRequest().setAttribute("ChecklistIstanza",chk);
+			   context.getRequest().setAttribute("numAllegato",String.valueOf(numAllegato));
+			   context.getRequest().setAttribute("versioneChecklist", String.valueOf(versioneChecklist));
+			   context.getRequest().setAttribute("ticketId", String.valueOf(ticketId));
+			   }
+			   
+			   if (numAllegato==30){ //vitelli
+				   
+				   org.aspcf.modules.checklist_benessere.base.v7.ChecklistIstanza_Vitelli chk = new org.aspcf.modules.checklist_benessere.base.v7.ChecklistIstanza_Vitelli();
+				   chk.setOrgId(orgIdInt);
+				   chk.setNumAllegato(numAllegato);
+				   chk.setCodAllegato(codAllegato);
+				   chk.setIdSpecie(specie);
+				   chk.setIdVersione(versioneChecklist);
+				   chk.setIdCu(ticketIdInt);
+				   chk.setBozza(bozza);
+				   chk.setEnteredBy(getUserId(context));
+				   chk.recuperaDaForm(context, db);
+				   chk.upsert(db);
+			
+				   
+			   context.getRequest().setAttribute("ChecklistIstanza",chk);
+			   context.getRequest().setAttribute("numAllegato",String.valueOf(numAllegato));
+			   context.getRequest().setAttribute("versioneChecklist", String.valueOf(versioneChecklist));
+			   context.getRequest().setAttribute("ticketId", String.valueOf(ticketId));
+			   }
+			   
+			   if (numAllegato==10){ //galline
+				   
+				   org.aspcf.modules.checklist_benessere.base.v7.ChecklistIstanza_Galline chk = new org.aspcf.modules.checklist_benessere.base.v7.ChecklistIstanza_Galline();
+				   chk.setOrgId(orgIdInt);
+				   chk.setNumAllegato(numAllegato);
+				   chk.setCodAllegato(codAllegato);
+				   chk.setIdSpecie(specie);
+				   chk.setIdVersione(versioneChecklist);
+				   chk.setIdCu(ticketIdInt);
+				   chk.setBozza(bozza);
+				   chk.setEnteredBy(getUserId(context));
+				   chk.recuperaDaForm(context, db);
+				   chk.upsert(db);
+			
+				   
+			   context.getRequest().setAttribute("ChecklistIstanza",chk);
+			   context.getRequest().setAttribute("numAllegato",String.valueOf(numAllegato));
+			   context.getRequest().setAttribute("versioneChecklist", String.valueOf(versioneChecklist));
+			   context.getRequest().setAttribute("ticketId", String.valueOf(ticketId));
+			   }
+			   
+			   if (numAllegato==4){ //altre specie
+				   
+				   org.aspcf.modules.checklist_benessere.base.v7.ChecklistIstanza_AltreSpecie chk = new org.aspcf.modules.checklist_benessere.base.v7.ChecklistIstanza_AltreSpecie();
+				   chk.setOrgId(orgIdInt);
+				   chk.setNumAllegato(numAllegato);
+				   chk.setCodAllegato(codAllegato);
+				   chk.setIdSpecie(specie);
+				   chk.setIdVersione(versioneChecklist);
+				   chk.setIdCu(ticketIdInt);
+				   chk.setBozza(bozza);
+				   chk.setEnteredBy(getUserId(context));
+				   chk.recuperaDaForm(context, db);
+				   chk.upsert(db);
+			
+				   
+			   context.getRequest().setAttribute("ChecklistIstanza",chk);
+			   context.getRequest().setAttribute("numAllegato",String.valueOf(numAllegato));
+			   context.getRequest().setAttribute("versioneChecklist", String.valueOf(versioneChecklist));
+			   context.getRequest().setAttribute("ticketId", String.valueOf(ticketId));
+			   }
+
+			   if (numAllegato==9){ //tacchini
+				   
+				   org.aspcf.modules.checklist_benessere.base.v7.ChecklistIstanza_Tacchini chk = new org.aspcf.modules.checklist_benessere.base.v7.ChecklistIstanza_Tacchini();
+				   chk.setOrgId(orgIdInt);
+				   chk.setNumAllegato(numAllegato);
+				   chk.setCodAllegato(codAllegato);
+				   chk.setIdSpecie(specie);
+				   chk.setIdVersione(versioneChecklist);
+				   chk.setIdCu(ticketIdInt);
+				   chk.setBozza(bozza);
+				   chk.setEnteredBy(getUserId(context));
+				   chk.recuperaDaForm(context, db);
+				   chk.upsert(db);
+			
+				   
+			   context.getRequest().setAttribute("ChecklistIstanza",chk);
+			   context.getRequest().setAttribute("numAllegato",String.valueOf(numAllegato));
+			   context.getRequest().setAttribute("versioneChecklist", String.valueOf(versioneChecklist));
+			   context.getRequest().setAttribute("ticketId", String.valueOf(ticketId));
+			   }
+			   
+		   }catch(SQLException sql){
+			   sql.printStackTrace();
+		   }finally{
+			   this.freeConnection(context, db);
+		   }
+		  
+		   return executeCommandAddSchedaAllegato_Ver7(context);
+	}	
+	
 	public String executeCommandInsertChecklistBenessere_Ver6(ActionContext context){
 		   
 		   //String url = context.getRequest().getParameter("url");
@@ -3600,7 +4200,30 @@ public Organization getDatiAllevamentoFarmacosorveglianza(Connection db, Organiz
 		 		   return "ViewAllegato_Bio_2022_Tacchini_OK";
 		 	  else if (specie==1310)
 		 		   return "ViewAllegato_Bio_2022_Broiler_OK";
-	 	   }
+	 	   } else if (versione == 2023) {
+		 		  if (specie==122)
+			 		   return "ViewAllegato_Bio_2023_Suini_Stab_Alta_OK";
+		 		  else if (specie==1221)
+			 		   return "ViewAllegato_Bio_2023_Suini_Semib_Alta_OK";
+		 		  else if (specie==1222)
+			 		   return "ViewAllegato_Bio_2023_Suini_Stab_Bassa_OK";
+		 		  else if (specie==1223)
+			 		   return "ViewAllegato_Bio_2023_Suini_Semib_Bassa_OK";
+		 		  else if (specie==131)
+			 		   return "ViewAllegato_Bio_2023_Galline_OK"; 
+			 	   else if (specie==132)
+			 		   return "ViewAllegato_Bio_2023_Tacchini_OK";
+			 	  else if (specie==1310)
+			 		   return "ViewAllegato_Bio_2023_Broiler_OK";
+			 	 else if (specie==13100)
+			 		   return "ViewAllegato_Bio_2023_Svezzamento_OK"; 
+			 	   else if (specie==13101)
+			 		   return "ViewAllegato_Bio_2023_Incubatoi_OK";
+			 	  else if (specie==13102)
+			 		   return "ViewAllegato_Bio_2023_Sotto250_OK";
+			 	 else if (specie==13103)
+			 		   return "ViewAllegato_Bio_2023_Oltre250_OK";
+			   }
 	 	 
 	 	   return "";
 	 	   
@@ -3805,4 +4428,6 @@ public Organization getDatiAllevamentoFarmacosorveglianza(Connection db, Organiz
 		 	   return executeCommandSchedaFarmacosorveglianza(context);
 		 }
 	    
+	    
+	   
 }

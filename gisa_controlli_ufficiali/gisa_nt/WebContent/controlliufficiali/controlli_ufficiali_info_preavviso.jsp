@@ -1,10 +1,30 @@
 <SCRIPT LANGUAGE="JavaScript" SRC="javascript/CalendarPopup2.js"></SCRIPT>
+
+<script>function gestionePreavviso(){
+	if (document.getElementById('flag_preavviso').value == "P" || document.getElementById('flag_preavviso').value == "T" || document.getElementById('flag_preavviso').value == "A"){
+		document.getElementById('data_preavviso_ba_tr').style.display='';
+		if (document.getElementById('flag_preavviso').value == "A"){
+			document.getElementById('descrizione_preavviso_ba').style.display='';
+		} else {
+				document.getElementById('descrizione_preavviso_ba').style.display='none';
+				document.getElementById('descrizione_preavviso_ba').value = '';
+		}
+	} else {
+		document.getElementById('data_preavviso_ba_tr').style.display='none';
+		document.getElementById('data_preavviso_ba').value='';
+		document.getElementById('descrizione_preavviso_ba').style.display='none';
+		document.getElementById('descrizione_preavviso_ba').value = '';
+	}
+	
+	
+}</script>
+
 <tr id="preavviso"   class="containerBody">
 		<td  class="formLabel">
 			Effettuato Preavviso
 			</td>
 		<td>
-		<select id= "flag_preavviso" name = "flag_preavviso" onchange="if(document.getElementById('flag_preavviso').value != '-1'&& document.getElementById('flag_preavviso').value!='N'){document.getElementById('data_preavviso_ba_tr').style.display=''}else{document.getElementById('data_preavviso_ba_tr').style.display='none';document.getElementById('data_preavviso_ba').value='';}">
+		<select id= "flag_preavviso" name = "flag_preavviso" onchange="gestionePreavviso()">
 		<option value = "-1" selected="selected" >Seleziona Voce</option>
 		<option value = "N">Nessun Preavviso</option>
 		<option value = "P">Telefono</option>
@@ -12,6 +32,8 @@
 		<option value = "A">Altro</option>
 		
 		</select>
+		
+		<input type="text" id="descrizione_preavviso_ba" name="descrizione_preavviso_ba" placeholder="descrizione altro" style="display: none"/>
 		</td>
 		</tr>
 		

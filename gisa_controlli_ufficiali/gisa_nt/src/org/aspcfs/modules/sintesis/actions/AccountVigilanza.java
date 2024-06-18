@@ -95,7 +95,7 @@ public final class AccountVigilanza extends CFSModule {
 			context.getRequest().setAttribute("tipologia", org.aspcfs.modules.troubletickets.base.Ticket.TIPO_SINTESIS);
 			
 			boolean isMobile = false;
-			String[] codiciMobile = {"1069-R-39-TRANS"};
+			String[] codiciMobile = {"1069-R-37-TRANS", "1069-R-38-TRANS", "1069-R-39-TRANS"};
 			
 			ArrayList<SintesisRelazioneLineaProduttiva> listaLinee = newSintesisStabilimento.getLinee();
 			for (int i = 0; i<listaLinee.size(); i++){

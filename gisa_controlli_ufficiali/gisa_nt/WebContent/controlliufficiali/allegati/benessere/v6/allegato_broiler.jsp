@@ -427,7 +427,10 @@ INFORMAZIONI SPECIFICHE E RACCOLTA DATI AZIENDALI<br/>
 <tr>
 <td>Fase produttiva:</td>
 <td colspan="3"> 
-<input type="radio" id="faseProduttiva_P" name="faseProduttiva" value="P" <%=(ChecklistIstanza!=null && toHtml(ChecklistIstanza.getFaseProduttiva()).equals("P")) ? "checked=\"checked\"" : ""%>/> Pollastra <input type="radio" id="faseProduttiva_P" name="faseProduttiva" value="P" <%=(ChecklistIstanza!=null && toHtml(ChecklistIstanza.getFaseProduttiva()).equals("D")) ? "checked=\"checked\"" : ""%>/> Deposizione <input type="button" name="resetRadioButton" onClick="resetRadio('faseProduttiva')" value="reset"/></td>
+<input type="radio" id="faseProduttiva_P" name="faseProduttiva" value="P" <%=(ChecklistIstanza!=null && toHtml(ChecklistIstanza.getFaseProduttiva()).equals("P")) ? "checked=\"checked\"" : ""%>/> Pollastra 
+<input type="radio" id="faseProduttiva_D" name="faseProduttiva" value="D" <%=(ChecklistIstanza!=null && toHtml(ChecklistIstanza.getFaseProduttiva()).equals("D")) ? "checked=\"checked\"" : ""%>/> Deposizione 
+<input type="button" name="resetRadioButton" onClick="resetRadio('faseProduttiva')" value="reset"/>
+</td>
 </tr>
 
 </table>

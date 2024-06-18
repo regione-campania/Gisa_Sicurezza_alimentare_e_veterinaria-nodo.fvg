@@ -44,6 +44,8 @@ boolean hasVitelli = false;
 boolean hasAltreSpecie = false;
 boolean hasOviCaprini = false;
 boolean hasConigli = false;
+boolean hasTacchini = false;
+
 
 for(Piano p :TicketDetails.getPianoMonitoraggio()) {
 	if (PopolaCombo.hasEventoMotivoCU("isBenessereAnimale", p.getId(), -1)){
@@ -72,6 +74,9 @@ for(Piano p :TicketDetails.getPianoMonitoraggio()) {
 		}
 		if (PopolaCombo.hasChecklistBenessereMotivoCU("isConigli", p.getId(), -1, TicketDetails.getId())){
 			hasConigli = true;
+		}
+		if (PopolaCombo.hasChecklistBenessereMotivoCU("isTacchini", p.getId(), -1, TicketDetails.getId())){
+			hasTacchini = true;
 		}
 		
 	}
@@ -288,6 +293,37 @@ for(Piano p :TicketDetails.getPianoMonitoraggio()) {
 				idBdn = toHtml(PopolaCombo.getInfoChecklistBenessereIstanza(TicketDetails.getId(), idSpecie, "id_bdn"));
 				statoGisa = toHtml(PopolaCombo.getInfoChecklistBenessereIstanza(TicketDetails.getId(), idSpecie, "bozza")).equals("t") ? "APERTA" : toHtml(PopolaCombo.getInfoChecklistBenessereIstanza(TicketDetails.getId(), idSpecie, "bozza")).equals("f") ? "CHIUSA" : "";
 				nomeChecklist = "CONIGLI";
+				idIstanza = toHtml(PopolaCombo.getInfoChecklistBenessereIstanza(TicketDetails.getId(), idSpecie, "id"));
+				dataImport =  toDateasStringFromStringWithTime(PopolaCombo.getInfoChecklistBenessereIstanza(TicketDetails.getId(), idSpecie, "data_import"));
+				esitoImport =  toHtml(PopolaCombo.getInfoChecklistBenessereIstanza(TicketDetails.getId(), idSpecie, "esito_import"));
+				descrizioneErrore =  toHtml(PopolaCombo.getInfoChecklistBenessereIstanza(TicketDetails.getId(), idSpecie, "descrizione_errore"));
+			%>
+				<%= col%2==0 ? "</td></tr><tr><td valign='top' align='right'>" : "</td><td valign='top'>" %>
+				<table class="details" cellpadding="10" cellspacing="10" width="40%">
+				<col width="30%">
+				<tr><th colspan="2">
+				<a href="javascript:openChk_bns('<%= TicketDetails.getOrgId() %>','<%=TicketDetails.getId()%>','<%=TicketDetails.getURlDettaglio() %>','<%=idSpecie%>');"> 
+				<input type="button" value="Compila/Visualizza lista di riscontro per <%=nomeChecklist %>"/></a>
+				</th></tr>	
+				<% if (TicketDetails.getClosed()!=null && statoGisa.equals("CHIUSA") && (idBdn == null || idBdn.equals("-1") || idBdn.equals("")) && (esitoImport==null || !esitoImport.equalsIgnoreCase("OK")) )  { %>
+					<tr><td colspan="2" align="center"><input type="button" value="INVIA CHECKLIST" onClick="inviaChecklist('<%= idIstanza %>', '<%=TicketDetails.getId()%>')"/></td></tr>
+				<% } %>
+				<tr><td class="formLabel">STATO GISA</td> <td><%= statoGisa %></td></tr>
+				<tr <%="OK".equals(esitoImport) ? " style= 'background: lime'" : "KO".equals(esitoImport) ? " style= 'background: lightcoral'" : "" %>><td class="formLabel">ESITO ULTIMO INVIO BDN</td> <td><%= esitoImport %></td></tr>
+				<tr><td class="formLabel">DESCRIZIONE ERRORE ULTIMO INVIO BDN</td> <td><%= descrizioneErrore %></td></tr>
+				<tr><td class="formLabel">DATA ULTIMO INVIO BDN</td> <td><%=dataImport %></td></tr>
+				<tr><td class="formLabel">ID BDN</td> <td><%= !"-1".equals(idBdn) ? idBdn : "" %></td></tr>
+				<tr><td colspan="2"></td></tr>
+				</table>
+			
+			<% col++;
+			} %>
+			
+			<% if (hasTacchini) { 
+				idSpecie = 132; 
+				idBdn = toHtml(PopolaCombo.getInfoChecklistBenessereIstanza(TicketDetails.getId(), idSpecie, "id_bdn"));
+				statoGisa = toHtml(PopolaCombo.getInfoChecklistBenessereIstanza(TicketDetails.getId(), idSpecie, "bozza")).equals("t") ? "APERTA" : toHtml(PopolaCombo.getInfoChecklistBenessereIstanza(TicketDetails.getId(), idSpecie, "bozza")).equals("f") ? "CHIUSA" : "";
+				nomeChecklist = "TACCHINI";
 				idIstanza = toHtml(PopolaCombo.getInfoChecklistBenessereIstanza(TicketDetails.getId(), idSpecie, "id"));
 				dataImport =  toDateasStringFromStringWithTime(PopolaCombo.getInfoChecklistBenessereIstanza(TicketDetails.getId(), idSpecie, "data_import"));
 				esitoImport =  toHtml(PopolaCombo.getInfoChecklistBenessereIstanza(TicketDetails.getId(), idSpecie, "esito_import"));

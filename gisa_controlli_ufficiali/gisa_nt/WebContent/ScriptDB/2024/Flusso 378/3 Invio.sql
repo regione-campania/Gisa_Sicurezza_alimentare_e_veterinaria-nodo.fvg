@@ -147,6 +147,7 @@ concat(
   "IDFiscale": "', o.codice_fiscale_rappresentante , '",
   "CodiceSpecie": "', o.specie_allevamento , '",
   "TpOperazione": ', _tipo_operazione, ',
+  "IDCU": "', (t.ticketid)::text, '", 
   "ListaRisposte": [' , (select * from get_chiamata_ws_insert_biosicurezza_2023_suini_risposte (_id)) ,'
   ]}') into ret
   
