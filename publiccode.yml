@@ -35,14 +35,14 @@ dependsOn:
 description:
   it:
     genericName: Gestionale
-  
+
     longDescription: |2+
            
 
-      L'Ecosistema GISA è composto da diversi componenti tra cui 
+      Il sistema GISA Campania - Sicurezza Alimentare e Veterinaria è composto da diversi componenti tra cui 
 
 
-      - Autenticazione tramite SPID/CIE
+      - Autenticazione tramite SPID/CIE/CNS
 
       - Gestione Integrata Notifiche Sanitarie: modulo di gestione delle
       pratiche di registrazione/riconoscimento degli OSA (Operatore del Settore
@@ -170,9 +170,11 @@ description:
       - Operatore Settore Alimentare per autovalutazione
 
       - Direttore Sanitario Canile
+      
+      - Privati   cittadini
+      
     shortDescription: |-
-      Ecosistema software regionale per Sanità Veterinaria e Sicurezza
-      Alimentare
+      Sistema software regionale per Sanità Veterinaria e Sicurezza Alimentare
       
     features:
       - Gestione Integrata Notifiche Sanitarie
