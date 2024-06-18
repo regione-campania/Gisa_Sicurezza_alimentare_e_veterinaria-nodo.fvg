@@ -193,7 +193,7 @@ maintenance:
   type: contract
   contractors:
     - name: ' US srl'
-      until: '2025-06-30'
+      until: '2025-12-31'
   contacts:
     - affiliation: Regione Campania
       email: cinzia.matonti@regione.campania.it
