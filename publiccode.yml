@@ -15,7 +15,7 @@ categories:
   - data-visualization
   - data-analytics
   - customer-service-and-support
- 
+
 developmentStatus: stable
 
 softwareType: standalone/web
@@ -184,6 +184,7 @@ description:
       - Registro Trasgressori e Gestione degli illeciti amministrativi
       - Registro Macellazioni
       - Cooperazione Applicativa tra ecosistema GISA e Sistemi Nazionali
+      
 legal:
   authorsFile: |-
     https://github.com/regione-campania/Gisa_Sicurezza_alimentare_e_veterinaria/blob/main/Copyrights.txt
@@ -216,10 +217,6 @@ it:
     spid: true
   riuso:
     codiceIPA: r_campan
-
-
-
-
 
 usedBy:
   - Regione Campania
