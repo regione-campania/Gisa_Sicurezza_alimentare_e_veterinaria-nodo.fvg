@@ -1,0 +1,86 @@
+<!--
+Copyright (C) AGPL-3.0  
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.-->
+<div id="capi_in_stalla" class="container">
+  <h1>Capi in Stalla</h1>
+  <div id="info-allevamento" class="d-flex my-2" *ngIf="info_all">
+    <ng-container *ngFor="let item of info_all | keyvalue; last as last">
+      <div class="info" *ngIf="item.value != null" [ngClass]="{'me-2': !last}">
+        <span class="fw-semibold">{{item.key}}: </span>
+        <span>{{item.value}}</span>
+      </div>
+    </ng-container>
+  </div>
+  <div id="buttons" class="d-flex align-items-center my-2">
+    <button *ngIf="this.capiInStalla && this.checkSpecie" type="button" id="barcodeButton"
+      class="btn btn-success me-1" (click)="generateBarcodes()">
+      Codici a barre <i class="fa fa-barcode ms-1" aria-hidden="true"></i>
+    </button>
+    <!-- <button type="button" id="aggiornaButton" class="btn btn-primary float-end" (click)="aggiornaGenerale()">
+        Aggiorna <i class="fa fa-refresh ms-1" aria-hidden="true"></i>
+      </button> -->
+    <button type="button" id="aggiornaButton" class="btn btn-primary" (click)="aggiornaCapi()">
+      Aggiorna <i class="fa fa-refresh ms-1" aria-hidden="true"></i>
+    </button>
+  </div>
+  <ng-template [ngIf]="this.capiInStalla" [ngIfElse]="noDataBlock">
+    <div class="table-container box-3d rounded p-0">
+      <a-smart-table class="table-striped" #tabella [src]="this.capiInStalla" [paginator]="true"
+        [colsInfo]="this.ui.colonne" [selection]="true" [autolayout]="false">
+        <ng-template aTemplate="head">
+          <tr>
+            <th scope="col" class="selector-th text-center" *ngIf="tabella.selectionEnabled"></th>
+            <th scope="col" [ngStyle]="{'width': colonna.campo.includes('num_suini') ? '20%' : ''}"
+              *ngFor="let colonna of this.ui.colonne">
+              <div class="d-flex align-items-center">
+                <a-table-sorter [type]="colonna.tipo" [field]="colonna.campo"></a-table-sorter>
+                <a-table-filter [type]="colonna.tipo" [field]="colonna.campo" [options]="{'minValue': 0}"></a-table-filter>
+                <span class="label">{{colonna.intestazione}}</span>
+              </div>
+            </th>
+          </tr>
+        </ng-template>
+        <ng-template aTemplate="body" let-capo>
+          <tr>
+            <!-- [selected]="capo.selezionato" -->
+            <td class="d-flex justify-content-center"><a-table-selector [data]="capo"></a-table-selector></td>
+            <!-- visualizza le movimentazioni se la specie è BOVINI, CAPRINI o OVINI -->
+            <ng-container *ngIf="this.checkSpecie; else noRouteLink">
+              <td class="clickable text-center" routerLink="movimentazionicapo"
+                [queryParams]="{idCapo: capo.id_capo, marchio: capo.marchio}" *ngFor="let colonna of this.ui.colonne">
+                <ng-container *ngIf="colonna.campo == 'data_da' || colonna.campo == 'data_a'; else elseField">
+                  {{capo[colonna.campo] | date: 'dd/MM/yyyy'}}
+                </ng-container>
+                <ng-template #elseField> {{capo[colonna.campo]}} </ng-template>
+              </td>
+            </ng-container>
+            <ng-template #noRouteLink>
+              <td class="text-center" *ngFor="let colonna of this.ui.colonne">
+                <ng-container *ngIf="colonna.campo == 'data_da' || colonna.campo == 'data_a'; else elseField">
+                  {{capo[colonna.campo] | date: 'dd/MM/yyyy'}}
+                </ng-container>
+                <ng-template #elseField> {{capo[colonna.campo]}} </ng-template>
+              </td>
+            </ng-template>
+          </tr>
+        </ng-template>
+      </a-smart-table>
+    </div>
+  </ng-template>
+  <ng-template #noDataBlock>
+    <div class="col-md position-relative">
+      <span>Non sono presenti dati nella tabella</span>
+    </div>
+  </ng-template>
+
+  <div style="display: none;" *ngIf="this.selectedCapi" class="row">
+    <div class="col" id="svg-container">
+      <svg *ngFor="let marchio of this.selectedCapi" id={{this.idMarchio(marchio)}}></svg>
+    </div>
+  </div>
+</div>

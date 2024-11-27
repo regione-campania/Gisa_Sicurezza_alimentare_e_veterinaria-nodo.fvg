@@ -1,0 +1,238 @@
+<!--
+Copyright (C) AGPL-3.0  
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.-->
+<div id="gestione-intervento" *ngIf="info_intervento.length">
+  <h1>Gestione Intervento</h1>
+  <!-- Sezione Info e Giornate -->
+  <div class="row">
+    <div class="col">
+      <h3 class="fw-semibold mb-0">Informazioni Intervento</h3>
+    </div>
+    <div class="col">
+      <!-- Bottoni per invio dati e risultati -->
+      <div *ngIf="giornate && !isAperto">
+        <button type="button" class="btn btn-secondary float-end mt-2" routerLink="risultati"
+          [queryParams]="{id_intervento: info_intervento[0]?.id_intervento}" ngbTooltip="Gestisci Risultati"
+          *ngIf="giornate && !isDaAprire">Risultati<i class="fa fa-list ms-2"
+            aria-hidden="true"></i></button>
+        <button type="button" class="btn btn-success float-end me-2 mt-2" (click)="sendData()" ngbTooltip="Invia dati a IZSVe"
+          [hidden]="info_preaccettazione?.[0].id || !giornate || idInteventoCollegato">Invia Dati<i class="fa fa-paper-plane ms-2"
+            aria-hidden="true"></i></button>
+        <button type="button" class="btn btn-primary float-end me-2 mt-2" (click)="downloadPDF()" ngbTooltip="Scheda accompagnamento campioni"
+          *ngIf="info_preaccettazione?.[0].id">Download PDF <i class="fa fa-download" aria-hidden="true"></i>
+        </button>
+        <!--  [hidden] = "info_preaccettazione[0].cod_ext" -->
+      </div>
+    </div>
+  </div>
+  <!-- Info Intervento -->
+  <h5  class="header">{{info_intervento[0]?.descrizione}}</h5>
+  <div class="row">
+    <div class="col-lg-6">
+      <ng-container *ngFor="let item of list_info | keyvalue | slice:0:6">
+        <div class="info d-flex" *ngIf="item.value && item.key != 'Laboratorio'">
+          <span class="key fw-semibold me-1">{{item.key}}:</span>
+          <span class="value">{{item.value}}</span>
+        </div>
+      </ng-container>
+    </div>
+    <div class="col-lg-6">
+      <ng-container *ngFor="let item of list_info | keyvalue | slice:6">
+        <div class="info d-flex" *ngIf="item.value">
+          <span class="key fw-semibold me-1">{{item.key}}:</span>
+          <span class="value">{{item.value}}</span>
+        </div>
+      </ng-container>
+    </div>
+    <div class="info d-flex">
+      <span class="key fw-semibold me-1">Laboratorio: </span>
+      <span class="value">{{list_info['Laboratorio']}}</span>
+    </div>
+    <div class="info d-flex">
+      <span class="key fw-semibold me-1">Veterinari Programmati: </span>
+      <span class="value">
+        <ng-template [ngIf]="vet_intervento!.length > 0" [ngIfElse]="noVetProg">
+          <ng-container>
+            {{vet_intervento}}
+          </ng-container>
+        </ng-template>
+        <ng-template #noVetProg>
+          Nessun Veterinario Programmato
+        </ng-template>
+      </span>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col">
+      <ng-template [ngIf]="info_intervento[0]?.descr_stato === 'Programmato'" [ngIfElse]="showGiornataButton">
+        <form [formGroup]="formIntervento">
+
+          <select class="form-select border mt-2 mb-1" formControlName="id_laboratorio">
+            <option value=null selected>Laboratorio...</option>
+            <option *ngFor="let l of laboratori" [value]="l.id">{{l.descr}}</option>
+          </select>
+        </form>
+        <button type="button" class="btn btn-primary ms-auto d-block" ngbTooltip="Apri Intervento"
+          (click)="apriIntervento()">
+          Apri<i class="ms-2 fa fa-folder-open ms-2"></i>
+        </button>
+      </ng-template>
+      <ng-template #showGiornataButton>
+        <!-- <button type="button" class="btn btn-primary ms-auto d-block" ngbTooltip="Inserisci Nuova Giornata"
+          (click)="modaleNuovaGiornataRef = openModal(modaleNuovaGiornata, 'xxl')">
+          <i class="icon fa-solid fa-plus"></i>
+          <span class="label">Nuova Giornata</span>
+        </button> -->
+        <!-- Note -->
+        <form [formGroup]="formInterventoNote" >
+          <div class="d-flex">
+            <span class="input-group-text" id="data-inizio-intervento">Data Inizio</span>
+            <input type="datetime-local" id="dt_inizio" class="form-control" [min]="minDate" [max]="maxDate" formControlName="dataInizio"
+            [readonly]="!isAperto">
+
+              <span class="input-group-text" id="data-fine-intervento">Data Fine</span>
+              <input type="datetime-local" id="dt_fine" class="form-control" formControlName="dataFine"
+                 [min]="minDate" [max]="maxDate" [readonly]="!isAperto">
+                </div>
+          <div class="row">
+            <div class="col-12">
+              <label class="form-label"> Note: (presente su scheda accompagnamento campione) </label>
+            </div>
+          </div>
+          <div class="row mb-2">
+            <div class="col-11 pe-0">
+              <input type="textarea" class="form-control w-100" formControlName="note"
+              [disabled]="info_preaccettazione?.[0].id">
+            </div>
+            <div class="col-1">
+              <button type="button" class="btn btn-primary w-100" (click)="saveNote()"
+                [disabled]="!isAperto && info_preaccettazione?.[0].id">
+                <i class="icon fa-solid fa-floppy-disk"></i>
+                <span class="label">Salva</span>
+              </button>
+            </div>
+          </div>
+        </form>
+        <button type="button" class="btn btn-primary ms-2 float-end" ngbTooltip="Inserisci Nuova Raccolta"
+          data-bs-toggle="modal" data-bs-target="#nuova-giornata-modal" (click)="resetNuovaRaccoltaModal()"
+          *ngIf="isAperto && !idInteventoCollegato">
+          <i class="icon fa-solid fa-plus"></i>
+          <span class="label">Nuova Raccolta</span>
+        </button>
+        <button type="button" class="btn btn-primary ms-2 float-end" ngbTooltip="Chiudi l'intervento"
+          (click)="closeIntervento()" *ngIf="isAperto">
+          <i class="icon fa-solid fa-lock"></i>
+          <span class="label">Chiudi Intervento</span>
+        </button>
+        <button class="btn btn-danger ms-auto float-end" ngbTooltip="Elimina l'intervento" (click)="delIntervento()" *ngIf="isAperto"><i
+            class="icon fa-solid fa-trash" aria-hidden="true"></i>
+          <span class="label">Elimina Intervento</span>
+        </button>
+      </ng-template>
+    </div>
+  </div>
+
+  <div id="giornate" class="mt-2" *ngIf="giornate">
+    <div class="row mb-2">
+      <div class="col">
+        <h3 class="fw-semibold m-0">Raccolte Intervento</h3>
+      </div>
+    </div>
+    <a-smart-table [colsInfo]="ui.colonne" class="table-striped" [src]="giornate" [autolayout]="false" [responsive]="false">
+      <ng-template aTemplate="head">
+        <tr>
+          <th scope="col" *ngFor="let colonna of ui.colonne">
+            <div class="d-flex align-items-center justify-content-center">
+              <span class="label">{{colonna.intestazione}}</span>
+              <a-table-sorter [type]="colonna.tipo" [field]="colonna.campo"></a-table-sorter>
+              <a-table-filter [type]="colonna.tipo" [field]="colonna.campo" [options]="{'minValue': 0}"></a-table-filter>
+            </div>
+          </th>
+          <th scope="col"></th>
+        </tr>
+      </ng-template>
+      <ng-template aTemplate="body" let-day>
+        <tr class="text-center">
+          <td *ngFor="let colonna of ui.colonne">
+            <ng-template [ngIf]="colonna.campo != 'id_veterinari'">
+              <ng-container *ngIf="colonna.tipo === 'date'; else elseField">
+                {{day[colonna.campo] | date: 'dd/MM/yyyy'}}
+              </ng-container>
+              <ng-template #elseField> {{colonna.campo === 'numero_capi' ? day[colonna.campo] ?? 0 :
+                day[colonna.campo]}} </ng-template>
+            </ng-template>
+          </td>
+          <td>
+            <button *ngIf="!idInteventoCollegato" class="btn btn-primary" routerLink="giornata" [queryParams]="{
+              id_intervento: day.id_intervento,
+              id_giornata: day.id_giornata,
+              dt: day.dt,
+              descr_metodo: day.descr_metodo,
+              descr_matrice: day.descr_matrice,
+              descr_specie: day.descrizione_specie,
+              id_allevamento: day.id_allevamento,
+              allev: day.allevamento
+            }">Apri</button>
+          </td>
+        </tr>
+      </ng-template>
+    </a-smart-table>
+  </div>
+</div>
+
+<!-- Nuova Giornata -->
+<div *ngIf="info_intervento.length" class="modal fade" id="nuova-giornata-modal" data-bs-backdrop="static" data-bs-keyobard="false" tabindex="-1"
+  aria-labelledby="nuova-giornata-modal" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Nuova Raccolta</h5>
+        <button type="button" class="btn btn-close btn-close-white" data-bs-dismiss="modal" aria-label="close"></button>
+      </div>
+      <div class="modal-body">
+        <!-- d-flex align-items-center  -->
+        <form class="mb-2" (ngSubmit)="onSubmit()">
+          <div class="row">
+            <div class="col">
+              <label for="allevamento" class="form-label">Scegli Allevamento</label>
+              <select name="allevamento" id="allevamento" for="allevamento" [formControl]="allevamentoForm"
+                class="form-select border">
+                <option value="null">Allevamento...</option>
+                <option *ngFor="let all of allevamenti" value="{{all.id_allevamento}}">{{all.allevamento}} - {{all.descrizione_specie}}</option>
+              </select>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
+              <label for="tipo_matrice" class="form-label">Scegli matrice</label>
+              <select name="tipo_matrice" id="tipo_matrice" for="tipo_matrice" [formControl]="_tipoMatriceForm"
+                class="form-select border">
+                <option value="null">Matrice...</option>
+                <option *ngFor="let tm of matrici_piano" value="{{tm.id}}">{{tm.descr}}</option>
+              </select>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
+              <!-- (change)="onChange($event)" -->
+              <label for="data_giornata" class="form-label">Inserisci data raccolta:</label>
+              <input type="date" class="form-control" id="data_giornata" [formControl]="_newDay" [min]="minDate"
+                [max]="2099-12-31" (blur)="onBlur($event)">
+            </div>
+          </div>
+          <div class="row mt-2">
+            <div class="col">
+              <button type="submit" class="btn btn-primary float-end">Aggiungi<i class="fa fa-plus ms-2"></i>
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

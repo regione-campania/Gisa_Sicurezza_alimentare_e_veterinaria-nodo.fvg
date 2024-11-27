@@ -1,0 +1,66 @@
+#app-root-router-outlet-container {
+  margin: 2rem auto;
+  margin-bottom: 0;
+
+  .info {
+    .label {
+      font-weight: 600;
+    }
+  }
+}
+
+#navbarSupportedContent {
+  button {
+    margin-left: 0.5rem;
+  }
+}
+
+.navbar {
+  background-color: var(--fvg-blue) !important;
+
+  &-brand {
+    background: var(--fvg-white);
+    border-radius: 18px;
+
+    img {
+      max-width: 280px;
+    }
+
+    #logo-sm {
+      width: 100px;
+    }
+  }
+
+  .nav-link {
+    &::after {
+      content: "";
+      display: block;
+      border: 2px solid var(--fvg-white);
+      border-radius: 18px;
+      width: 100%;
+      transform: scaleX(0);
+      transform-origin: right;
+      transition: transform .33s cubic-bezier(0.25, 1, 0.5, 1);
+    }
+
+    &:hover,
+    &.active {
+      &::after {
+        transform: scaleX(1);
+        transform-origin: left;
+      }
+    }
+
+    &.active {
+      color: var(--fvg-white) !important;
+    }
+  }
+}
+
+#homeButton {
+  margin-right: 0.5rem;
+}
+
+h1 {
+  color: white;
+}

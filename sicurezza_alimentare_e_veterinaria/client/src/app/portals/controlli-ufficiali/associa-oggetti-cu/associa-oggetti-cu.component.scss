@@ -1,0 +1,8 @@
+tr.disabilitato td{
+    color: red;
+}
+
+tr.selezionato td{
+    background: var(--fvg-primary);
+    color: var(--fvg-white);
+}

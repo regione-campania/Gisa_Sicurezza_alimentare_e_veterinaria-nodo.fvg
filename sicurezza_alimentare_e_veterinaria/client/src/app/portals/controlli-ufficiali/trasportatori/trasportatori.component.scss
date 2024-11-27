@@ -1,0 +1,12 @@
+.table-assistiti thead th {
+    background-color: var(--table-toolbar-bg);
+    color: var(--table-toolbar-color);
+}
+
+.table-assistiti thead th:is(:first-child) {
+    border-radius: 0.5rem 0 0 0;
+}
+
+.table-assistiti thead th:is(:last-child) {
+    border-radius: 0 0.5rem 0 0;
+}

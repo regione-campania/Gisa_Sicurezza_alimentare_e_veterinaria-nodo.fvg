@@ -1,0 +1,162 @@
+<!--
+Copyright (C) AGPL-3.0  
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.-->
+<div id="compila-certificato" *ngIf="campi && campi.length> 0">
+  <div class="row">
+    <div class="col">
+      <table summary="table summary" class="table table-responsive table-borderless">
+        <thead>
+          <tr>
+            <th scope="col"></th>
+            <th scope="col" class="px-2 py-1">Campo</th>
+            <th scope="col" class="px-2 py-1">Valore</th>
+          </tr>
+        </thead>
+        <tbody id="bodyDynamicTable">
+          <ng-container *ngFor="let campiModulo of campi; index as i">
+            <td colspan="3" *ngIf="i == 0" style="font-weight: bold;">
+              {{campiModulo[0].descr_modulo.toUpperCase()}}
+            </td>
+            <td colspan="3" *ngIf="i >= 1"  style="font-weight: bold;">
+              {{campiModulo[0].descr_modulo.toUpperCase()}} (allegato {{i}})
+              <button *ngIf="stato == 'new'" type="button" ngbTooltip="Elimina allegato"
+                class="btn btn-sm btn-danger" style="background-color: var(--fvg-red);" (click)="removeModuloAllegato(i)"><i class="fa fa-trash" aria-hidden="true"></i>
+              </button>
+              <button *ngIf="stato == 'new'" type="button" ngbTooltip="Duplica allegato"
+                 class="btn btn-sm btn-primary"  style="background-color: var(--fvg-blue);" (click)="duplicaModuloAllegato(i)"><i class="fa fa-clone" aria-hidden="true"></i>
+              </button>
+            </td>
+            <ng-container *ngFor="let c of campiModulo">
+            <tr class="p-2" [style.display]="c.calcolo_a_posteriori ? 'none' : ''">
+              <ng-template [ngIf]="c.descr == 'object'" [ngIfElse]="noObject">
+                <td colspan="2" class="px-2 py-1">
+                  <div class="row">
+                    <div class="col">
+                      {{c.label.toUpperCase()}}:
+                    </div>
+                    <div *ngIf="isCertificatoModificabile" class="col">
+                      <button style="margin-right: 0.5rem !important;" class="btn btn-secondary btn-sm ms-3 float-end"
+                        type="button" (click)="addChild(c)" ngbTooltip="Aggiungi Elemento">
+                        <span><i class="fa fa-plus" aria-hidden="true"></i></span>
+                      </button>
+                    </div>
+                  </div>
+                  <ng-container *ngFor="let child of c.children">
+                    <div class="container">
+                      <div *ngIf="isCertificatoModificabile" class="row">
+                        <div class="col">
+                          <button class="btn btn-danger btn-sm float-end" (click)="removeChild(c, child)"><i class="fa fa-trash" aria-hidden="true"></i></button>
+                        </div>
+                      </div>
+                      <ng-container *ngFor="let elemOfChild of getArray(child)">
+                        <div class="row">
+                          <div class="col">
+                            <span style="color: lightgray; font-size: x-small;">{{this.getRef(elemOfChild.id_modulo_campo_ref).toUpperCase()}}</span>
+                            <i class="fa fa-level-down mx-2" aria-hidden="true"></i>{{elemOfChild.label.toUpperCase()}}:
+                          </div>
+                          <div class="col">
+                            <input name="{{this.getNameTag(elemOfChild, i)}}" type="{{elemOfChild.descr}}" value="{{elemOfChild.valore}}" [disabled]="!isCertificatoModificabile" (change)="onChange($event)">
+                          </div>
+                        </div>
+                      </ng-container>
+                    </div>
+                  </ng-container>
+                </td>
+              </ng-template>
+              <ng-template #noObject>
+                <td class="px-2 py-1">
+                  
+                </td>
+                <td class="px-2 py-1">
+                  <input *ngIf="c.dipende_tipo_certificato" type="checkbox" ngbTooltip="Riporta descrizione prodotto" 
+                    name="check_{{this.getNameTag(c , i)}}" [checked]="c.riporta_tipo_prodotto">
+                  <button *ngIf="c.dipende_tipo_certificato"  type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal"
+                  data-bs-target="#tipo-prodotto-modal" (click)="currentCampo = c.id">
+                  {{c.descr_tipo_prodotto ?? 'Seleziona'}}
+                  </button>
+                  {{c.label.toUpperCase()}}{{c.obbligatorio ? '*' : ''}}:
+                </td>
+                <td class="px-2 py-1" [ngSwitch]="c.descr">
+                  <select *ngSwitchCase="'select'" name="{{this.getNameTag(c , i)}}" (change)="changeCertificato($event)" [disabled]="!isCertificatoModificabile" (change)="onChange($event)">
+                    <option *ngIf="c.valore == null" selected disabled value="{{null}}">Seleziona...</option>
+                    <option [selected]="c.valore == opt.nome_campo" *ngFor="let opt of c.children"
+                      value="{{opt.nome_campo}}">{{opt.label}}</option>
+                  </select>
+                  <textarea class="input-compilatore" *ngSwitchCase="'text'" name="{{this.getNameTag(c , i)}}" value="{{c.valore}}" [disabled]="!isCertificatoModificabile" (change)="onChange($event)"
+                  [autofiller]="c.dipende_tipo_certificato ? c.autofiller?.valoriFiltrati : c.autofiller?.valori" autofillerKey="descr" [minLength]="2" [limit]="100" matchingMode="includes" (valueChange)="patchValue($event, c.nome_campo, c.autofiller?.valori)"
+                  [placeholder]="c.anagrafica ? c.anagrafica : ''" id="campo_{{c.id}}"
+                  ></textarea>
+                  <input class="input-compilatore" *ngSwitchCase="'number'" id="{{c.descr}}" name="{{this.getNameTag(c , i)}}" type="{{c.descr}}" value="{{c.valore}}" [disabled]="!isCertificatoModificabile" (change)="onChange($event)" (blur)="checkTypeNumber($event)">
+                  <input class="input-compilatore" *ngSwitchCase="'date'" name="{{this.getNameTag(c , i)}}" type="{{c.descr}}" value="{{c.valore}}" [disabled]="!isCertificatoModificabile" (change)="onChange($event)">
+                  <div *ngSwitchCase="'peso'" class="d-flex">
+                    <input class="input-compilatore"  id="{{c.descr}}_stat" name="{{this.getNameTag(c , i)}}_stat" type="number" value="{{c.valore_statistico}}" [disabled]="!isCertificatoModificabile" (change)="onChange($event)" (blur)="checkTypeNumber($event)" ngbTooltip="Inserisci peso in kg" min="0">
+                    <input class="input-compilatore"  id="{{c.descr}}" name="{{this.getNameTag(c , i)}}" type="text" value="{{c.valore}}" [disabled]="!isCertificatoModificabile" (change)="onChange($event)" ngbTooltip="Inserisci cosa mostrare sul certificato">
+                  </div>
+                </td>
+              </ng-template>
+              <!-- <ng-template [ngIf]="this.isCertificatoModificabile" [ngIfElse]="noInput">
+              <td>
+                <ng-template [ngIf]="c.descr == 'select'" [ngIfElse]="noSelect">
+                  <select name="campo_{{c.nome_campo.split(' ').join('_')}}" (change)="changeCertificato($event)">
+                    <option *ngIf="c.valore == null" value="{{null}}" selected disabled>Seleziona...</option>
+                    <option [selected]="c.valore == opt.nome_campo" *ngFor="let opt of c.children" value="{{opt.nome_campo}}">{{opt.nome_campo}}</option>
+                  </select>
+                </ng-template>
+                <ng-template #noSelect>
+                  <input name="campo_{{c.nome_campo.split(' ').join('_')}}" type="{{c.descr}}" value="{{c.valore}}">
+                </ng-template>
+              </td>
+            </ng-template>
+            <ng-template #noInput>
+              <td>{{c.valore}}</td>
+            </ng-template> -->
+            </tr>
+            </ng-container>
+          </ng-container>
+          <hr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col">
+      <span class="m-2 fw-semibold">* Campi Obbligatori</span>
+    </div>
+  </div>
+  <div *ngIf="this.isCertificatoModificabile" class="row">
+    <div class="col">
+      <button style="margin-right: 1rem !important;" class="btn btn-primary mx-2 float-end"
+        (click)="preview()">Preview<i class="ms-2 fa fa-eye" aria-hidden="true"></i></button>
+    </div>
+  </div>
+</div>
+
+
+<!-- Modale per la denominazione del prodotto -->
+<div class="modal fade" id="tipo-prodotto-modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header" style="background: var(--fvg-black); color: var(--fvg-white);">
+        <h1 class="modal-title fs-5" id="tipo-prodotto-label">Tipo Prodotto</h1>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <a-tree-filter [tree]="treeProdotti" placeholder="Ricerca Prodotto..."></a-tree-filter>
+        <div class="scrollbox h-100 overflow-auto custom-scrollbar">
+          <a-tree #treeProdotti [root]="prodottiTreeRoot" (onClick)="selectProdotto($event)"></a-tree>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">
+          Chiudi<i class="ms-2 fa fa-window-close" aria-hidden="true"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+

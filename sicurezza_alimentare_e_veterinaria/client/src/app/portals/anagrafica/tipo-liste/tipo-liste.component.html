@@ -1,0 +1,175 @@
+<!--
+Copyright (C) AGPL-3.0  
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.-->
+<div id="tipo-liste">
+
+  <h3 class="d-flex align-items-center">
+
+    <span>Elenco Import Eseguiti </span>
+    <button type="button" *ngIf="isRuoloAbilitato" class="btn btn-primary ms-auto"
+      (click)="finestraTipoLista = openPopup($event, modal, 'add_import')">
+      <i class="icon fa-solid fa-plus"></i>
+      <span>Nuovo Import </span>
+    </button>
+
+  </h3>
+
+  <div class="row">
+    <div class="col">
+      <div *ngIf="tipoliste; else noDataBlock" class="table-container box-3d rounded p-0">
+        <a-smart-table [colsInfo]="this.ui.colonne" [src]="tipoliste" [selection]="false" [autolayout]="false"
+          [exportable]="false">
+
+          <ng-template aTemplate="head">
+            <tr>
+              <th scope="col" class="selector-th"></th>
+              <th scope="col" *ngFor="let colonna of this.ui.colonne">
+                <div class="d-flex align-items-center">
+                  <span class="label">{{colonna.intestazione}}</span>
+                  <a-table-sorter [type]="colonna.tipo" [field]="colonna.campo"></a-table-sorter>
+                  <a-table-filter [type]="colonna.tipo" [field]="colonna.campo" [options]="colonna.filterOptions"></a-table-filter>
+                </div>
+              </th>
+              <th scope="col"></th>
+
+              <th scope="col"></th>
+            </tr>
+          </ng-template>
+          <ng-template aTemplate="body" let-tipolista>
+            <tr class="clickable">
+              <td>
+                <a-table-selector *ngIf="tipolista.selezionabile" [data]="tipolista"></a-table-selector>
+              </td>
+   <!--
+              <td *ngFor="let colonna of this.ui.colonne" >
+                <ng-container *ngIf="colonna.tipo === 'date'; else campoNormale">
+                  {{ tipolista[colonna.campo] | date : "dd/MM/yyyy" }}
+                </ng-container>
+
+                <ng-template #campoNormale>
+                  <ng-container *ngIf="colonna.campo === 'esito'; else campoNormale2">
+                    <ng-container *ngIf="tipolista['esito'] == true; else verificatoNo">
+                      <i class="fa-solid fa-check-square" aria-hidden="true" style="color:green;"></i>
+                    </ng-container>
+                    <ng-template #verificatoNo>
+                      <i class="fa-solid fa-window-close" aria-hidden="true" style="color:red;"></i>
+                    </ng-template>
+                  </ng-container>
+
+
+                  <ng-template #campoNormale2>
+                    <ng-container *ngIf="colonna.tipo === 'number'; else elseBlock">
+                      {{tipolista[colonna.campo] | numberPipe}}
+                    </ng-container>
+
+
+                    <ng-template #elseBlock>
+                      {{tipolista[colonna.campo]}}
+                       {{tipolista[colonna.campo] | numberPipe}}
+                    </ng-template>
+                  </ng-template>
+                </ng-template>
+              </td>
+            -->
+           <td *ngFor="let colonna of this.ui.colonne"  [ngClass]="colonna.tipo == 'number' ? 'text-end' : ''">
+
+                <ng-container *ngIf="colonna.tipo == 'date'">
+                   {{tipolista[colonna.campo] | date: 'dd/MM/yyyy HH:mm:SS'}}
+                </ng-container>
+                <ng-container *ngIf="colonna.tipo == 'number'">
+                  {{tipolista[colonna.campo] | numberPipe}}
+                </ng-container>
+                <ng-container *ngIf="colonna.tipo == 'text'">
+                  {{tipolista[colonna.campo]}}
+                </ng-container>
+                <ng-container *ngIf="colonna.tipo == 'boolean'">
+                  <ng-container *ngIf="tipolista['esito'] == true; else verificatoNo">
+                    <i class="fa-solid fa-check-square" aria-hidden="true" style="color:green;"></i>
+                  </ng-container>
+                  <ng-template #verificatoNo>
+                    <i class="fa-solid fa-window-close" aria-hidden="true" style="color:red;"></i>
+                  </ng-template>
+                </ng-container>
+
+              </td>
+
+              <td style="text-align: center;">
+                <button [disabled]="tipolista.associati!=0?false:true"  type="button" class="btn btn-primary save-button auto" (click)="export(tipolista ,'Import')">
+                  <i class="icon fa-solid fa-arrow-down"></i>
+                  <span onclass="label">Esporta Assoc.</span>
+                </button>
+              </td>
+
+
+              <td style="text-align: center;">
+                <button [disabled]="tipolista.non_associati!=0?false:true"  type="button" class="btn btn-primary save-button auto" (click)="exportEsclusi(tipolista ,'Esclusi')">
+                  <i class="icon fa-solid fa-arrow-down"></i>
+                  <span onclass="label">Esporta Non Assoc.</span>
+                </button>
+              </td>
+            </tr>
+          </ng-template>
+        </a-smart-table>
+      </div>
+      <ng-template #noDataBlock>
+        <div class="col-md position-relative">
+          <span> Non sono presenti dati nella tabella </span>
+        </div>
+      </ng-template>
+    </div>
+  </div>
+
+
+
+
+  <ng-template #modal>
+
+    <div class="modal-header">
+      <button type="button" class="btn btn-close d-inline-block ms-auto" (click)="closePopup()"></button>
+    </div>
+    <div class="modal-body">
+      <h3 class="modal-title text-center mb-2">Nuovo {{operazione}}</h3>
+      <span class="input-group-text" id="data-sintesis">Data Estrazione</span>
+
+      <input  id="dt_sintesis" type="date" />
+      <p>Selezionare la tipologia di anagrafica da importare:</p>
+      <div class="form-check">
+        <div *ngFor="let elemento of this.tipoimportLista">
+         <p> <input type="radio" id={{elemento.cod}} name="tipoimport" value={{elemento.descr}} class="form-check-input">
+          <label class="form-check-label">{{elemento.descr}}</label>
+        </p>
+        </div>
+      </div>
+      <div class="modal-body">
+        <p class="fs-5 fw-semibold">Selezionare file da importare. Deve rispettare la struttura del template:
+          <button class="btn btn-outline-success d-block mx-auto my-3" ngbTooltip="Scarica Template"
+            (click)="downloadTemplate()">
+            Scarica Template (esempio)<i class="ms-2 fa fa-file-excel" aria-hidden="true"></i>
+          </button>
+        </p>
+        <p class="fs-5 fw-semibold">Eventuali dati precedentemente imporati verranno sovrascritti. </p>
+
+          <input class="form-control" type="file" id="import-file"
+            (change)="fileSelezionato = $any($event.target).files[0]"
+            accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">
+
+        <div class="modal-footer border-0 wrapper justify-content-around">
+          <button type="button" [disabled]="!fileSelezionato" (click)="importFile(listaSelezionata)"
+            class="btn btn-primary d-block w-25 mx-auto my-3">Importa</button>
+          <button type="button" class="btn btn-danger action-button" (click)="closePopup()">Annulla</button>
+        </div>
+
+
+
+      </div>
+
+      <br>
+
+  </div>
+
+  </ng-template>

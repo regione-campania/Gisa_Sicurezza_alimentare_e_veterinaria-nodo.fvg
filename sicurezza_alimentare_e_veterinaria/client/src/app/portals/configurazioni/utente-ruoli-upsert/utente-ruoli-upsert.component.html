@@ -1,0 +1,58 @@
+<!--
+Copyright (C) AGPL-3.0  
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.-->
+<div>
+    <div class="row">
+        <div class="col">
+            <h4 class="d-flex align-items-center">
+                <span>Ruoli</span>
+                 <button [disabled]="!this.tabellaRuoli?.selectedData?.length" class="btn btn-primary ms-auto"
+                    (click)="salvaRuoli()">
+                    <i class="icon fa-solid fa-plus"></i>
+                    <span>Aggiungi</span>
+                </button>
+            </h4>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col" *ngIf="ruoli; else noElements">
+            <a-smart-table #tabellaRuoli [colsInfo]="ui.colonne" [src]="ruoli" [autolayout]="false" [selection]="true">
+                <ng-template aTemplate="head">
+                    <tr>
+                        <th scope="col" class="selector-th"></th>
+                        <th scope="col" *ngFor="let colonna of ui.colonne">
+                            <div class="d-flex align-items-center">
+                                <span class="label">{{ colonna.intestazione }}</span>
+                                <a-table-sorter [type]="colonna.tipo" [field]="colonna.campo"></a-table-sorter>
+                                <a-table-filter [type]="colonna.tipo" [field]="colonna.campo" [options]="colonna.filterOptions"></a-table-filter>
+                            </div>
+                        </th>
+                    </tr>
+                </ng-template>
+                <ng-template aTemplate="body" let-ar>
+                    <tr>
+                        <td class="selection-td">
+                            <a-table-selector [data]="ar"></a-table-selector>
+                        </td>
+                        <td *ngFor="let colonna of ui.colonne">
+                            <ng-container *ngIf="colonna.tipo === 'date'; else campoNormale">
+                                {{ ar[colonna.campo] | date : "dd/MM/yyyy" }}
+                            </ng-container>
+                            <ng-template #campoNormale>
+                                {{ ar[colonna.campo] }}
+                            </ng-template>
+                        </td>
+                    </tr>
+                </ng-template>
+            </a-smart-table>
+        </div>
+    </div>
+</div>
+<ng-template #noElements>
+    <span>Nessun elemento presente</span>
+</ng-template>

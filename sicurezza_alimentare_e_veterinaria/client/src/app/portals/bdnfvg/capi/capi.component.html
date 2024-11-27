@@ -1,0 +1,122 @@
+<!--
+Copyright (C) AGPL-3.0  
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.-->
+<div id="capi">
+  <h1>Capi</h1>
+  <div
+    id="form-ricerca"
+    class="inline-form d-flex align-items-center"
+    [formGroup]="form"
+  >
+    <div class="form-field">
+      <label for="azienda" class="form-label fw-semibold"
+        >Codice Azienda:</label
+      >
+      <input
+        type="text"
+        class="form-control border"
+        id="azienda"
+        placeholder="Codice Azienda..."
+        (dataChange)="selezionaAzienda($event)"
+        [autofiller]="aziende"
+        autofillerKey="cod_azienda"
+        formControlName="azienda"
+        (keydown.enter)="onSubmit($event)"
+      />
+    </div>
+    <div class="form-field">
+      <label for="allevamento" class="form-label fw-semibold"
+        >Id Allevamento BDN:</label
+      >
+      <input
+        type="text"
+        class="form-control border"
+        id="allevamento"
+        placeholder="Id Allevamento..."
+        formControlName="allevamento"
+        (keydown.enter)="onSubmit($event)"
+      />
+    </div>
+    <div class="form-field">
+      <label for="Marchio" class="form-label fw-semibold">Marchio:</label>
+      <input
+        type="text"
+        class="form-control border"
+        id="marchio"
+        placeholder="Marchio..."
+        formControlName="marchio"
+        (keydown.enter)="onSubmit($event)"
+      />
+    </div>
+    <div class="form-field">
+      <label for="specie" class="form-label fw-semibold">Specie:</label>
+      <input
+        type="text"
+        class="form-control border"
+        id="specie"
+        placeholder="Specie..."
+        (dataChange)="selezionaSpecie($event)"
+        [autofiller]="specie"
+        autofillerKey="descrizione"
+        formControlName="specie"
+        (keydown.enter)="onSubmit($event)"
+      />
+    </div>
+    <button class="btn btn-primary mt-auto" (click)="onSubmit($event)">
+      Ricerca<i class="fa fa-search ms-2" aria-hidden="true"></i>
+    </button>
+  </div>
+  <ng-template [ngIf]="capi" [ngIfElse]="noData">
+    <div class="box-3d rounded p-0 mt-2">
+      <a-smart-table
+        class="table-striped"
+        [src]="capi"
+        [paginator]="true"
+        [colsInfo]="ui.colonne"
+        [autolayout]="false"
+      >
+        <ng-template aTemplate="head">
+          <tr>
+            <th scope="col" *ngFor="let colonna of ui.colonne">
+              <div class="d-flex align-items-center">
+                <a-table-sorter
+                  [type]="colonna.tipo"
+                  [field]="colonna.campo"
+                ></a-table-sorter>
+                <a-table-filter
+                  [type]="colonna.tipo"
+                  [field]="colonna.campo"
+                ></a-table-filter>
+                <span class="label">{{ colonna.intestazione }}</span>
+              </div>
+            </th>
+          </tr>
+        </ng-template>
+        <ng-template aTemplate="body" let-capo>
+          <tr
+            class="clickable text-center"
+            routerLink="movimentazionicapo"
+            [queryParams]="{ idCapo: capo.id_capo, marchio: capo.marchio }"
+          >
+            <td *ngFor="let colonna of ui.colonne">
+              <ng-container *ngIf="colonna.tipo === 'date'; else noDate">
+                {{ capo[colonna.campo] | date : "dd/MM/yyyy" }}
+              </ng-container>
+              <ng-template #noDate> {{ capo[colonna.campo] }} </ng-template>
+            </td>
+          </tr>
+        </ng-template>
+      </a-smart-table>
+    </div>
+  </ng-template>
+  <ng-template #noData>
+    <div class="col-md position-relative">
+      <span *ngIf="showNotice">Non sono presenti dati nella tabella</span>
+    </div>
+  </ng-template>
+</div>

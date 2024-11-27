@@ -1,0 +1,30 @@
+<script>
+    document.addEventListener("DOMContentLoaded", function(){
+        setTimeout(() => {
+            esci();
+        },1);
+        
+    });
+
+    var decodeHtmlEntity = function(x) {
+    return x.replace(/&#(\d+);/g, function(match, dec) {
+        return String.fromCharCode(dec);
+    });
+    };
+    
+    function esci(){
+        var tipoApp = '';
+        console.log(('<%= JSON.stringify(userData) %>'))
+        var userData = decodeHtmlEntity ("<%= JSON.stringify(userData) %>");
+        if(tipoApp == 'android'){
+            app.getSpidData(jsonData);
+            document.location.href='http://exitme';
+        }else if(tipoApp == 'ios'){
+            webkit.messageHandlers.bridge.postMessage(jsonData);
+        }else{
+	    if(userData)
+            	window.opener.postMessage(userData, '*');
+            window.close();
+        }
+    }
+</script>

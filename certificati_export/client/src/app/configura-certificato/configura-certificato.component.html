@@ -1,0 +1,174 @@
+<!--
+Copyright (C) AGPL-3.0  
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.-->
+<div id="container">
+  <div class="row">
+    <div class="col">
+      <h1>Configuratore Certificati</h1>
+    </div>
+  </div>
+  <div>
+    <div class="row mb-2">
+      <div class="col">
+        <label id="tipo">Tipo:</label>
+        <select id="tipo" class="ms-2" (change)="changeTipo($event)">
+          <option selected value="certificato">Certificato</option>
+          <option value="allegato">Allegato</option>
+        </select>
+      </div>
+    </div>
+      <div class="row mb-2">
+        <div class="col">
+          <label id="paese">Paese Esportazione / Tracciabilità:</label>
+          <select id="paesi" class="ms-2" (change)="changePaese($event)">
+            <option selected disabled>Seleziona...</option>
+            <option *ngFor="let paese of paesi" value="{{paese.id}}">{{paese.descr}}</option>
+          </select>
+        </div>
+      </div>
+      <div class="row align-items-center mb-2">
+        <div class="col">
+          <label id="tipoCertificato">Tipo {{mode}}:</label>
+          <select id="tipiCertificato" class="ms-2" (change)="changeCertificato($event)">
+            <option selected disabled>Seleziona...</option>
+            <option value="-1">Nuovo {{mode}}</option>
+            <option *ngFor="let cert of certificatiArray" value="{{cert.id}}">{{cert.descr}}</option>
+          </select>
+          <button *ngIf="selectedCertificato > -1" class="btn btn-danger float-end" (click)="eliminaCertificato(selectedCertificato)">Elimina<i class="ms-2 icon fa fa-trash"></i></button>
+        </div>
+      </div>
+    <div class="row align-items-center mb-2" *ngIf="(selectedCertificato && selectedCertificato == -1)">
+      <div class="col">
+        <label id="nuovo-certificato">Nome nuovo {{mode}}:</label>
+        <input id="nuovo-certificato" class="ms-2" (change)="setNuovoCertificato($event)" type="text">
+      </div>
+    </div>
+    <div class="row mb-1">
+      <div *ngIf="selectedCertificato || mode == 'allegato'">
+        <div class="row mb-2">
+          <div>
+          <button type="button" class="btn btn-primary float-end" (click)="downloadTemplateCorrente()">
+            Scarica template corrente<i class="ms-2 icon fa-solid fa-download"></i>
+          </button>
+        </div>
+      </div>
+      <div class="row mb-2">
+        <div>
+          <b>Aggiungi nuovo template:</b>
+        </div>
+      </div>
+      <div class="col">
+        <input class="form-control" type="file" accept="application/pdf" (change)="allegaVerbaleDaConfigurare($event)">
+      </div>
+    </div>
+    <div>
+      
+    </div>
+    </div>
+    <div class="row mb-2">
+      <div class="col">
+        <h3>Campi</h3>
+      </div>
+      <div class="col">
+        <button type="button" class="btn btn-primary float-end" (click)="saveCampi()" [disabled]="campiForm?.invalid || !selectedCertificato || !pdf?.name">
+          Salva<i class="ms-2 icon fa-solid fa-floppy-disk"></i>
+        </button>
+      </div>
+    </div>
+    <div class="row overflow-auto" style="height: 50%;">
+      <div class="col">
+        <form [formGroup]="campiForm!">
+          <div formArrayName="campi">
+            <div class="row mb-2" *ngFor="let c of campiFormArray.controls; let i = index" [formGroupName]="i">
+
+              <!-- Nome Campo -->
+              <div class="col" style="display: none;">
+                <div class="input-group mb-1">
+                  <span class="input-group-text" id="nome_campo-span" for="nome_campo">Campo</span>
+                  <input type="text" class="form-control border" placeholder="Nome Campo..."
+                    formControlName="nome_campo" [readonly]="true">
+                </div>
+              </div>
+
+               <!-- LABEL -->
+               <div class="col">
+                <div class="input-group mb-1">
+                  <span class="input-group-text" id="label-span" for="label">Label</span>
+                  <input type="text" class="form-control border" placeholder=""
+                    formControlName="label">
+                </div>
+              </div>
+
+              <!-- fontsize -->
+              <div class="col-2">
+                <div class="input-group mb-1">
+                  <span class="input-group-text" id="label-span" for="fontsize">FontSize</span>
+                  <input type="number" class="form-control border" placeholder=""
+                    formControlName="font_size">
+                </div>
+              </div>
+
+              <!-- Prevalorizzato -->
+              <div class="col">
+                <div class="col">
+                  <select class="form-select border" formControlName="id_query" (change)="changeQuery($event, i)">
+                    <option [value]="null" selected>Predefinito...</option>
+                    <option *ngFor="let c of query" [value]="c.id">{{c.label}}</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- id tipo campo -->
+              <div class="col" >
+                <select class="form-select border"   formControlName="id_tipo_campo" id="{{'tipo_'+i}}" (change)="changeQuery($event, i )">
+                  <option value=null selected >Tipo campo...</option>
+                  <option  *ngFor="let tc of tipiCampo" [value]="tc.id">{{tc.label}}</option>
+                </select>
+              </div>
+
+              <!-- id_anagrafica_lista -->
+              <div class="col" >
+                <div class="col">
+                  <select class="form-select border" formControlName="id_anagrafica_lista" (change)="changeQuery($event, i)">
+                    <option [value]="null" selected>Anagrafica...</option>
+                    <option *ngFor="let a of anagrafiche.dati" [value]="a.id">{{a.descr}}</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- campo_traduzione -->
+              <div class="col" >
+                <div class="col">
+                  <select class="form-select border" formControlName="campo_traduzione" (change)="changeQuery($event, i)">
+                    <option [value]="null" selected>Traduzione...</option>
+                    <option *ngFor="let a of anagraficheSelezionate" [value]="a.descr">{{a.descr}}</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- obbligatorio -->
+              <div class="col">
+                <span class="ms-1 text-label">Obbligatorio: </span>
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="radio" formControlName="obbligatorio" id="obbligatorio-true"
+                    value={{true}}>
+                  <label class="form-check-label" for="obbligatorio-true">SI</label>
+                </div>
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="radio" formControlName="obbligatorio" id="obbligatorio-false"
+                    value={{false}}>
+                  <label class="form-check-label" for="obbligatorio-false">NO</label>
+                </div>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

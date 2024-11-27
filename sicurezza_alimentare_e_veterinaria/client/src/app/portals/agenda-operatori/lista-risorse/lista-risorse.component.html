@@ -1,0 +1,62 @@
+<!--
+Copyright (C) AGPL-3.0  
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.-->
+<div id="lista-risorse">
+  <h2>Lista Risorse</h2>
+  <p>Selezionando una risorsa dalla tabella verrà mostrato il rispettivo calendario.</p>
+  <ng-container *ngIf="infoCalendari else message">
+    <a-smart-table [colsInfo]="infoCalendari.ui.colonne" class="table-striped" [src]="infoCalendari.calendari"
+      [autolayout]="false">
+      <ng-template aTemplate="head">
+        <tr>
+          <th scope="col" *ngFor="let col of infoCalendari.ui.colonne">
+            <!-- MODIFICATA INTESTAZIONE ALLINEAMENTO A DESTRA PER I NUMERI -->
+            <ng-container *ngIf="col.tipo == 'number' else normalHeader">
+              <div class="d-flex align-items-center justify-content-end">
+                <span class="label">{{col.intestazione}}</span>
+                <a-table-filter [type]="col.tipo" [field]="col.campo" [options]="col.filterOptions"></a-table-filter>
+                <a-table-sorter [type]="col.tipo" [field]="col.campo"></a-table-sorter>
+              </div>
+            </ng-container>
+            <ng-template #normalHeader>
+              <div class="d-flex align-items-center">
+                <span class="label">{{col.intestazione}}</span>
+                <a-table-filter [type]="col.tipo" [field]="col.campo" [options]="col.filterOptions"></a-table-filter>
+                <a-table-sorter [type]="col.tipo" [field]="col.campo"></a-table-sorter>
+              </div>
+            </ng-template>
+          </th>
+        </tr>
+      </ng-template>
+      <ng-template aTemplate="body" let-cal>
+        <tr class="clickable" (click)="gotoCalendar(cal.id_anagrafica)">
+          <td *ngFor="let colonna of infoCalendari.ui.colonne">
+            <!-- RIMOSSO 26/03 ora arriva da db
+            <ng-container
+              *ngIf="colonna.campo == 'tempo' || colonna.campo == 'eff' || colonna.campo == 'cons'; else elseField">
+              {{parsePercent(cal[colonna.campo]).toFixed(2)}} %
+            </ng-container>
+            <ng-template #elseField> {{cal[colonna.campo]}} </ng-template>
+            -->
+            <ng-container *ngIf="colonna.tipo == 'number' else normalField">
+              <div class="d-flex align-items-center justify-content-end">
+                <span>{{cal[colonna.campo] | numberPipe}}</span>
+              </div>
+            </ng-container>
+            <ng-template #normalField>
+              {{cal[colonna.campo]}}
+            </ng-template>
+          </td>
+        </tr>
+      </ng-template>
+    </a-smart-table>
+  </ng-container>
+  <ng-template #message>
+    <p>Nessuna risorsa trovata.</p>
+  </ng-template>
+</div>

@@ -1,0 +1,34 @@
+<!--
+Copyright (C) AGPL-3.0  
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.-->
+<h2 class="d-flex align-items-center">{{labelBottone}} Figura {{tipoFigura}}
+    <button *ngIf="mostra_parix && !parix_soggetto && labelBottone == 'Aggiungi'" class="btn btn-secondary ms-auto"
+        (click)="goToPARIX()">
+        Allineamento PARIX
+    </button>
+</h2>
+<br>
+<app-form-figure #formFigure (valueEmitted)="prendiValoreResidenza($event)"></app-form-figure>
+<br>
+<div [hidden]="this._formFigure?.valoreResidenza == 'si' || this._formFigure?.valoreResidenza == null">
+    <h3 class="d-flex align-items-center"> Indirizzo</h3>
+    <!-- {{labelBottone}} -->
+    <div *ngIf="id_indirizzo_nuovo || labelBottone == 'Aggiungi'">
+        <app-form-indirizzo-main #formIndirizzo (valueEmitted)="prendiValoreEstero($event)"
+            [_id_indirizzo_preso]="id_indirizzo_nuovo" [_id_stabilimento_preso]="_id_stabilimento"
+            [_labelBottone]="labelBottone" [_id_impresa_preso]="_id_impresa"
+            [showButton]="false"></app-form-indirizzo-main>
+    </div>
+</div>
+<button class="btn btn-primary ms-2 float-end" (click)="updFigura()"
+    [disabled]="!this._formFigure?.formFigura?.valid || !this._formIndirizzo?.formModificaIndirizzo?.valid">
+    <!-- <i class="icon fa-solid fa-plus"></i>
+    <span>{{labelBottone}}</span> -->
+    <i class="icon fa-solid fa-save"></i>
+    <span>Salva</span>
+</button>

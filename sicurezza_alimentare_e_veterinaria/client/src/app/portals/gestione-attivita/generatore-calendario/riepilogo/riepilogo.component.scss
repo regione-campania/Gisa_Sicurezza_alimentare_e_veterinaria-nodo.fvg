@@ -1,0 +1,26 @@
+/* .tabs {
+  display: flex;
+  margin-bottom: 1rem;
+
+  .tab {
+    min-width: 200px;
+    border-bottom: 3px solid transparent;
+    cursor: pointer;
+    transition: .15s ease-in-out;
+
+    &.active {
+      border-color: var(--light-blue, lightblue);
+      font-weight: 600;
+    }
+
+    &.active,
+    &:hover {
+      background-color: var(--light-gray-plus, lightgray);
+    }
+  }
+} */
+
+#riepilogo {
+  display: block;
+  height: 100%;
+}

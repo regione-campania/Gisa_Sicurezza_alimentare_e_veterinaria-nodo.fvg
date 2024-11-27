@@ -1,0 +1,33 @@
+#bottom-bar {
+  display: flex;
+  flex-wrap: nowrap;
+  background-color: var(--bottom-bar-bg);
+  color: var(--bottom-bar-color);
+  height: var(--bottom-bar-height);
+
+  .nav-links,
+  .quick-links {
+    flex: 1 1 auto;
+    display: flex;
+    flex-wrap: nowrap;
+  }
+
+  .nav-link {
+    flex: 1 1 auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0.25rem 0.375rem;
+  }
+
+  @media screen and (min-width: 768px) {
+    .nav-links {
+      flex: initial;
+      border-right: 2px solid currentColor;
+    }
+
+    .quick-links {
+      justify-content: flex-end;
+    }
+  }
+}

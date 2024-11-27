@@ -1,0 +1,87 @@
+<!--
+Copyright (C) AGPL-3.0  
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.-->
+<div id="lista-calendari">
+  <h2 class="d-flex align-items-center">
+    <span>Lista Calendari</span>
+    <button type="button" class="btn btn-primary ms-auto" (click)="openPopup($event, modal, 'calendario')">
+      <i class="icon fa-solid fa-plus"></i>
+      <span>Nuovo calendario</span>
+    </button>
+  </h2>
+  <a-smart-table *ngIf="calendari" [exportable]="false" [src]="calendari">
+    <ng-template aTemplate="head">
+      <tr>
+        <th scope="col">Data</th>
+        <th scope="col">Descrizione</th>
+        <th scope="col">Nota</th>
+        <th scope="col"></th>
+      </tr>
+    </ng-template>
+    <ng-template aTemplate="body" let-calendario>
+      <tr #row class="clickable" (click)="row.classList.toggle('opened')">
+        <td>
+          <button class="icon-only" *ngIf="calendario.elabs">
+            <i class="icon fa fa-angle-right"></i>
+          </button>
+          {{calendario.cal.tm | date: 'dd/MM/yyyy HH:mm'}}
+        </td>
+        <td>{{calendario.cal.descr}}</td>
+        <td>{{calendario.cal.nota}}</td>
+        <td>
+          <button type="button" class="btn btn-primary"
+            (click)="openPopup($event, modal, 'elaborazione', calendario.cal.id)">
+            <i class="fa fa-plus" aria-hidden="true"></i>
+            Nuova elaborazione
+          </button>
+          <button *ngIf="calendario.eliminabile" type="button" class="btn btn-danger ms-2"
+            (click)="deleteCal(calendario.cal.id)">
+            <i class="fa fa-trash me-1" aria-hidden="true"></i>
+            <span>Elimina</span>
+          </button>
+        </td>
+      </tr>
+      <tr class="child-row" *ngFor="let elab of calendario.elabs; index as i"
+        [ngClass]="{'d-table-row': row.classList.contains('opened')}">
+        <td>{{elab.tm | date: 'dd/MM/yyyy HH:mm'}}</td>
+        <td>{{elab.descr}}</td>
+        <td>{{elab.nota}}</td>
+        <td>
+          <button type="button" class="btn btn-primary" (click)="openElab(elab)">
+            <i class="icon fa-solid fa-gear me-1" aria-hidden="true"></i>
+            <span>Gestione</span>
+          </button>
+          <button *ngIf="!elab.bloccato" type="button" class="btn btn-danger ms-2" (click)="deleteElab(elab.id)">
+            <i class="icon fa fa-trash me-1" aria-hidden="true"></i>
+            <span>Elimina</span>
+          </button>
+        </td>
+      </tr>
+    </ng-template>
+  </a-smart-table>
+</div>
+
+<ng-template #modal>
+  <div class="modal-header">
+    <button type="button" class="btn btn-close d-inline-block ms-auto" (click)="closePopup()"></button>
+  </div>
+  <div class="modal-body">
+    <h3 class="modal-title text-center mb-2">Aggiungi {{operazione}}</h3>
+    <label>Descrizione</label>
+    <input type="text" class="form-control" id="descrizione">
+    <br>
+    <label>Nota</label>
+    <input type="text" class="form-control" id="nota">
+    <br>
+  </div>
+  <div class="modal-footer border-0 wrapper justify-content-around">
+    <button type="button" class="btn btn-primary action-button" (click)="save($event)"
+      [disabled]="disableAddButton">Aggiungi</button>
+    <button type="button" class="btn btn-danger action-button" (click)="closePopup()">Annulla</button>
+  </div>
+</ng-template>

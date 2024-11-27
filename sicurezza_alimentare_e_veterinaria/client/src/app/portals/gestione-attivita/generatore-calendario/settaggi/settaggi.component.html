@@ -1,0 +1,178 @@
+<!--
+Copyright (C) AGPL-3.0  
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.-->
+<div id="settaggi">
+  <div class="loading-box" *ngIf="loading; else ready">
+    <loading-message message="Caricamento settaggi..."></loading-message>
+  </div>
+  <ng-template #ready>
+    <h2>Settaggi</h2>
+    <form [formGroup]="form" (ngSubmit)="(null)">
+      <div class="wrapper mb-3">
+        <div class="form-field form-check me-3">
+          <input
+            type="checkbox"
+            id="ispettore"
+            formControlName="ispettore"
+            class="form-check-input"
+          />
+          <label for="ispettore" class="form-check-label">ispettore</label>
+        </div>
+        <div class="form-field form-check">
+          <input
+            type="checkbox"
+            id="linea"
+            formControlName="linea"
+            class="form-check-input"
+          />
+          <label for="linea" class="form-check-label">linea</label>
+        </div>
+      </div>
+      <div class="wrapper mb-3" id="periodo">
+        <span class="form-label" id="periodo-label">Periodo</span>
+        <div class="form-field wrapper me-3">
+          <label for="periodo_da" class="form-label">da</label>
+          <!-- <input
+            type="date"
+            id="periodo_da"
+            formControlName="periodo_da"
+            class="form-control"
+            [min]="intervalloPeriodo ? intervalloPeriodo.da : ''"
+          /> -->
+          <date-input
+            id="periodo_da"
+            formControlName="periodo_da"
+            min="2000-01-01"
+            max="2099-12-31"
+          ></date-input>
+        </div>
+        <div class="form-field wrapper">
+          <label for="periodo_a" class="form-label">a</label>
+          <date-input
+            id="periodo_a"
+            formControlName="periodo_a"
+            min="2000-01-01"
+            max="2099-12-31"
+          ></date-input>
+          <!-- <input
+            type="date"
+            id="periodo_a"
+            formControlName="periodo_a"
+            class="form-control"
+          /> -->
+        </div>
+      </div>
+      <small class="error-message" *ngIf="!isPeriodoValid">
+        La data di inizio non può superare la data di fine.
+      </small>
+      <div id="sliders">
+        <div class="form-field slider-wrapper wrapper mb-3">
+          <label for="casuale" class="form-label">Casuale</label>
+          <input
+            #casuale
+            type="range"
+            id="casuale"
+            formControlName="casuale"
+            class="form-range"
+          />
+          <output class="ms-2">
+            {{
+              (+casuale.value /
+                (+casuale.value +
+                  +machine.value +
+                  +ultimaVisita.value +
+                  +nonVisitatiDal.value)) *
+                100 | number : "2.0-2"
+            }}
+            %
+          </output>
+        </div>
+        <div class="form-field slider-wrapper wrapper mb-3">
+          <label for="machine" class="form-label">Machine</label>
+          <input
+            #machine
+            type="range"
+            id="machine"
+            formControlName="machine"
+            class="form-range"
+          />
+          <output class="ms-2">
+            {{
+              (+machine.value /
+                (+casuale.value +
+                  +machine.value +
+                  +ultimaVisita.value +
+                  +nonVisitatiDal.value)) *
+                100 | number : "2.0-2"
+            }}
+            %
+          </output>
+        </div>
+        <div class="form-field slider-wrapper wrapper mb-3">
+          <label for="ultima_visita" class="form-label">Ultima visita</label>
+          <input
+            #ultimaVisita
+            type="range"
+            id="ultima_visita"
+            formControlName="ultima_visita"
+            class="form-range"
+          />
+          <output class="ms-2">
+            {{
+              (+ultimaVisita.value /
+                (+casuale.value +
+                  +machine.value +
+                  +ultimaVisita.value +
+                  +nonVisitatiDal.value)) *
+                100 | number : "2.0-2"
+            }}
+            %
+          </output>
+        </div>
+        <div id="non_visitati_dal">
+          <div class="form-field slider-wrapper wrapper mb-3">
+            <label for="non_visitati_dal" class="form-label"
+              >Non visitati dal:</label
+            >
+            <!-- <input
+              type="date"
+              id="non_visitati_dal"
+              formControlName="non_visitati_dal"
+              class="form-control"
+            /> -->
+            <date-input
+              id="non_visitati_dal"
+              formControlName="non_visitati_dal"
+            ></date-input>
+          </div>
+          <div class="form-field slider-wrapper wrapper mb-3">
+            <label for="non_visitati_dal_valore" class="form-label"></label>
+            <input
+              #nonVisitatiDal
+              type="range"
+              id="non_visitati_dal_valore"
+              formControlName="non_visitati_dal_valore"
+              class="form-range"
+            />
+            <output class="ms-2">
+              {{
+                (+nonVisitatiDal.value /
+                  (+casuale.value +
+                    +machine.value +
+                    +ultimaVisita.value +
+                    +nonVisitatiDal.value)) *
+                  100 | number : "2.0-2"
+              }}
+              %
+            </output>
+          </div>
+        </div>
+      </div>
+    </form>
+  </ng-template>
+</div>

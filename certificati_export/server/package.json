@@ -1,0 +1,34 @@
+{
+  "name": "nodejsserver",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "base64url": "^3.0.1",
+    "bwip-js": "^4.1.2",
+    "compression": "^1.7.4",
+    "cors": "^2.8.5",
+    "docxtemplater": "^3.37.6",
+    "express": "^4.18.2",
+    "express-fileupload": "^1.4.0",
+    "express-session": "^1.17.3",
+    "helmet": "^7.1.0",
+    "jsbarcode": "^3.11.5",
+    "jsonwebtoken": "^9.0.0",
+    "libreoffice-convert": "^1.4.1",
+    "moment": "^2.29.4",
+    "node-cron": "^3.0.2",
+    "nodemailer": "^6.9.2",
+    "pdf-lib": "^1.17.1",
+    "pdf-watermark": "^1.0.4",
+    "pdfkit": "^0.13.0",
+    "pg": "^8.10.0",
+    "pizzip": "^3.1.4",
+    "soap": "^1.0.0"
+  }
+}

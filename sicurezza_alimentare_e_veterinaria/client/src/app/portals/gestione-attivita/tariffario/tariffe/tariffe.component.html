@@ -1,0 +1,423 @@
+<!--
+Copyright (C) AGPL-3.0  
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.-->
+<div id="tariffe">
+  <div class="row">
+    <div class="col p-0 w-25">
+      <button class="btn btn-outline-success ms-2 mb-2" (click)="openExportFilenameModal()"
+        ngbTooltip="Esporta il tariffario in Excel">
+        Esporta Tariffario<i class="fa fa-file-excel ms-2" aria-hidden="true"></i>
+      </button>
+    </div>
+  </div>
+  <div class="row align-items-center">
+    <div class="col">
+      <h3 class="list-title">Tariffe</h3>
+    </div>
+  </div>
+  <div class="row" id="tariffario-main-content">
+    <div class="col-md h-100" id="colonna-tariffario" *ngIf="tariffarioParsed">
+      <a-tree-filter [tree]="tree" placeholder="Ricerca tariffa..."></a-tree-filter>
+      <div class="scrollbox h-100 overflow-auto custom-scrollbar" id="tariffario-tree-scrollbox">
+        <a-tree #tree [root]="tariffarioParsed" (onClick)="selezionaVoce($event)"></a-tree>
+      </div>
+    </div>
+    <div class="col-md h-100 position-relative custom-scrollbar">
+      <div class="d-flex flex-column h-100 justify-content-center my-2" id="loading-message-box"
+        *ngIf="loadingVociTariffa else tabellaVociTariffa">
+        <loading-message></loading-message>
+      </div>
+      <ng-template #tabellaVociTariffa>
+        <h3 class="header">{{voceSelezionata?.name}}</h3>
+        <div *ngIf="this.voceSelezionata" class="row">
+          <div class="col" *ngIf="canModifyCurrentNode">
+            <button type="button" class="btn btn-primary btn-sm my-2 float-end" ngbTooltip="Aggiungi Voce"
+              (click)="showTable()" *ngIf="this.seeTable === false; else hideIcon">
+              <i class="fa fa-plus" aria-hidden="true"></i>
+            </button>
+            <ng-template #hideIcon>
+              <button type="button" class="btn btn-primary btn-sm my-2 float-end" ngbTooltip="Nascondi"
+                (click)="showTable()">
+                <i class="fa fa-minus m-0" aria-hidden="true"></i>
+              </button>
+            </ng-template>
+          </div>
+        </div>
+        <div class="settings box-3d rounded mb-3" *ngIf="this.seeTable && formTabella">
+          <div class="row align-items-center">
+            <div class="col">
+              <div class="input-group input-group-sm">
+                <span class="input-group-text">Da:</span>
+                <input type="date" id="inputDa" [value]="min_valido_da" name="data_inizio" class="form-control"
+                  placeholder="Da" aria-label="Data Inizio" aria-describedby="data_inizio" [min]="min_valido_da"
+                  [max]="maxDate" (blur)="onBlur($event)">
+              </div>
+            </div>
+            <div id="headerTableButtons" class="col" *ngIf="canModifyCurrentNode">
+              <button type="button" class="btn btn-primary px-2 py-1 float-end" (click)="salvaVociTariffa()"
+                ngbTooltip="Salva">
+                <i class="icon fa-solid fa-floppy-disk m-0"></i>
+              </button>
+              <!-- *ngIf="!pendingRow else applicaButton" -->
+              <button type="button" class="btn btn-primary px-2 py-1 ms-2 float-end" (click)="aggiungiVoceTariffa()"
+                ngbTooltip="Aggiungi riga">
+                <i class="icon fa-solid fa-plus m-0"></i>
+              </button>
+              <!-- <ng-template #applicaButton>
+                <button type="button" class="btn btn-primary px-2 py-1 ms-2 float-end"
+                  (click)="salvaPendingVoceTariffa()" ngbTooltip="Applica riga">
+                  <i class="icon fa-solid fa-check m-0"></i>
+                </button>
+              </ng-template> -->
+            </div>
+          </div>
+          <form [formGroup]="formTabella" #formRef="ngForm">
+            <div class="table-container">
+              <table summary="table summary" class="table table-striped border my-3" id="tabella-tariffa">
+                <thead>
+                  <tr class="text-center">
+                    <th scope="col" class="row-controls-th"></th>
+                    <th scope="col">DA</th>
+                    <th scope="col">A</th>
+                    <th scope="col" *ngFor="let header of tariffaVoci">
+                      {{header.descr}}
+                    </th>
+                  </tr>
+                </thead>
+                <tbody formArrayName="dati">
+                  <tr [formGroupName]="i" *ngFor="let c of $any(formRef.form.get('dati')).controls as controls; index as i;
+                  first as isFirst; last as isLast">
+                    <td class="row-controls-td">
+                      <div class="row-controls" *ngIf="!isFirst">
+                        <button type="button" class="btn btn-danger" ngbTooltip="Elimina riga" placement="left"
+                          (click)="eliminaVoceTariffa(i)">
+                          <i class="icon fa-solid fa-xmark"></i>
+                        </button>
+                      </div>
+                    </td>
+                    <td>
+                      <number-input #inf class="text-end" type="int" formControlName="inf"
+                        [min]="isFirst ? 0 : controls[i-1].get('inf').value+1"
+                        [max]="pendingRow || !isLast ? +(upp.value!)-1 : null" [readonly]="isFirst ? true : null"
+                        (valueChange)="onInfValueChange($event, i)">
+                      </number-input>
+                    </td>
+                    <td>
+                      <number-input #upp class="text-end" type="int" formControlName="upp"
+                        [min]="pendingRow || !isLast ? +(inf.value!)+1 : null"
+                        [max]="pendingRow ? (isLast ? null : controls[i+1].get('upp').value-1) : (isLast || i >= controls.length-2 ? null : controls[i+1].get('upp').value-1)"
+                        [readonly]="pendingRow ? null : (isLast ? true : null)"
+                        (valueChange)="onUppValueChange($event, i)">
+                      </number-input>
+                    </td>
+                    <ng-container formArrayName="valori">
+                      <td *ngFor="let val of $any(c.controls['valori']).controls; index as j">
+                        <number-input [formControlName]="j" [min]="0" class="text-end"></number-input>
+                      </td>
+                    </ng-container>
+                  </tr>
+                  <ng-container *ngIf="pendingRow" [ngTemplateOutlet]="pendingRowTemplate"
+                    [ngTemplateOutletContext]="{$implicit: $any(formRef.form.get('dati')).at(-1)}">
+                  </ng-container>
+                </tbody>
+              </table>
+            </div>
+          </form>
+          <form>
+            <div class="wrapper mt-4">
+              <div class="input-group me-2">
+                <!-- <number-input #sim id="simulazione" [min]="0" class="h-100" inputClass="text-end w-100"></number-input> -->
+                <input type="number" #sim id="simulazione" [min]="0" class="h-100" inputClass="text-end w-100"
+                  (keydown.enter)="$event.preventDefault()">
+                <button type="button" class="btn btn-primary rounded-0 rounded-end" (click)="simulaCosto(+sim.value!)">
+                  <i class="icon fa-solid fa-calculator"></i>
+                  <span>Simula</span>
+                </button>
+              </div>
+              <div class="input-group ms-2">
+                <span class="input-group-text rounded-0 rounded-start">€</span>
+                <output class="form-control">
+                  {{risultatoSimulazione}}
+                </output>
+              </div>
+            </div>
+          </form>
+        </div>
+        <!-- Tabella Storico -->
+        <ng-container *ngIf="this.datiTabellaStorico.length > 0">
+          <h3 class="header">Storico</h3>
+          <div class="settings box-3d rounded">
+            <div class="row align-items-center">
+              <div class="col-1">
+                <button *ngIf="!isLast" type="button" class="btn btn-primary btn-sm mb-1" (click)="goBack()"><i
+                    class="fa fa-arrow-left" aria-hidden="true"></i></button>
+              </div>
+              <div class="col">
+                <div class="input-group input-group-sm">
+                  <span class="input-group-text">Da:</span>
+                  <output class="form-control">
+                    {{this.getCurrentTable()?.da?.split('T')[0] | date:'dd/MM/yyyy'}}
+                  </output>
+                  <span class="input-group-text">a:</span>
+                  <output class="form-control">
+                    {{this.getCurrentTable()?.a?.split('T')[0] | date:'dd/MM/yyyy'}}
+                  </output>
+                </div>
+              </div>
+              <div class="col-1">
+                <button *ngIf="!isFirst" type="button" class="btn btn-primary btn-sm mb-1 float-end"
+                  (click)="goAhead()"><i class="fa fa-arrow-right" aria-hidden="true"></i></button>
+              </div>
+              <div class="col-1">
+                [{{currentStorico}}/{{totaleStorico}}]
+              </div>
+              <div class="col-3">
+                <div class="input-group input-group-sm">
+                  <span class="input-group-text">ASL:</span>
+                  <output class="form-control">
+                    {{this.getCurrentTable()?.asl}}
+                  </output>
+                </div>
+              </div>
+              <!-- <div class="col-1" *ngIf="this.getCurrentTable()?.cancellabile"> -->
+              <div class="col-1" *ngIf="canModifyCurrentNode">
+                <button type="button" class="btn btn-danger btn-sm mb-1 float-end" (click)="deleteTariffaVoci()"
+                  ngbTooltip="Elimina">
+                  <i class="fa fa-trash m-0" aria-hidden="true"></i>
+                </button>
+              </div>
+            </div>
+            <div class="row">
+              <div class="table-container">
+                <table summary="table summary" class="table table-striped border my-3" id="tab-storico">
+                  <thead>
+                    <tr class="text-center">
+                      <th scope="col">DA</th>
+                      <th scope="col">A</th>
+                      <th scope="col" *ngFor="let header of tariffaVoci">
+                        {{header.descr}}
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let dati of this.getCurrentTable()?.dati" class="text-center">
+                      <td>{{dati.inf}}</td>
+                      <td>{{dati.upp}}</td>
+                      <td *ngFor="let valore of dati?.valori">
+                        {{valore}}
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col">
+                <form>
+                  <div class="wrapper mt-2">
+                    <div class="input-group me-2">
+                      <input type="number" #simStorico id="simulazione_storico" [min]="0" class="h-100"
+                        inputClass="text-end w-100" (keydown.enter)="$event.preventDefault()">
+                      <button type="button" class="btn btn-primary rounded-0 rounded-end"
+                        (click)="simulaCostoStorico(+simStorico.value!)">
+                        <i class="icon fa-solid fa-calculator"></i>
+                        <span>Simula</span>
+                      </button>
+                    </div>
+                    <div class="input-group ms-2">
+                      <span class="input-group-text rounded-0 rounded-start">€</span>
+                      <output class="form-control">
+                        {{risultatoSimulazioneStorico}}
+                      </output>
+                    </div>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+      </ng-template>
+    </div>
+  </div>
+</div>
+
+<ng-template #templateFormTariffa>
+  <div class="system-modal">
+    <div class="modal-header d-flex">
+      <span class="modal-title">{{headerModaleTariffa}}</span>
+      <button type="button" class="btn btn-close ms-auto" (click)="modalRef?.close()"></button>
+    </div>
+    <div class="modal-body">
+      <form [formGroup]="formTariffa!" (ngSubmit)="salvaTariffa()">
+        <!-- [min]="tomorrow" [max]="maxDate" (blur)="onBlur($event)" -->
+        <div class="form-group mb-2">
+          <label for="valido_da_tariffa" class="form-label">Valido da</label>
+          <input type="date" id="valido_da_tariffa" name="valido_da_tariffa" class="form-control" aria-label="Valido da"
+            aria-describedby="valido_da_tariffa" formControlName="valido_da_tariffa" [min]="tomorrow" [max]="maxDate"
+            (blur)="onBlur($event)" (keydown.enter)="$event.preventDefault()">
+          <span class="text-info" *ngIf="!checkDates">"<b>Valido da</b>" deve essere minore di "<b>Valido a</b>"</span>
+          <br>
+          <span class="text-danger" *ngIf="formTariffaControls['valido_da_tariffa'].errors?.['required']">
+            Data Inizio Richiesta
+          </span>
+        </div>
+        <!-- [min]="theDayAfterTomorrow" [max]="maxDate" (blur)="onBlur($event)" -->
+        <div class="form-group mb-2">
+          <label for="valido_a_tariffa" class="form-label">Valido a</label>
+          <input type="date" id="valido_a_tariffa" name="valido_a_tariffa" class="form-control" placeholder="Valido a"
+            aria-label="Valido a" aria-describedby="valido_a_tariffa" formControlName="valido_a_tariffa"
+            [min]="minValidoA" [max]="maxDate" (blur)="onBlur($event)" (keydown.enter)="$event.preventDefault()">
+        </div>
+        <div class="form-group mb-2">
+          <label for="sigla" class="form-label">Sigla</label>
+          <input type="text" id="sigla" formControlName="sigla" class="form-control border"
+            (keydown.enter)="$event.preventDefault()">
+          <span class="text-danger" *ngIf="formTariffaControls['sigla'].errors?.['required']">
+            Sigla richiesta
+          </span>
+        </div>
+        <div class="form-group mb-2">
+          <label for="descr" class="form-label">Descrizione</label>
+          <input type="text" id="descr" formControlName="descr" class="form-control border"
+            (keydown.enter)="$event.preventDefault()">
+          <span class="text-danger" *ngIf="formTariffaControls['descr'].errors?.['required']">
+            Descrizione richiesta
+          </span>
+        </div>
+        <div class="form-group mb-2">
+          <label for="id_u_mis" class="form-label">Unita di Misura</label>
+          <select id="id_u_mis" formControlName="id_u_mis" class="form-select text-capitalize border">
+            <option [value]="u.id_u_mis" *ngFor="let u of unitaMisura" class="text-capitalize">
+              {{u.descr}}
+            </option>
+          </select>
+          <span class="text-danger" *ngIf="formTariffaControls['id_u_mis'].errors?.['required']">
+            Unità di Misura richiesta
+          </span>
+        </div>
+        <div class="form-group mb-2">
+          <label for="cod_iva" class="form-label">Codice IVA</label>
+          <select id="cod_iva" formControlName="cod_iva" class="form-select border">
+            <option [value]="c.id_cod_iva" *ngFor="let c of codiciIva">
+              {{c.cod_iva}}
+            </option>
+          </select>
+          <span class="text-danger" *ngIf="formTariffaControls['cod_iva'].errors?.['required']">
+            Codice IVA richiesto
+          </span>
+        </div>
+        <div class="form-group mb-2">
+          <label for="ordinamento" class="form-label">Ordinamento</label>
+          <input type="number" id="ordinamento" formControlName="ordinamento" class="form-control border"
+            (keydown.enter)="$event.preventDefault()" (blur)="checkTypeNumber($event)" min="0">
+          <span class="text-danger" *ngIf="formTariffaControls['ordinamento'].errors?.['required']">
+            Ordinamento richiesto
+          </span>
+        </div>
+        <div class="form-group mb-2" *ngIf="formTariffaControls['visibile_fatt'].value">
+          <label for="descr_in_fatt" class="form-label">Descrizione in fatture</label>
+          <input type="text" id="descr_in_fatt" formControlName="descr_in_fatt" class="form-control border"
+            (keydown.enter)="$event.preventDefault()">
+        </div>
+
+        <!-- Limite Inferiore -->
+        <div class="form-group mb-2">
+          <label for="limite_inf" class="form-label">Limite Inferiore (minuti)</label>
+          <input type="number" id="limite_inf" formControlName="limite_inf" class="form-control border" min="0"
+            (keydown.enter)="$event.preventDefault()" (blur)="checkTypeNumber($event)">
+        </div>
+
+        <!-- Limite Superiore -->
+        <div class="form-group mb-2">
+          <label for="limite_sup" class="form-label">Limite Superiore (minuti)</label>
+          <input type="number" id="limite_sup" formControlName="limite_sup" class="form-control border" min="0"
+            (keydown.enter)="$event.preventDefault()" (blur)="checkTypeNumber($event)">
+        </div>
+
+        <div class="form-group">
+          <label for="nota" class="form-label">Nota</label>
+          <textarea id="nota" formControlName="nota" class="form-control no-resize" rows="4"></textarea>
+        </div>
+        <div class="row my-3 align-items-center">
+          <div class="col">
+            <div class="form-check">
+              <input type="checkbox" id="visibile_trf" formControlName="visibile_trf" class="form-check-input"
+                (keydown.enter)="$event.preventDefault()">
+              <label for="visibile_trf" class="form-check-label">Visibile in Tariffe</label>
+            </div>
+            <div class="form-check">
+              <input type="checkbox" id="visibile_fatt" formControlName="visibile_fatt" class="form-check-input"
+                (keydown.enter)="$event.preventDefault()">
+              <label for="visibile_fatt" class="form-check-label">Visibile in Fatture</label>
+            </div>
+          </div>
+          <div class="col">
+            <div class="form-check">
+              <input type="checkbox" id="visibile_piani" formControlName="visibile_piani" class="form-check-input"
+                (keydown.enter)="$event.preventDefault()">
+              <label for="visibile_piani" class="form-check-label">Visibile in Piani</label>
+            </div>
+            <div class="form-check">
+              <input type="checkbox" id="visibile_contabilita" formControlName="visibile_contabilita"
+                class="form-check-input" (keydown.enter)="$event.preventDefault()">
+              <label for="visibile_contabilita" class="form-check-label">Visibile in Contabilità</label>
+            </div>
+          </div>
+        </div>
+        <div class="row align-items-center">
+          <div class="col">
+            <div class="form-check">
+              <input type="checkbox" id="livello_asl" formControlName="livello_asl" class="form-check-input"
+                (keydown.enter)="$event.preventDefault()">
+              <label for="livello_asl" class="form-check-label">Livello ASL</label>
+            </div>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary d-block ms-auto mt-2"
+          (keydown.enter)="$event.preventDefault()">Salva</button>
+      </form>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #pendingRowTemplate let-prev>
+  <tr [formGroup]="pendingRow!" id="pending-row">
+    <td class="row-controls">
+      <button tyoe="button" class="btn btn-danger" ngbTooltip="Elimina riga" placement="left"
+        (click)="eliminaVoceTariffa()">
+        <i class="icon fa-solid fa-xmark"></i>
+      </button>
+    </td>
+    <td>
+      <number-input #inf class="text-end" type="int" formControlName="inf" [min]="prev.get('inf').value+1"
+        (valueChange)="prev.get('upp').patchValue(+inf.value!)">
+      </number-input>
+    </td>
+    <td>
+      <number-input #upp class="text-end" type="int" formControlName="upp" [value]="null" [readonly]="true">
+      </number-input>
+    </td>
+    <ng-container formArrayName="valori">
+      <td *ngFor="let val of $any(pendingRow!.get('valori')).controls; index as j">
+        <number-input [formControlName]="j" [min]="0" class="text-end"></number-input>
+      </td>
+    </ng-container>
+  </tr>
+</ng-template>
+
+<ng-template #exportFilenameModalTemplate>
+  <div class="modal-header">
+    <button class="btn-close d-block ms-auto" (click)="closeExportFilenameModal()"></button>
+  </div>
+  <div class="modal-body">
+    <p class="fs-5 fw-semibold">Nome file:</p>
+    <input class="form-control" id="filename" [formControl]="filenameControl">
+    <button type="button" class="btn btn-primary d-block w-25 mx-auto my-3" (click)="exportTariffario()"
+      [disabled]="filenameControl.invalid">OK</button>
+  </div>
+</ng-template>

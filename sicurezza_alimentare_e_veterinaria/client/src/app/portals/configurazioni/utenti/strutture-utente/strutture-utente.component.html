@@ -1,0 +1,201 @@
+<!--
+Copyright (C) AGPL-3.0  
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.-->
+<div>
+    <div class="row">
+        <div class="col">
+            <h2 class="d-flex align-items-center">
+                <span>Utente</span>
+                <button [disabled]="false" class="btn btn-secondary ms-auto" (click)="goToModifica()">
+                    <i class="icon fa-solid fa-edit"></i>
+                    <span>Modifica</span>
+                </button>
+            </h2>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col" *ngIf="utente">
+            <div class="card">
+                <div class="card-body d-flex flex-wrap gap-2">
+                    <div class="item flex-fill col-3" *ngFor="let colonna of ui_utente.colonne">
+                        <label>{{colonna.intestazione}}</label><br>
+                        <ng-container *ngIf="colonna.tipo === 'date'; else norm">
+                            <span><b>{{utente[colonna.campo] | date : "dd/MM/yyyy"}}</b></span>
+                        </ng-container>
+                        <ng-template #norm>
+                            <span><b>{{utente[colonna.campo]}}</b></span>
+                        </ng-template>
+                        &nbsp;
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br>
+    <div class="row">
+        <div class="col">
+            <h4 class="d-flex align-items-center">
+                <span>Strutture Associate</span>
+                <button class="btn btn-primary ms-auto" (click)="aggiungiStruttura()">
+                    <i class="icon fa-solid fa-plus"></i>
+                    <span>Aggiungi</span>
+                </button>
+            </h4>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <a-smart-table *ngIf="strutture" [colsInfo]="ui_strutture.colonne" [src]="strutture" [autolayout]="false">
+                <ng-template aTemplate="head">
+                    <tr>
+                        <th scope="col" *ngFor="let colonna of ui_strutture.colonne">
+                            <div class="d-flex align-items-center">
+                                <span class="label">{{ colonna.intestazione }}</span>
+                                <a-table-sorter [type]="colonna.tipo" [field]="colonna.campo"></a-table-sorter>
+                                <a-table-filter [type]="colonna.tipo" [field]="colonna.campo"></a-table-filter>
+                            </div>
+                        </th>
+                        <th scope="col"></th>
+                    </tr>
+                </ng-template>
+                <ng-template aTemplate="body" let-ar>
+                    <tr>
+                        <td *ngFor="let colonna of ui_strutture.colonne">
+                            <ng-container *ngIf="colonna.tipo === 'date'; else campoNormale">
+                                {{ ar[colonna.campo] | date : "dd/MM/yyyy" }}
+                            </ng-container>
+                            <ng-template #campoNormale>
+                                {{ ar[colonna.campo] }}
+                            </ng-template>
+                        </td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <button [disabled]="ar.fine_validita" class="btn btn-danger ms-auto"
+                                    (click)="modificaStruttura(ar)">
+                                    <i class="icon fa-solid fa-trash"></i>
+                                    <!-- <span>Dettaglio</span> -->
+                                </button>
+                                <button [disabled]="ar.fine_validita" class="btn btn-secondary ms-2"
+                                    (click)="goToDettaglio(ar['id_utente_struttura'])">
+                                    <!-- <i class="icon fa-solid fa-plus"></i> "  -->
+                                    <span>Dettaglio</span>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                </ng-template>
+            </a-smart-table>
+        </div>
+    </div>
+</div>
+
+
+
+<!-- modal -->
+<div class="modal fade" id="modal-struttura" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable" role="document">
+        <div class="modal-content">
+            <!-- modal-header -->
+            <div class="modal-header">
+                <ng-container *ngIf="modalMode == 'add'">
+                    <h2 class="modal-title">Aggiungi Struttura</h2>
+                </ng-container>
+                <ng-container *ngIf="modalMode == 'upd'">
+                    <h2 class="modal-title">Modifica Struttura</h2>
+                </ng-container>
+                <div class="justify-content-end">
+                    <button [disabled]="formStruttura.invalid" type="button" class="btn btn-secondary ms-auto"
+                        (click)="salva(modalMode)">
+                        <i class="icon fa-solid fa-save"></i>
+                        <span>Salva</span>
+                    </button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="close"></button>
+                </div>
+            </div>
+
+            <!-- modal-body -->
+            <div class="modal-body">
+                <div class="">
+                    <form [formGroup]="formStruttura">
+                        <label>Inizio validità: <span class="text-danger mb-3 ms-1 ">*</span></label>
+                        <input [readonly]="modalMode == 'upd'" type="date" class="form-control border"
+                            formControlName="inizio" [min]="1900-01-01" (blur)="checkDate($event,formUtente)" />
+
+                        <label>Fine validità:</label>
+                        <input type="date" class="form-control border" formControlName="fine" [min]="1900-01-01"
+                            (blur)="checkDate($event,formUtente)" />
+
+                    </form>
+                    <ng-container *ngIf="modalMode =='add'">
+                        <label>Seleziona:<span class="text-danger"> *</span></label>
+                        <a-tree-filter [tree]="struttureTree" placeholder="Ricerca Struttura..."></a-tree-filter>
+                        <a-tree #struttureTree [src]="_strutture_tree" [mapping]="mappaturaAlberi"
+                            (onClick)="onTreeNodeClick($event)"></a-tree>
+                    </ng-container>
+                </div>
+            </div>
+
+            <!-- modal-footer -->
+            <div class="modal-footer"></div>
+        </div>
+    </div>
+</div>
+
+<!-- modal -->
+<div class="modal fade" id="modal-utente" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable" role="document">
+        <div class="modal-content">
+            <!-- modal-header -->
+            <div class="modal-header">
+                <ng-container>
+                    <h2 class="modal-title">Modifica Utente</h2>
+                    <div class="justify-content-end">
+                        <button [disabled]="formUtente.invalid" type="button" class="btn btn-secondary ms-auto"
+                            (click)="modificaUtente()">
+                            <i class="icon fa-solid fa-save"></i>
+                            <span>Salva</span>
+                        </button>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="close"></button>
+                    </div>
+                </ng-container>
+            </div>
+
+            <!-- modal-body -->
+            <div class="modal-body">
+                <div class="">
+                    <form [formGroup]="formUtente">
+                        <label>Qualifica: <span class="text-danger mb-3 ms-1 ">*</span></label>
+                        <select class="form-select" id="id_qualifica" formControlName="id_qualifica">
+                            <option></option>
+                            <option *ngFor="let el of qualifiche" [value]="el.id_qualifica">
+                                {{ el.descr }}
+                            </option>
+                        </select>
+
+                        <label>E-mail:</label>
+                        <input type="text" class="form-control border" formControlName="mail" />
+
+                        <label>Telefono:</label>
+                        <input type="text" class="form-control border" formControlName="tel" />
+
+                        <label>Inizio validità: <span class="text-danger mb-3 ms-1 ">*</span></label>
+                        <input readonly type="date" class="form-control border" formControlName="inizio"
+                            [min]="1900-01-01" (blur)="checkDate($event,formUtente)" />
+
+                        <label>Fine validità:</label>
+                        <input type="date" class="form-control border" formControlName="fine" [min]="1900-01-01"
+                            (blur)="checkDate($event,formUtente)" />
+                    </form>
+                </div>
+            </div>
+
+            <!-- modal-footer -->
+            <div class="modal-footer"></div>
+        </div>
+    </div>
+</div>

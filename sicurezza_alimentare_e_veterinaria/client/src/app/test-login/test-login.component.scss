@@ -1,0 +1,43 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 100%;
+}
+
+#test-login {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 100%;
+
+  #login-box {
+    width: calc(250px + 10vw);
+    margin: auto;
+  }
+
+  #login-form {
+    display: flex;
+    flex-direction: column;
+
+    .separator {
+      align-self: center;
+      display: flex;
+      justify-content: center;
+      width: 100%;
+
+      .stroke {
+        border-top: 1px solid var(--fvg-gray);
+        border-radius: var(--border-radius-light, 8px);
+        flex: 0 1 40%;
+        margin: auto;
+      }
+
+      .label {
+        margin: 0 .5rem;
+        text-align: center;
+        flex: 1 0 20%;
+      }
+    }
+  }
+}

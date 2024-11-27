@@ -1,0 +1,57 @@
+<!--
+Copyright (C) AGPL-3.0  
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.-->
+<div id="valida-utenti">
+  <div class="row align-items-center">
+    <div class="col">
+      <h1>Valida Utenti Registrati</h1>
+    </div>
+    <div class="col">
+      <button type="button" class="btn btn-outline-danger float-end" (click)="rifiutaUtenti()" [disabled]="disable">
+        Rifiuta<i class="ms-1 fa fa-cancel" aria-hidden="true"></i>
+      </button>
+      <button type="button" class="btn btn-outline-primary float-end" (click)="validaUtenti()" [disabled]="disable">
+        Valida<i class="ms-1 fa fa-check" aria-hidden="true"></i>
+      </button>
+    </div>
+  </div>
+  <div class="row" *ngIf="users_da_validare; else noData;">
+    <div class="col">
+      <div class="table-container box-3d rounded p-0">
+        <a-smart-table #tableUsers class="table table-striped" [autolayout]="false" [src]="users_da_validare"
+          [colsInfo]="ui.colonne"   [selection]="true">
+          <ng-template aTemplate="head">
+            <tr>
+              <th scope="col" class="selector-th"></th>
+              <th scope="col" *ngFor="let c of ui.colonne">
+                <div class="d-flex justify-content-center align-items-center">
+                  <span class="label">{{c.intestazione}}</span>
+                  <a-table-filter [type]="c.tipo" [field]="c.campo"></a-table-filter>
+                  <a-table-sorter [type]="c.tipo" [field]="c.campo"></a-table-sorter>
+                </div>
+              </th>
+            </tr>
+          </ng-template>
+          <ng-template aTemplate="body" let-udv>
+            <tr>
+              <td class="selector-td">
+                <a-table-selector [data]="udv" (change)="disableButton()"></a-table-selector>
+              </td>
+              <td *ngFor="let c of ui.colonne" class="text-center">
+                {{udv[c.campo]}}
+              </td>
+            </tr>
+          </ng-template>
+        </a-smart-table>
+      </div>
+    </div>
+  </div>
+  <ng-template #noData>
+    <p>Non sono presenti Utenti.</p>
+  </ng-template>
+</div>

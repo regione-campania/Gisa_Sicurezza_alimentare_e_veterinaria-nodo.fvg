@@ -1,0 +1,138 @@
+<!--
+Copyright (C) AGPL-3.0  
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.-->
+<div>
+    <div class="row">
+        <div class="col">
+            <h2 class="d-flex align-items-center">
+                <span>Soggetto Fisico</span>
+                <button class="btn btn-secondary ms-auto" [disabled]="disabilitaModSogg" (click)="goToModifica()">
+                    <i class="icon fa-solid fa-edit"></i>
+                    <span>Modifica</span>
+                </button>
+
+            </h2>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col" *ngIf="soggetto">
+            <div class="card">
+                <div class="card-body d-flex flex-wrap gap-2">
+                    <div class="item flex-fill col-2" *ngFor="let colonna of ui_soggetto.colonne">
+                        <label>{{colonna.intestazione}}</label><br>
+                        <ng-container *ngIf="colonna.tipo === 'date'; else norm">
+                            <span><b>{{soggetto[colonna.campo] | date : "dd/MM/yyyy"}}</b></span>
+                        </ng-container>
+                        <ng-template #norm>
+                            <span><b>{{soggetto[colonna.campo]}}</b></span>
+                        </ng-template>
+                        &nbsp;
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br>
+    <!-- Stabilimenti -->
+    <div class="row">
+        <div class="col">
+            <h4 class="d-flex align-items-center">
+                <span>Stabilimenti</span>
+            </h4>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col" *ngIf="soggettoStab; else noElements">
+            <a-smart-table [colsInfo]="ui_soggettoStab.colonne" [src]="soggettoStab" [autolayout]="false">
+                <ng-template aTemplate="head">
+                    <tr>
+                        <th scope="col" *ngFor="let colonna of ui_soggettoStab.colonne">
+                            <div class="d-flex align-items-center">
+                                <span class="label">{{ colonna.intestazione }}</span>
+                                <a-table-sorter [type]="colonna.tipo" [field]="colonna.campo"></a-table-sorter>
+                                <a-table-filter [type]="colonna.tipo" [field]="colonna.campo" [options]="colonna.filterOptions"></a-table-filter>
+                            </div>
+                        </th>
+                        <th scope="col"></th>
+                    </tr>
+                </ng-template>
+                <ng-template aTemplate="body" let-ar>
+                    <tr>
+                        <td *ngFor="let colonna of ui_soggettoStab.colonne">
+                            <ng-container *ngIf="colonna.tipo === 'date'; else campoNormale">
+                                {{ ar[colonna.campo] | date : "dd/MM/yyyy" }}
+                            </ng-container>
+                            <ng-template #campoNormale>
+                                {{ ar[colonna.campo] }}
+                            </ng-template>
+                        </td>
+                        <td>
+                            <div>
+                                <button class="btn btn-secondary float-end"
+                                (click)="goToStabilimento(ar['id_stabilimento'])">
+                                    <!-- <i class="icon fa-solid fa-plus"></i>  -->
+                                    <span>Dettaglio</span>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                </ng-template>
+            </a-smart-table>
+        </div>
+    </div>
+    <!-- Imprese -->
+    <div class="row">
+        <div class="col">
+            <h4 class="d-flex align-items-center">
+                <span>Imprese</span>
+            </h4>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col" *ngIf="soggettoImp; else noElements">
+            <a-smart-table [colsInfo]="ui_soggettoImp.colonne" [src]="soggettoImp" [autolayout]="false">
+                <ng-template aTemplate="head">
+                    <tr>
+                        <th scope="col" *ngFor="let colonna of ui_soggettoImp.colonne">
+                            <div class="d-flex align-items-center">
+                                <span class="label">{{ colonna.intestazione }}</span>
+                                <a-table-sorter [type]="colonna.tipo" [field]="colonna.campo"></a-table-sorter>
+                                <a-table-filter [type]="colonna.tipo" [field]="colonna.campo" [options]="colonna.filterOptions"></a-table-filter>
+                            </div>
+                        </th>
+                        <th scope="col"></th>
+                    </tr>
+                </ng-template>
+                <ng-template aTemplate="body" let-ar>
+                    <tr>
+                        <td *ngFor="let colonna of ui_soggettoImp.colonne">
+                            <ng-container *ngIf="colonna.tipo === 'date'; else campoNormale">
+                                {{ ar[colonna.campo] | date : "dd/MM/yyyy" }}
+                            </ng-container>
+                            <ng-template #campoNormale>
+                                {{ ar[colonna.campo] }}
+                            </ng-template>
+                        </td>
+                        <td>
+                            <div>
+                                <button class="btn btn-secondary float-end"
+                                (click)="goToImpresa(ar['id_impresa'])">
+                                    <!-- <i class="icon fa-solid fa-plus"></i> (click)="goToStabilimento(ar['id_stabilimento'])" -->
+                                    <span>Dettaglio</span>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                </ng-template>
+            </a-smart-table>
+        </div>
+    </div>
+    <ng-template #noElements>
+        <span>Nessun elemento presente</span>
+    </ng-template>
+</div>

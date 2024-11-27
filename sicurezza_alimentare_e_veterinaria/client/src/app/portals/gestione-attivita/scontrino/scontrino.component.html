@@ -1,0 +1,329 @@
+<!--
+Copyright (C) AGPL-3.0  
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.-->
+<!-- <button type="button" (click)="updateFattura()">Prova</button> -->
+<div id="scontrino" *ngIf="dettagli && trfattivita; else noData">
+  <div class="row">
+    <div class="col-md">
+      <button type="button" class="btn btn-primary ms-auto" (click)="printScontrino()">
+        <i class="fa fa-file-pdf"></i> Stampa PDF 
+      </button>
+      <button *ngIf="this.trfFunzione == 'fattura'" type="button" class="btn btn-primary ms-auto" (click)="printXML()">
+        <i class="fa fa-file-code"></i> Stampa XML
+      </button>
+      <button *ngIf="!getClosed" type="button" class="btn btn-primary ms-auto" (click)="chiudiTariffazione()"
+        [disabled]="disableCloseTariffa">
+        <i class="fa fa-window-close"></i> Chiudi Tariffazione
+      </button>
+      <!-- <button type="button" class="btn btn-primary ms-auto" (click)="goBack()" style="float: right;">
+        <i class="fa fa-arrow-left"></i> Indietro
+      </button> -->
+    </div>
+  </div>
+  <div #scontrino>
+    <div class="sezione box-3d" id="intestazione">
+      <div *ngIf="trfFunzione == 'rilevazione_attivita'">
+        <div class="row">
+          <div class="col-md">
+            <div class="info">
+              <span class="value">{{trfattivita.sigla_ente}}</span>
+            </div>
+          </div>
+          <div class="col-md">
+            <div class="info">
+              <span class="label">Tariffario</span>
+              <span class="value">{{trfattivita.tariffa_da | date: 'dd/MM/yyyy'}} {{ trfattivita.tariffa_a != null ? ('
+                - ' + trfattivita.tariffa_a | date: 'dd/MM/yyyy') : ""}}</span>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md">
+            <div class="info">
+              <span class="label">Cliente</span>
+              <span class="value">{{trfattivita.cliente}}</span>
+            </div>
+          </div>
+          <div class="col-md">
+            <div class="info">
+              <span class="label">Servizio</span>
+              <span class="value">{{trfattivita.servizio}} {{trfattivita.attivita_da | date: 'dd/MM/yyyy'}} {{' - ' +
+                (trfattivita.attivita_a | date: 'dd/MM/yyyy')}}</span>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md">
+            <div class="info">
+              <span class="label">Operatore</span>
+              <span class="value">{{trfattivita.operatore}}</span>
+            </div>
+          </div>
+          <div class="col-md">
+            <div class="info">
+              <span class="label">Luogo</span>
+              <span class="value">{{trfattivita.luogo}}</span>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md">
+            <div class="info">
+              <span class="label">Note</span>
+              <span class="value">{{trfattivita.note}}</span>
+            </div>
+          </div>
+          <div class="col-md">
+            <div class="info">
+              <span class="label">Tipo giorno</span>
+              <span class="value">{{trfattivita.tipo_giorno}}</span>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md">
+            <div class="info">
+              <span class="label">Tariffa applicata</span>
+              <span class="value">{{trfattivita.tariffa_applicata}}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div *ngIf="trfFunzione == 'fattura'">
+        <div class="row align-items-center">
+          <div class="col-md">
+            <div class="info">
+              <span class="label">Cliente</span>
+              <span class="value">{{trfattivita.descr}}</span>
+            </div>
+          </div>
+          <div class="col-md">
+            <div class="info">
+              <span class="label">Data</span>
+              <span class="value">{{trfattivita.data_creazione | date: 'dd/MM/yyyy'}} </span>
+            </div>
+          </div>
+        </div>
+        <div class="row align-items-center">
+          <div class="col-md">
+            <div class="info">
+              <span class="label">Partita IVA</span>
+              <span class="value">{{trfattivita.piva}}</span>
+            </div>
+          </div>
+          <div class="col-md">
+            <div class="info">
+              <span class="label">Codice Fiscale</span>
+              <span class="value">{{trfattivita.codfis}}</span>
+            </div>
+          </div>
+        </div>
+        <div class="row align-items-center">
+          <div class="col-md">
+            <div class="info">
+              <span class="label">Indirizzo</span>
+              <span class="value">{{trfattivita.indirizzo_fatturazione}}</span>
+            </div>
+          </div>
+          <div class="col-md">
+            <div class="info">
+              <span class="label">Comune</span>
+              <span class="value">{{trfattivita.comune_fatturazione}}</span>
+            </div>
+          </div>
+        </div>
+        <div class="row align-items-center">
+          <div class="col-md">
+            <div class="info">
+              <span class="label">Tariffa</span>
+              <span class="value">{{trfattivita.descr_tariffa}}</span>
+            </div>
+          </div>
+          <div class="col-md">
+            <div class="info">
+              <span class="label"></span>
+              <span class="value"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="box-3d rounded mt-3">
+      <div class="save-div my-2" *ngIf="this.getClosed !== true && (trfFunzione && trfFunzione !== 'fattura')">
+        <button type="button" title="Modifica" class="btn icon-only action-button edit-button" [hidden] = "!disableModifica"
+          *ngIf="!editMode; else saveButton" (click)="changeMode()">
+          <i class="icon fa fa-solid fa-pen m-0"></i>
+        </button>
+        <ng-template #saveButton>
+          <button type="button" title="Salva" class="btn icon-only action-button save-button" (click)="changeMode()">
+            <i class="icon fa-solid fa-floppy-disk m-0"></i>
+          </button>
+        </ng-template>
+      </div>
+      <div *ngIf="dettagli.struttura[1] && dettagli.struttura[1].nome != 'RIGHE' else onlyRigheTable">
+        <div *ngFor="let tab of dettagli.dati.sezioni">
+          <div class="sezione">
+            <div class="header">{{tab.descrizione}}</div>
+            <div class="table-container box p-0">
+              <table summary="table summary" class="striped">
+                <thead>
+                  <tr>
+                    <th scope="col" *ngFor="let col of (jsonParse(tab.ui_info)).colonne; index as i">
+                      <span class="column-name">
+                        {{col.intestazione ? col.intestazione : col}}
+                      </span>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <!--<tr>
+                    <th *ngFor="let col2 of (jsonParse(tab.ui_info)).colonne; index as k">
+                      {{col2.intestazione ? col2.intestazione : col2}}
+                    </th>
+                  </tr>-->
+                  <tr *ngFor="let riga of tab.sezioni; index as i">
+                    <ng-template [ngIf]="dettagli.struttura.length == 3"> <!--struttura senza colonne alla fine-->
+                      <td>
+                        {{riga.descrizione}}
+                      </td>
+                      <td>
+                        <input class="read-only-input input-modificabile" attr.id-tariffa="{{riga.id_node}}" type="text"
+                        [min]="riga.limite_inf ? riga.limite_inf : 0" [max]="riga.limite_sup ? riga.limite_sup : 99999999" value="" readonly>
+                      </td>
+                    </ng-template>
+                    <!-- No Voce A -->
+                    <ng-template [ngIf]="(jsonParse(tab.ui_info)).mode != 'usa_lista_valori'"
+                      [ngIfElse]="listaValoriAsColonne">
+                      <td *ngIf="riga.sezioni[0]">
+                        {{riga.sezioni[0].descrizione}}
+                      </td>
+                      <td *ngFor="let cella of riga.sezioni; index as j">
+                        <span *ngIf="true else readOnlyCell">
+                          <input class="read-only-input input-modificabile" attr.id-tariffa="{{cella.id_node}}"
+                            type="{{jsonParse(tab.ui_info).formato_colonne?.[j+1] == 'time' ? 'time' : 'text'}}"
+                            attr.formato-input="{{jsonParse(tab.ui_info).formato_colonne?.[j+1]}}" [min]="riga.limite_inf ? riga.limite_inf : 0" [max]="riga.limite_sup ? riga.limite_sup : 99999999"
+                            value="{{parseCell(cella.valore, jsonParse(tab.ui_info).formato_colonne?.[j+1])}}"
+                            readonly>
+                        </span>
+                        <ng-template #readOnlyCell>
+                          {{cella.valore}}
+                        </ng-template>
+                      </td>
+                    </ng-template>
+
+                    <!-- Voce A -->
+                    <ng-template #listaValoriAsColonne>
+                      <td *ngFor="let cella of jsonParse(riga.sezioni[0].lista_valori); index as j">
+                        <ng-template [ngIf]="jsonParse(tab.ui_info).tipo_colonne[j] == 'text'" [ngIfElse]="numberLabel">
+                          <span>
+                            {{cella}}
+                          </span>
+                        </ng-template>
+                        <ng-template #numberLabel>
+                          <span>
+                            <input class="read-only-input input-modificabile"
+                              attr.formato-input="{{jsonParse(tab.ui_info).formato_colonne?.[j]}}" type="text" [min]="riga.limite_inf ? riga.limite_inf : 0" [max]="riga.limite_sup ? riga.limite_sup : 99999999"
+                              value="{{parseCell(cella, jsonParse(tab.ui_info).formato_colonne?.[j])}}" readonly>
+                          </span>
+                        </ng-template>
+                      </td>
+                    </ng-template>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+      <ng-template #onlyRigheTable>
+        <!-- Se sono presenti le sezioni -->
+        <ng-template [ngIf]="this.getDontshowViewSezioni" [ngIfElse]="noSezioni">
+          <div class="table-container box p-0">
+            <table summary="table summary" class="striped">
+              <thead>
+                <tr>
+                  <th scope="col" *ngFor="let col of ((dettagli.dati.ui_info)).colonne; index as i">
+                    <span class="column-name">
+                      {{col.intestazione ? col.intestazione : col}}
+                    </span>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let riga of dettagli.dati.sezioni; index as i">
+                  <td *ngFor="let cella of(jsonParse(riga.lista_valori)); index as j">
+                    <span *ngIf="(
+                        (dettagli.dati.ui_info).colonne[j]?.editabile || (dettagli.dati.ui_info).colonne_editabili?.[j] )  
+                        else readOnlyCell">
+                      <input class="read-only-input input-modificabile" attr.id-tariffa="{{riga.id_node}}"
+                        type="{{(dettagli.dati.ui_info).formato_colonne?.[j] == 'time' ? 'time' : 'text'}}" [min]="riga.limite_inf ? riga.limite_inf : 0" [max]="riga.limite_sup ? riga.limite_sup : 99999999"
+                        attr.formato-input="{{(dettagli.dati.ui_info).formato_colonne?.[j]}}" value="{{
+                          parseCell(cella, 
+                          (dettagli.dati.ui_info).formato_colonne?.[j] ? (dettagli.dati.ui_info).formato_colonne[j] : (dettagli.dati.ui_info).colonne[j].tipo)}}" readonly>
+                    </span>
+                    <ng-template #readOnlyCell>
+                      {{
+                      (dettagli.dati.ui_info).formato_colonne[j] ?
+                      parseCell(cella, (dettagli.dati.ui_info).formato_colonne[j])
+                      : cella
+                      }}
+                    </ng-template>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </ng-template>
+        <ng-template #noSezioni>
+          <div class="table-container box p-0">
+            <table summary="table summary" class="striped">
+              <thead>
+                <tr>
+                  <th scope="col" *ngFor="let col of dettagli.dati.ui_info.colonne; index as i">
+                    <span class="column-name">
+                      {{col.intestazione ? col.intestazione : col}}
+                    </span>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td *ngFor="let colonna of dettagli.dati.ui_info.colonne">
+                    <span *ngIf="colonna.editabile === true else readOnlyCell">
+                      <input class="read-only-input input-modificabile" attr.id-tariffa="{{dettagli.dati.id_node}}"
+                        type="colonna.tipo" [min]="dettagli.dati.limite_inf ? dettagli.dati.limite_inf : 0" [max]="dettagli.dati.limite_sup ? dettagli.dati.limite_sup : 99999999"
+                        value="{{parseCell(dettagli.dati[colonna.campo], colonna.tipo)}}" readonly>
+                    </span>
+                    <ng-template #readOnlyCell>
+                      {{dettagli.dati[colonna.campo]}}
+                    </ng-template>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </ng-template>
+      </ng-template>
+      <!-- Bottone salvataggio alla fine dello scontrino -->
+      <div class="row" *ngIf="this.getClosed !== true && (trfFunzione && trfFunzione !== 'fattura') && editMode">
+        <div class="col">
+          <div class="save-div my-2">
+            <button type="button" title="Salva" class="btn icon-only action-button save-button"
+              (click)="changeMode()">
+              <i class="icon fa-solid fa-floppy-disk m-0"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<ng-template #noData>
+  <span>Non sono presenti dati.</span>
+</ng-template>

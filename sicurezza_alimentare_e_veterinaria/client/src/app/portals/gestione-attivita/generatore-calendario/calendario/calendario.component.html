@@ -1,0 +1,58 @@
+<!--
+Copyright (C) AGPL-3.0  
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.-->
+<div id="calendario">
+  <h2 class="mb-3">Calendario</h2>
+  <loading-message *ngIf="loading; else ready" message="Caricamento calendario..."></loading-message>
+  <ng-template #ready>
+    <ng-container *ngIf="calendario; else message">
+      <cal-toolbar [elab]="elab" [tabella]="tabellaAttivita" [disabled]="tabellaAttivita.selectedData.length === 0"
+        (onChange)="init()">
+      </cal-toolbar>
+      <a-smart-table [src]="calendario" [colsInfo]="ui.colonne" [autolayout]="false" [selection]="true"
+        #tabellaAttivita errorMessage="Nessuna attività nel calendario">
+        <ng-template aTemplate="head">
+          <tr>
+            <th scope="col" class="selector-th">
+            </th>
+            <th scope="col" *ngFor="let colonna of ui.colonne">
+              <div class="d-flex align-items-center">
+                <span class="label">{{colonna.intestazione}}</span>
+                <a-table-sorter [type]="colonna.tipo" [field]="colonna.campo"></a-table-sorter>
+                <a-table-filter [type]="colonna.tipo" [field]="colonna.campo" [options]="colonna.filterOptions"></a-table-filter>
+              </div>
+            </th>
+          </tr>
+        </ng-template>
+        <ng-template aTemplate="body" let-evento>
+          <tr>
+            <td>
+              <a-table-selector [data]="evento" *ngIf="evento.selezionabile"></a-table-selector>
+            </td>
+            <td *ngFor="let colonna of ui.colonne" [ngClass]="{'text-end': colonna.tipo == 'number'}">
+              <ng-container *ngIf="colonna.tipo == 'date'; else elseBlock">
+                {{evento[colonna.campo] | date: 'dd/MM/yyyy'}}
+              </ng-container>
+              <ng-template #elseBlock>
+                <ng-container *ngIf="colonna.tipo == 'number'; else normalFormat">
+                  {{evento[colonna.campo] | numberPipe}}
+                </ng-container>
+                <ng-template #normalFormat>
+                  {{evento[colonna.campo]}}
+                </ng-template>
+              </ng-template>
+            </td>
+          </tr>
+        </ng-template>
+      </a-smart-table>
+    </ng-container>
+    <ng-template #message>
+      <div>Nessuna attività nel calenario.</div>
+    </ng-template>
+  </ng-template>
+</div>

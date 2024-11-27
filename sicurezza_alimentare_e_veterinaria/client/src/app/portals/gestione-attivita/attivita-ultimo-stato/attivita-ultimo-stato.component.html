@@ -1,0 +1,90 @@
+<!--
+Copyright (C) AGPL-3.0  
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.-->
+<div class="sezione" id="attivita-ultimo-stato">
+    <!-- <h2 class="d-flex align-items-center">
+        <span>Invio Attività Ultimo Stato </span>
+    </h2>
+    <a-smart-table #tabellaNucleo *ngIf="uiUltimoStato" [colsInfo]="uiUltimoStato.colonne" [src]="retDatiUltimoStato"
+        [autolayout]="false" [paginator]="false">
+        <ng-template aTemplate="head">
+            <tr>
+                <th *ngFor="let colonna of uiUltimoStato.colonne">
+                    <div class="d-flex align-items-center justify-content-center">
+                        <span class="label">{{colonna.intestazione}}</span>
+                        <a-table-sorter [type]="colonna.tipo" [field]="colonna.campo"></a-table-sorter>
+                        <a-table-filter [type]="colonna.tipo" [field]="colonna.campo" [options]="colonna.filterOptions"></a-table-filter>
+                    </div>
+                </th>
+            </tr>
+        </ng-template>
+        <ng-template aTemplate="body" let-ar>
+            <tr>
+                <td *ngFor="let colonna of uiUltimoStato.colonne">
+                    <ng-container *ngIf="colonna.tipo === 'date'; else campoNormale">
+                        {{ar[colonna.campo] | date: 'dd/MM/yyyy HH:mm:ss'}}
+                    </ng-container>
+                    <ng-template #campoNormale>
+                        {{ar[colonna.campo]}}
+                    </ng-template>
+                </td>
+            </tr>
+        </ng-template>
+    </a-smart-table>
+    <br> -->
+    <h2 class="d-flex align-items-center">
+        <span> Invio Attività Stati </span>
+    </h2>
+    <a-smart-table #tabellaNucleo *ngIf="ui" [colsInfo]="ui.colonne" [src]="retDati" [autolayout]="false"
+        [paginator]="false">
+        <ng-template aTemplate="head">
+            <tr>
+                <th id="intestazione-attività-stati" *ngFor="let colonna of ui.colonne">
+                    <div class="d-flex align-items-center justify-content-center">
+                        <span class="label">{{colonna.intestazione}}</span>
+                        <a-table-sorter [type]="colonna.tipo" [field]="colonna.campo"></a-table-sorter>
+                        <a-table-filter [type]="colonna.tipo" [field]="colonna.campo" [options]="colonna.filterOptions"></a-table-filter>
+                    </div>
+                </th>
+                <th scope="col"></th>
+            </tr>
+        </ng-template>
+        <ng-template aTemplate="body" let-ar>
+            <tr>
+                <td id="dati-attività-stati" *ngFor="let colonna of ui.colonne">
+                    <ng-container *ngIf="colonna.tipo === 'date'; else campoNormale">
+                        {{ar[colonna.campo] | date: 'dd/MM/yyyy HH:mm:ss'}}
+                    </ng-container>
+                    <ng-template #campoNormale>
+                        {{ar[colonna.campo]}}
+                    </ng-template>
+                </td>
+                <td><button class="btn btn-primary ms-auto" ngbTooltip="Vedi dettaglio risposta" (click)="mostraDettagli(ar)" [disabled] = "!ar.ret">
+                        Visualizza
+                    </button></td>
+            </tr>
+        </ng-template>
+    </a-smart-table>
+    <br>
+</div>
+<!-- Mostra il dettaglio della risposta-->
+<ng-template #templateModaleDettaglio>
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title">Dettaglio Risposta</h2>
+            <button type="button" class="btn btn-close d-inline-block ms-auto"
+                (click)="modaleDettaglio?.close()"></button>
+        </div>
+        <div class="modal-body">
+           {{ar}}
+        </div>
+        <div class="modal-footer">
+
+        </div>
+    </div>
+</ng-template>

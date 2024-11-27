@@ -1,0 +1,811 @@
+<!--
+Copyright (C) AGPL-3.0  
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.-->
+<h2> Stabilimento: </h2>
+<h3> {{nomeStab}} Codice Regionale / Num. Riconoscimento: {{codRegionale}}</h3>
+<h2 class="d-flex align-items-center">
+    <span> Sedi </span>
+    <button class="btn btn-primary float-end ms-auto" ngbTooltip="Aggiungi sede" data-bs-toggle="modal"
+        data-bs-target="#aggiungiSede" [disabled]="!tipiSedi?.length && !retDatiSedi['fine_validita'] || fine_validita_presa">
+        Aggiungi
+    </button>
+</h2>
+<div id="sedi" class="sezione" *ngIf="retDatiSedi; else messaggioSedi">
+    <a-smart-table [colsInfo]="uiSedi.colonne" [src]="retDatiSedi" [autolayout]="false">
+        <ng-template aTemplate="head">
+            <tr>
+                <th scope="col" *ngFor="let colonna of uiSedi.colonne">
+                    <div class="d-flex align-items-center justify-content-center">
+                        <span class="label">{{colonna.intestazione}}</span>
+                        <a-table-sorter [type]="colonna.tipo" [field]="colonna.campo"></a-table-sorter>
+                        <a-table-filter [type]="colonna.tipo" [field]="colonna.campo" [options]="colonna.filterOptions"></a-table-filter>
+                    </div>
+                </th>
+                <!-- <th scope="col"></th> -->
+                <th scope="col"></th>
+            </tr>
+        </ng-template>
+        <ng-template aTemplate="body" let-ar>
+            <tr>
+                <td *ngFor="let colonna of uiSedi.colonne">
+                    <ng-container *ngIf="colonna.tipo === 'date'; else campoNormale">
+                        {{ar[colonna.campo] | date: 'dd/MM/yyyy'}}
+                    </ng-container>
+                    <ng-template #campoNormale>
+                        {{ar[colonna.campo]}}
+                    </ng-template>
+                </td>
+                <td>
+                    <div class="row">
+                        <div class="d-flex gap-1">
+                            <button class="btn btn-primary float-end ms-auto" ngbTooltip="Visualizza dettaglio sede"
+                                (click)="apriModalVisualizzaSedi(ar)">
+                                Visualizza
+                            </button>
+                            <button class="btn btn-primary float-end ms-2"
+                                ngbTooltip="Modifica dati sede {{ar['descr_tipo_sede']}} {{ar['toponimo']}} {{ar['nome']}} {{ar['comune']}}"
+                                (click)="apriModalModificaSedi(ar)" [disabled]="ar['fine_validita'] || fine_validita_presa">
+                                Modifica
+                            </button>
+                        </div>
+                    </div>
+                    <div class="row" style="padding-top: 0.8%; padding-left: 1.5%;">
+                        <div class="d-flex gap-1">
+                            <button class="btn btn-danger float-end ms-2" data-bs-toggle="modal"
+                                data-bs-target="#eliminaSede" (click)="getIdSede(ar)" style="min-width: 100px;"
+                                [disabled]="ar['fine_validita'] || fine_validita_presa">Elimina
+                            </button>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        </ng-template>
+    </a-smart-table>
+    <br>
+</div>
+<ng-template #messaggioSedi>
+    Non sono presenti sedi
+</ng-template>
+<h2 class="d-flex align-items-center">
+    <span> Figure </span>
+    <button class="btn btn-primary float-end ms-auto" ngbTooltip="Aggiungi figura" data-bs-toggle="modal"
+        data-bs-target="#aggiungiFigure" [disabled]="!tipiFigure?.length && !retDatiFigure['fine_validita'] || fine_validita_presa">
+        Aggiungi
+    </button>
+</h2>
+<div id="Figure" class="sezione" *ngIf="retDatiFigure; else messaggioFigure">
+    <a-smart-table [colsInfo]="uiFigure.colonne" [src]="retDatiFigure" [autolayout]="false">
+        <ng-template aTemplate="head">
+            <tr>
+                <th scope="col" *ngFor="let colonna of uiFigure.colonne">
+                    <div class="d-flex align-items-center justify-content-center">
+                        <span class="label">{{colonna.intestazione}}</span>
+                        <a-table-sorter [type]="colonna.tipo" [field]="colonna.campo"></a-table-sorter>
+                        <a-table-filter [type]="colonna.tipo" [field]="colonna.campo" [options]="colonna.filterOptions"></a-table-filter>
+                    </div>
+                </th>
+                <th scope="col"></th>
+                <!-- <th scope="col"></th> -->
+            </tr>
+        </ng-template>
+        <ng-template aTemplate="body" let-ar>
+            <tr>
+                <td *ngFor="let colonna of uiFigure.colonne">
+                    <ng-container *ngIf="colonna.tipo === 'date'; else campoNormale">
+                        {{ar[colonna.campo] | date: 'dd/MM/yyyy'}}
+                    </ng-container>
+                    <ng-template #campoNormale>
+                        {{ar[colonna.campo]}}
+                    </ng-template>
+                </td>
+                <td>
+                    <div class="row">
+                        <div class="d-flex gap-1">
+                            <button class="btn btn-primary float-end ms-auto" ngbTooltip="Visualizza dettaglio figura"
+                                (click)="apriModalVisualizzaFigure(ar)">
+                                Visualizza
+                            </button>
+                            <button class="btn btn-primary float-end ms-2"
+                                ngbTooltip="Modifica dati figura {{ar['nome']}} {{ar['cognome']}}"
+                                (click)="apriModalModificaFigure(ar)" [disabled]="ar['fine_validita'] || fine_validita_presa">
+                                Modifica
+                            </button>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="d-flex gap-1" style="padding-top: 0.8%; padding-left: 1.5%;">
+                            <button class="btn btn-danger float-end ms-2" data-bs-toggle="modal"
+                                data-bs-target="#eliminaFigura" (click)="getIdFigura(ar)" style="min-width: 100px;"
+                                [disabled]="ar['fine_validita'] || fine_validita_presa">Elimina
+                            </button>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        </ng-template>
+    </a-smart-table>
+    <br>
+</div>
+<ng-template #messaggioFigure>
+    Non sono presenti figure
+</ng-template>
+<h2 class="d-flex align-items-center">
+    <span> Linee </span>
+    <button class="btn btn-primary float-end ms-auto" ngbTooltip="Aggiungi linea" data-bs-toggle="modal"
+        data-bs-target="#aggiungiLinea" [disabled]="fine_validita_presa">
+        Aggiungi
+    </button>
+</h2>
+<div id="linee" class="sezione" *ngIf="retDatiLinee; else messaggioLinee">
+    <a-smart-table [colsInfo]="uiLinee.colonne" [src]="retDatiLinee" [autolayout]="false">
+        <ng-template aTemplate="head">
+            <tr>
+                <th scope="col" *ngFor="let colonna of uiLinee.colonne">
+                    <div class="d-flex align-items-center justify-content-center">
+                        <span class="label">{{colonna.intestazione}}</span>
+                        <a-table-sorter [type]="colonna.tipo" [field]="colonna.campo"></a-table-sorter>
+                        <a-table-filter [type]="colonna.tipo" [field]="colonna.campo" [options]="colonna.filterOptions"></a-table-filter>
+                    </div>
+                </th>
+                <!-- <th scope="col"></th> -->
+            </tr>
+        </ng-template>
+        <ng-template aTemplate="body" let-ar>
+            <tr>
+                <td *ngFor="let colonna of uiLinee.colonne">
+                    <ng-container *ngIf="colonna.tipo === 'date' else campoNormale">
+                        {{ar[colonna.campo] | date: 'dd/MM/yyyy'}}
+                    </ng-container>
+                    <ng-template #campoNormale>
+                        {{ar[colonna.campo]}}
+                    </ng-template>
+                </td>
+                <div class="d-flex flex-column gap-1">
+                    <button class="btn btn-danger float-end ms-2" data-bs-toggle="modal" data-bs-target="#eliminaLinea"
+                        (click)="getIdLinea(ar)" [disabled]="ar['fine_validita'] || fine_validita_presa">Elimina
+                    </button>
+                </div>
+                <!-- <td class="d-flex align-items-center">
+                    <button class="btn btn-primary float-end ms-auto"
+                        ngbTooltip="Modifica dati sede {{ar['descr_tipo_sede']}} {{ar['toponimo']}} {{ar['nome']}} {{ar['comune']}}"
+                        (click)="apriModalModificaSedi(ar)">
+                        Modifica
+                    </button>
+                </td> -->
+            </tr>
+        </ng-template>
+    </a-smart-table>
+    <br>
+</div>
+<ng-template #messaggioLinee>
+    Non sono presenti linee
+</ng-template>
+<!-- CU -->
+<h2 class="d-flex align-items-center">
+    <span> CU programmati </span>
+    <!-- <button class="btn btn-primary float-end ms-auto" ngbTooltip="Aggiungi sede" data-bs-toggle="modal"
+        data-bs-target="#aggiugiSede">
+        Aggiungi
+    </button> -->
+</h2>
+<div id="programmati" class="sezione" *ngIf="retDatiProg; else messaggioProg">
+    <a-smart-table [colsInfo]="uiProg.colonne" [src]="retDatiProg" [autolayout]="false">
+        <ng-template aTemplate="head">
+            <tr>
+                <th scope="col" *ngFor="let colonna of uiProg.colonne">
+                    <div class="d-flex align-items-center justify-content-center">
+                        <span class="label">{{colonna.intestazione}}</span>
+                        <a-table-sorter [type]="colonna.tipo" [field]="colonna.campo"></a-table-sorter>
+                        <a-table-filter [type]="colonna.tipo" [field]="colonna.campo" [options]="colonna.filterOptions"></a-table-filter>
+                    </div>
+                </th>
+                <!-- <th scope="col"></th> -->
+            </tr>
+        </ng-template>
+        <ng-template aTemplate="body" let-ar>
+            <tr>
+                <td *ngFor="let colonna of uiProg.colonne">
+                    <ng-container *ngIf="colonna.tipo === 'date' else campoNormale">
+                        {{ar[colonna.campo] | date: 'dd/MM/yyyy'}}
+                    </ng-container>
+                    <ng-template #campoNormale>
+                        {{ar[colonna.campo]}}
+                    </ng-template>
+                </td>
+                <!-- <td class="d-flex align-items-center">
+                    <button class="btn btn-primary float-end ms-auto"
+                        ngbTooltip="Modifica dati sede {{ar['descr_tipo_sede']}} {{ar['toponimo']}} {{ar['nome']}} {{ar['comune']}}"
+                        (click)="apriModalModificaSedi(ar)">
+                        Modifica
+                    </button>
+                </td> -->
+            </tr>
+        </ng-template>
+    </a-smart-table>
+    <br>
+</div>
+<ng-template #messaggioProg>
+    Non sono presenti CU programmati
+</ng-template>
+<h2 class="d-flex align-items-center">
+    <span> CU effettuati </span>
+    <!-- <button class="btn btn-primary float-end ms-auto" ngbTooltip="Aggiungi sede" data-bs-toggle="modal"
+        data-bs-target="#aggiugiSede">
+        Aggiungi
+    </button> -->
+</h2>
+<div id="effettuati" class="sezione" *ngIf="retDatiEff; else messaggioEff">
+    <a-smart-table [colsInfo]="uiEff.colonne" [src]="retDatiEff" [autolayout]="false">
+        <ng-template aTemplate="head">
+            <tr>
+                <th scope="col" *ngFor="let colonna of uiEff.colonne">
+                    <div class="d-flex align-items-center justify-content-center">
+                        <span class="label">{{colonna.intestazione}}</span>
+                        <a-table-sorter [type]="colonna.tipo" [field]="colonna.campo"></a-table-sorter>
+                        <a-table-filter [type]="colonna.tipo" [field]="colonna.campo" [options]="colonna.filterOptions"></a-table-filter>
+                    </div>
+                </th>
+                <!-- <th scope="col"></th> -->
+            </tr>
+        </ng-template>
+        <ng-template aTemplate="body" let-ar>
+            <tr>
+                <td *ngFor="let colonna of uiEff.colonne">
+                    <ng-container *ngIf="colonna.tipo === 'date' else campoNormale">
+                        {{ar[colonna.campo] | date: 'dd/MM/yyyy'}}
+                    </ng-container>
+                    <ng-template #campoNormale>
+                        {{ar[colonna.campo]}}
+                    </ng-template>
+                </td>
+                <!-- <td class="d-flex align-items-center">
+                    <button class="btn btn-primary float-end ms-auto"
+                        ngbTooltip="Modifica dati sede {{ar['descr_tipo_sede']}} {{ar['toponimo']}} {{ar['nome']}} {{ar['comune']}}"
+                        (click)="apriModalModificaSedi(ar)">
+                        Modifica
+                    </button>
+                </td> -->
+            </tr>
+        </ng-template>
+    </a-smart-table>
+    <br>
+</div>
+<ng-template #messaggioEff>
+    Non sono presenti CU effettuati
+</ng-template>
+<h2 class="d-flex align-items-center">
+    <span> Provvedimenti in corso </span>
+    <!-- <button class="btn btn-primary float-end ms-auto" ngbTooltip="Aggiungi sede" data-bs-toggle="modal"
+        data-bs-target="#aggiugiSede">
+        Aggiungi
+    </button> -->
+</h2>
+<div id="provvedimenti" class="sezione" *ngIf="retDatiProvv; else messaggioProvv">
+    <a-smart-table [colsInfo]="uiProvv.colonne" [src]="retDatiProvv" [autolayout]="false">
+        <ng-template aTemplate="head">
+            <tr>
+                <th scope="col" *ngFor="let colonna of uiProvv.colonne">
+                    <div class="d-flex align-items-center justify-content-center">
+                        <span class="label">{{colonna.intestazione}}</span>
+                        <a-table-sorter [type]="colonna.tipo" [field]="colonna.campo"></a-table-sorter>
+                        <a-table-filter [type]="colonna.tipo" [field]="colonna.campo" [options]="colonna.filterOptions"></a-table-filter>
+                    </div>
+                </th>
+                <!-- <th scope="col"></th> -->
+            </tr>
+        </ng-template>
+        <ng-template aTemplate="body" let-ar>
+            <tr>
+                <td *ngFor="let colonna of uiProvv.colonne">
+                    <ng-container *ngIf="colonna.tipo === 'date' else campoNormale">
+                        {{ar[colonna.campo] | date: 'dd/MM/yyyy'}}
+                    </ng-container>
+                    <ng-template #campoNormale>
+                        {{ar[colonna.campo]}}
+                    </ng-template>
+                </td>
+                <!-- <td class="d-flex align-items-center">
+                    <button class="btn btn-primary float-end ms-auto"
+                        ngbTooltip="Modifica dati sede {{ar['descr_tipo_sede']}} {{ar['toponimo']}} {{ar['nome']}} {{ar['comune']}}"
+                        (click)="apriModalModificaSedi(ar)">
+                        Modifica
+                    </button>
+                </td> -->
+            </tr>
+        </ng-template>
+    </a-smart-table>
+    <br>
+</div>
+<ng-template #messaggioProvv>
+    Non sono presenti provvedimenti in corso
+</ng-template>
+<div class="modal fade modal-dialog-scrollable" id="aggiungiSede" data-bs-backdrop="static" data-bs-keyboard="false"
+    tabindex="-1" aria-labelledby="new-piano-label" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Aggiungi Sede</h2>
+                <div class="justify-content-end">
+                    <button class="btn btn-primary ms-auto" ngbTooltip="Aggiungi sede" [disabled]="!this.formSede.valid"
+                        (click)="aggiungiSede()">
+                        Aggiungi
+                    </button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="close"></button>
+                </div>
+            </div>
+            <div class="modal-body">
+                <form [formGroup]="formSede">
+                    <label>Tipo Sede: <span class="text-danger mb-3 ms-1">
+                            *
+                        </span> </label>
+                    <select class="form-select" id="tipo_sede" formControlName="sede">
+                        <option></option>
+                        <option *ngFor="let el of tipiSedi" [value]="el.id">{{el.descr}}
+                        </option>
+                    </select>
+
+                    <label>Codice Fiscale: <span class="text-danger mb-3 ms-1">
+                            *
+                        </span> </label>
+                    <input type="text" class="form-control border" formControlName="cf">
+
+                    <label>Partita IVA: <span class="text-danger mb-3 ms-1">
+                            *
+                        </span> </label>
+                    <input type="text" class="form-control border" formControlName="piva">
+
+                    <label>PEC: <span class="text-danger mb-3 ms-1">
+                            *
+                        </span> </label>
+                    <input type="text" class="form-control border" formControlName="pec">
+
+                    <label>Email: </label>
+                    <input type="text" class="form-control border" formControlName="email">
+
+                    <label>SDI: <span class="text-danger mb-3 ms-1">
+                            *
+                        </span> </label>
+                    <input type="text" class="form-control border" formControlName="sdi">
+
+                    <label>Split Payement: <span class="text-danger mb-3 ms-1">
+                            *
+                        </span> </label>
+                    <select class="form-select" id="tipo_sede" formControlName="split_payement">
+                        <option value='S'>S</option>
+                        <option value='N'>N</option>
+                    </select>
+
+                    <label>Codice Tipo Impresa: <span class="text-danger mb-3 ms-1">
+                            *
+                        </span> </label>
+                    <select class="form-select" id="tipo_imprese" formControlName="cod_tipo_impresa">
+                        <option></option>
+                        <option *ngFor="let el of tipiImprese" [value]="el.cod">{{el.descr}}
+                        </option>
+                    </select>
+
+                    <label>Data inizio validità: <span class="text-danger mb-3 ms-1">
+                            *
+                        </span> </label>
+                    <input type="date" class="form-control border" formControlName="data_inizio_validita"
+                        [min]="dataMin" (blur)="checkDate($event,formSede)">
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary float-end" ngbTooltip="Aggiungi sede" [disabled]="!this.formSede.valid"
+                    (click)="aggiungiSede()">
+                    Aggiungi
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade modal-dialog-scrollable" id="aggiungiFigure" data-bs-backdrop="static" data-bs-keyboard="false"
+    tabindex="-1" aria-labelledby="new-piano-label" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Aggiungi Figura</h2>
+                <div class="justify-content-end">
+                    <button class="btn btn-primary ms-auto" ngbTooltip="Aggiungi figura"
+                        [disabled]="!this.formFigure.valid" (click)="aggiungiFigure()">
+                        Aggiungi
+                    </button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="close"></button>
+                </div>
+            </div>
+            <div class="modal-body">
+                <form [formGroup]="formFigure">
+                    <label>Tipo Figura: <span class="text-danger mb-3 ms-1">
+                            *
+                        </span> </label>
+                    <select class="form-select" id="tipo_figure" formControlName="figura">
+                        <option></option>
+                        <option *ngFor="let el of tipiFigure" [value]="el.id">{{el.descr}}
+                        </option>
+                    </select>
+
+                    <label>Codice Fiscale: <span class="text-danger mb-3 ms-1">
+                            *
+                        </span> </label>
+                    <input type="text" class="form-control border" formControlName="cf"
+                        (blur)="checkCodiceFiscale($event,formFigure)">
+
+                    <label>Nome: <span class="text-danger mb-3 ms-1">
+                            *
+                        </span> </label>
+                    <input type="text" class="form-control border" formControlName="nome" readonly>
+
+                    <label>Cognome: <span class="text-danger mb-3 ms-1">
+                            *
+                        </span> </label>
+                    <input type="text" class="form-control border" formControlName="cognome" readonly>
+
+                    <label>Data inizio validità: <span class="text-danger mb-3 ms-1">
+                            *
+                        </span> </label>
+                    <input type="date" class="form-control border" formControlName="data_inizio_validita"
+                        [min]="dataMin" (blur)="checkDate($event,formFigure)">
+
+                    <!-- <label>Toponimo: </label>
+                    <input type="text" class="form-control border" formControlName="toponimo">
+
+                    <label>Indirizzo: </label>
+                    <input type="text" class="form-control border" formControlName="indirizzo">
+
+                    <label>Civico: </label>
+                    <input type="text" class="form-control border" formControlName="civico">
+
+                    <label>Comune: </label>
+                    <input type="text" class="form-control border" formControlName="comune"> -->
+
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary float-end" ngbTooltip="Aggiungi figura"
+                    [disabled]="!this.formFigure.valid" (click)="aggiungiFigure()">
+                    Aggiungi
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<ng-template #templateModaleModificaSedi>
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title">Modifica Sede</h2>
+            <button type="button" class="btn btn-close d-inline-block ms-auto"
+                (click)="modaleModificaSedi?.close()"></button>
+        </div>
+        <div class="modal-body">
+            <form [formGroup]="formModificaSedi">
+
+                <label>Codice Fiscale: <span class="text-danger mb-3 ms-1">
+                        *
+                    </span> </label>
+                <input type="text" class="form-control border" formControlName="cf">
+
+                <label>Partita IVA: <span class="text-danger mb-3 ms-1">
+                        *
+                    </span> </label>
+                <input type="text" class="form-control border" formControlName="piva">
+
+                <label>PEC: <span class="text-danger mb-3 ms-1">
+                        *
+                    </span> </label>
+                <input type="text" class="form-control border" formControlName="pec">
+
+                <label>Email: </label>
+                <input type="text" class="form-control border" formControlName="email">
+
+                <label>SDI: <span class="text-danger mb-3 ms-1">
+                    *
+                </span></label>
+                <input type="text" class="form-control border" formControlName="sdi">
+
+                <label>Split Payement: <span class="text-danger mb-3 ms-1">
+                        *
+                    </span> </label>
+                <select class="form-select" id="tipo_sede" formControlName="split_payement">
+                    <option value='S'>S</option>
+                    <option value='N'>N</option>
+                </select>
+
+                <label>Codice Tipo Impresa: <span class="text-danger mb-3 ms-1">
+                        *
+                    </span> </label>
+                <select class="form-select" id="tipo_imprese" formControlName="cod_tipo_impresa">
+                    <option></option>
+                    <option *ngFor="let el of tipiImprese" [value]="el.cod">{{el.descr}}
+                    </option>
+                </select>
+
+                <label>Data inizio validità: <span class="text-danger mb-3 ms-1">
+                        *
+                    </span> </label>
+                <input type="date" class="form-control border" formControlName="data_inizio_validita" [min]="dataMin"
+                    (blur)="checkDate($event, formModificaSedi)">
+            </form>
+            <h5> Indirizzo </h5>
+            <!-- <app-form-indirizzo [_id_preso]="arAppSede.id_indirizzo"></app-form-indirizzo> -->
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-primary float-end" ngbTooltip="Modifica dati sede" (click)="updSede(arAppSede)"
+                [disabled]="!this.formModificaSedi.valid">
+                Modifica
+            </button>
+        </div>
+    </div>
+</ng-template>
+<ng-template #templateModaleModificaFigure>
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title">Modifica Figura</h2>
+            <button type="button" class="btn btn-close d-inline-block ms-auto"
+                (click)="modaleModificaFigure?.close()"></button>
+        </div>
+        <div class="modal-body">
+            <form [formGroup]="formModificaFigure">
+
+                <label>Data inizio validità: <span class="text-danger mb-3 ms-1">
+                        *
+                    </span> </label>
+                <input type="date" class="form-control border" formControlName="data_inizio_validita" [min]="dataMin"
+                    (blur)="checkDate($event, formModificaFigure)">
+            </form>
+            <h5> Indirizzo </h5>
+            <!-- <app-form-indirizzo [_id_preso]="arAppFigure.id_indirizzo"></app-form-indirizzo> -->
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-primary float-end" ngbTooltip="Modifica dati nucleo ispettivo"
+                (click)="updFigure(arAppFigure)" [disabled]="!this.formModificaFigure.valid">
+                Modifica
+            </button>
+        </div>
+    </div>
+</ng-template>
+<ng-template #templateModaleVisualizzaSedi>
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title">Dettaglio Sede</h2>
+            <button type="button" class="btn btn-close d-inline-block ms-auto"
+                (click)="modaleVisualizzaSedi?.close()"></button>
+        </div>
+        <div class="modal-body">
+            <form [formGroup]="formVisualizzaSedi">
+
+                <label>Codice Fiscale: </label>
+                <input type="text" class="form-control border" formControlName="cf" readonly>
+
+                <label>Partita IVA: </label>
+                <input type="text" class="form-control border" formControlName="piva" readonly>
+
+                <label>PEC: </label>
+                <input type="text" class="form-control border" formControlName="pec" readonly>
+
+                <label>Email: </label>
+                <input type="text" class="form-control border" formControlName="email" readonly>
+
+                <label>SDI: </label>
+                <input type="text" class="form-control border" formControlName="sdi" readonly>
+
+                <label>Split Payement: </label>
+                <select class="form-select" id="tipo_sede" formControlName="split_payement">
+                    <option value='S' disabled>S</option>
+                    <option value='N' disabled>N</option>
+                </select>
+
+                <label>Codice Tipo Impresa: </label>
+                <select class="form-select" id="tipo_imprese" formControlName="cod_tipo_impresa">
+                    <option></option>
+                    <option *ngFor="let el of tipiImprese" [value]="el.cod" disabled>{{el.descr}}
+                    </option>
+                </select>
+            </form>
+        </div>
+        <div class="modal-footer">
+        </div>
+    </div>
+</ng-template>
+<ng-template #templateModaleVisualizzaFigure>
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title">Dettaglio Figura</h2>
+            <button type="button" class="btn btn-close d-inline-block ms-auto"
+                (click)="modaleVisualizzaFigure?.close()"></button>
+        </div>
+        <div class="modal-body">
+            <form [formGroup]="formVisualizzaFigure">
+                <label>Tipo Figura: </label>
+                <input type="text" class="form-control border" formControlName="figura" readonly>
+
+                <label>Nome: </label>
+                <input type="text" class="form-control border" formControlName="nome" readonly>
+
+                <label>Cognome: </label>
+                <input type="text" class="form-control border" formControlName="cognome" readonly>
+
+                <label>Codice Fiscale: </label>
+                <input type="text" class="form-control border" formControlName="cf" readonly>
+
+                <!-- <label>Toponimo: </label>
+                <input type="text" class="form-control border" formControlName="toponimo">
+
+                <label>Indirizzo: </label>
+                <input type="text" class="form-control border" formControlName="indirizzo">
+
+                <label>Civico: </label>
+                <input type="text" class="form-control border" formControlName="civico">
+
+                <label>Comune: </label>
+                <input type="text" class="form-control border" formControlName="comune"> -->
+
+            </form>
+        </div>
+        <div class="modal-footer">
+        </div>
+    </div>
+</ng-template>
+<div class="modal fade" id="eliminaSede" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    aria-labelledby="new-piano-label" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Elimina Sede</h2>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="close"></button>
+            </div>
+            <div class="modal-body">
+                <form [formGroup]="formEliminaSede">
+
+                    <label>Data fine validità: <span class="text-danger mb-3 ms-1">
+                            *
+                        </span> </label>
+                    <input type="date" class="form-control border" formControlName="data_fine_validita"
+                        [min]="1900-01-01" (blur)="checkDate($event,formEliminaSede)">
+
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button [disabled]="formEliminaSede.invalid" class="ms-2 btn btn-danger float-end" (click)="delSede()">
+                    <i class="fa fa-trash" aria-hidden="true"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="eliminaFigura" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    aria-labelledby="new-piano-label" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Elimina Figura</h2>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="close"></button>
+            </div>
+            <div class="modal-body">
+                <form [formGroup]="formEliminaFigura">
+
+                    <label>Data fine validità: <span class="text-danger mb-3 ms-1">
+                            *
+                        </span> </label>
+                    <input type="date" class="form-control border" formControlName="data_fine_validita"
+                        [min]="1900-01-01" (blur)="checkDate($event,formEliminaFigura)">
+
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button [disabled]="formEliminaFigura.invalid" class="ms-2 btn btn-danger float-end"
+                    (click)="delFigura()">
+                    <i class="fa fa-trash" aria-hidden="true"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade modal-dialog-scrollable" id="aggiungiLinea" data-bs-backdrop="static" data-bs-keyboard="false"
+    tabindex="-1" aria-labelledby="new-piano-label" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Aggiungi Linea</h2>
+                <div class="justify-content-end">
+                    <button class="btn btn-primary ms-auto" ngbTooltip="Aggiungi linea"
+                        [disabled]="!this.formLinea.valid" (click)="aggiungiLinea()">
+                        Aggiungi
+                    </button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="close"></button>
+                </div>
+            </div>
+            <div class="modal-body">
+                <a-tree-filter [tree]="lineeTree" placeholder="Ricerca Linea..."></a-tree-filter>
+                <a-tree #lineeTree [root]="tipoLineeParsed" (onClick)="prendiValoreAlbero($event)"></a-tree>
+                <form [formGroup]="formLinea">
+                    <div class="row">
+                        <div class="col">
+                            <label>Linea Principale: <span class="text-danger mb-3 ms-1">
+                                    *
+                                </span> </label>
+                            <div *ngIf="!hasLineaPrincipale">
+                                <input type="radio" class="form-check-input ms-4" formControlName="valore" value="si"
+                                    autocomplete="off">
+                                <label class="form-check-label"> SI </label>
+                            </div>
+                            <input type="radio" class="form-check-input ms-4" formControlName="valore" value="no"
+                                autocomplete="off">
+                            <label class="form-check-label"> NO </label>
+                        </div>
+                    </div>
+                    <div>
+                        <!-- <label>Data ultima visita: <span class="text-danger mb-3 ms-1">
+                                *
+                            </span> </label>
+                        <input type="date" class="form-control border" formControlName="data_ultima_visita"
+                            [min]="1900-01-01" (blur)="checkDate($event,formLinea)"> -->
+                        <label>Data inizio validità: <span class="text-danger mb-3 ms-1">
+                                *
+                            </span> </label>
+                        <input type="date" class="form-control border" formControlName="data_inizio_validita"
+                            [min]="dataMin" (blur)="checkDate($event, formModificaFigure)">
+                    </div>
+
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary float-end" ngbTooltip="Aggiungi linea" [disabled]="!this.formLinea.valid"
+                    (click)="aggiungiLinea()">
+                    Aggiungi
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="eliminaLinea" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    aria-labelledby="new-piano-label" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Elimina Linea</h2>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="close"></button>
+            </div>
+            <div class="modal-body">
+                <form [formGroup]="formEliminaLinea">
+
+                    <label>Data fine validità: <span class="text-danger mb-3 ms-1">
+                            *
+                        </span> </label>
+                    <input type="date" class="form-control border" formControlName="data_fine_validita"
+                        [min]="1900-01-01" (blur)="checkDate($event,formEliminaLinea)">
+
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button [disabled]="formEliminaLinea.invalid" class="ms-2 btn btn-danger float-end"
+                    (click)="delLinea()">
+                    <i class="fa fa-trash" aria-hidden="true"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="aggiungiIndirizzo" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    aria-labelledby="new-piano-label" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Aggiungi Indirizzo</h2>
+                <div class="justify-content-end">
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="close"></button>
+                </div>
+            </div>
+            <div class="modal-body">
+                <h5> Indirizzo </h5>
+            <!-- <app-form-indirizzo [_id_preso]="id_indirizzo_nuovo"[labelBottone]="'Aggiungi'"></app-form-indirizzo> -->
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>

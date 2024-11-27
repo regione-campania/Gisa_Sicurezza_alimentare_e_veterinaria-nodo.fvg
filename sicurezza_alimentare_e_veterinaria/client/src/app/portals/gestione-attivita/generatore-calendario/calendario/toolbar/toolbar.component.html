@@ -1,0 +1,339 @@
+<!--
+Copyright (C) AGPL-3.0  
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.-->
+<ul class="box toolbar rounded d-flex mb-2 p-0" id="cal-toobar">
+  <li class="toolbar-item" ngbDropdown>
+    <button type="button" class="toolbar-button" [disabled]="disabled" ngbDropdownToggle>
+      <i class="icon fa-solid fa-industry"></i>
+      <span class="label">Azienda</span>
+    </button>
+    <ul class="dropdown-menu" ngbDropdownMenu>
+      <li class="dropdown-item" (click)="modaleAssociaLineaRef = openModal(modaleAssociaLinea)">
+        <button type="button">
+          <i class="icon fa-solid fa-link"></i>
+          <span>Associa</span>
+        </button>
+      </li>
+      <li class="dropdown-item" (click)="openModaleConferma({
+        message: 'Eliminare linea per le attivita selezionate?',
+        confirmAction: eliminaLinea
+      })">
+        <button type="button">
+          <i class="icon fa-solid fa-trash-can"></i>
+          <span>Elimina</span>
+        </button>
+      </li>
+    </ul>
+  </li>
+  <li class="toolbar-item" ngbDropdown>
+    <button type="button" class="toolbar-button" [disabled]="disabled" ngbDropdownToggle>
+      <i class="icon fa-solid fa-user"></i>
+      <span class="label">Ispettore</span>
+    </button>
+    <ul class="dropdown-menu" ngbDropdownMenu>
+      <li class="dropdown-item" (click)="modaleAssociaNsRef = openModal(modaleAssociaNs)">
+        <button type="button">
+          <i class="icon fa-solid fa-link"></i>
+          <span>Associa</span>
+        </button>
+      </li>
+      <li class="dropdown-item" (click)="openModaleConferma({
+        message: 'Eliminare nominativo per le attivita selezionate?',
+        confirmAction: eliminaNominativo
+      })">
+        <button type="button" *ngIf="isEliminaIspettoreEnabled">
+          <i class="icon fa-solid fa-trash-can"></i>
+          <span>Elimina</span>
+        </button>
+      </li>
+    </ul>
+  </li>
+  <li class="toolbar-item" ngbDropdown>
+    <button type="button" class="toolbar-button" [disabled]="disabled" ngbDropdownToggle>
+      <i class="icon fa-solid fa-user"></i>
+      <span class="label">Partner</span>
+    </button>
+    <ul class="dropdown-menu" ngbDropdownMenu>
+      <li class="dropdown-item" (click)="modaleAssociaPartnerRef = openModal(modaleAssociaPartner)">
+        <button type="button">
+          <i class="icon fa-solid fa-link"></i>
+          <span>Associa</span>
+        </button>
+      </li>
+      <li class="dropdown-item" (click)="openModaleConferma({
+        message: 'Eliminare partner per le attivita selezionate?',
+        confirmAction: eliminaPartner
+      })">
+        <button type="button" *ngIf="isEliminaPartnerEnabled">
+          <i class="icon fa-solid fa-trash-can"></i>
+          <span>Elimina</span>
+        </button>
+      </li>
+    </ul>
+  </li>
+  <li class="toolbar-item" ngbDropdown>
+    <button type="button" class="toolbar-button" [disabled]="disabled" ngbDropdownToggle>
+      <i class="icon fa-regular fa-calendar"></i>
+      <span class="label">Data</span>
+    </button>
+    <ul class="dropdown-menu" ngbDropdownMenu>
+      <li class="dropdown-item" (click)="openModificaData(modaleModificaData)">
+        <button type="button">
+          <i class="icon fa-solid fa-pen-to-square"></i>
+          <span>Modifica</span>
+        </button>
+      </li>
+      <li class="dropdown-item" (click)="openModaleConferma({
+        message: 'Eliminare data per le attivita selezionate?',
+        confirmAction: eliminaData
+      })">
+        <button type="button">
+          <i class="icon fa-solid fa-trash-can"></i>
+          <span>Elimina</span>
+        </button>
+      </li>
+    </ul>
+  </li>
+  <li class="toolbar-item" ngbDropdown>
+    <button type="button" class="toolbar-button" [disabled]="disabled" ngbDropdownToggle>
+      <i class="icon fa-regular fa-calendar-check"></i>
+      <span class="label">Validità</span>
+    </button>
+    <ul class="dropdown-menu" ngbDropdownMenu>
+      <li class="dropdown-item" (click)="openModificaValidita(modaleModificaValidita)">
+        <button type="button">
+          <i class="icon fa-solid fa-pen-to-square"></i>
+          <span>Modifica</span>
+        </button>
+      </li>
+      <li class="dropdown-item" (click)="openModaleConferma({
+        message: 'Eliminare validità per le attivita selezionate?',
+        confirmAction: eliminaValidita
+      })">
+        <button type="button">
+          <i class="icon fa-solid fa-trash-can"></i>
+          <span>Elimina</span>
+        </button>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<ng-template #modaleConferma>
+  <ng-container *ngIf="modaleConfermaConf as conf">
+    <div class="modal-header">
+      <button type="button" class="btn btn-close d-inline-block ms-auto"
+        (click)="closeModal(modaleConfermaRef)"></button>
+    </div>
+    <div class="modal-body">
+      <span>{{conf.message}}</span>
+    </div>
+    <div class="modal-footer border-0 wrapper justify-content-around">
+      <button type="button" class="btn btn-primary action-button" (click)="conf.confirmAction && conf.confirmAction(conf.context); closeModal()">SI</button>
+      <button type="button" class="btn btn-danger action-button" (click)="conf.cancelAction && conf.cancelAction(conf.context); closeModal()">NO</button>
+    </div>
+  </ng-container>
+</ng-template>
+
+<ng-template #modaleAssociaLinea>
+  <div class="modal-header">
+    <div class="modal-title">Associa Linea</div>
+    <button type="button" class="btn btn-close d-inline-block ms-auto"
+      (click)="closeModal(modaleAssociaLineaRef)"></button>
+  </div>
+  <div class="modal-body">
+    <div style="min-height: 300px" class="d-flex flex-column justify-content-center p-3"
+      *ngIf="lineeLoading; else ready">
+      <loading-message message="Caricamento linee..."></loading-message>
+    </div>
+    <ng-template #ready>
+      <div class="mb-2">Selezionare una linea dalla lista:</div>
+      <a-smart-table [src]="linee" [autolayout]="false">
+        <ng-template aTemplate="head">
+          <tr>
+            <th scope="col">
+              <div class="wrapper y-centered">
+                <span>Denominazione</span>
+                <a-table-filter type="text" field="denominazione_sede_operativa"></a-table-filter>
+                <a-table-sorter type="text" field="denominazione_sede_operativa"></a-table-sorter>
+              </div>
+            </th>
+            <th scope="col">
+              <div class="wrapper y-centered">
+                <span>Comune</span>
+                <a-table-filter type="text" field="comune"></a-table-filter>
+                <a-table-sorter type="text" field="comune"></a-table-sorter>
+              </div>
+            </th>
+            <th scope="col">
+              <div class="wrapper y-centered">
+                <span>Indirizzo</span>
+                <a-table-filter type="text" field="indirizzo"></a-table-filter>
+                <a-table-sorter type="text" field="indirizzo"></a-table-sorter>
+              </div>
+            </th>
+          </tr>
+        </ng-template>
+        <ng-template aTemplate="body" let-linea>
+          <tr class="clickable" (click)="openModaleConferma({message: 'Associare linea selezionata?\n(' + linea.denominazione_sede_operativa + ')',
+          confirmAction: associaLinea, context: linea})">
+            <td>{{linea.denominazione_sede_operativa}}</td>
+            <td>{{linea.comune}}</td>
+            <td>{{linea.indirizzo}}</td>
+          </tr>
+        </ng-template>
+      </a-smart-table>
+    </ng-template>
+  </div>
+</ng-template>
+
+<ng-template #modaleAssociaNs>
+  <div class="modal-header">
+    <div class="modal-title">Associa Nominativo</div>
+    <button type="button" class="btn btn-close d-block ms-auto" (click)="closeModal(modaleAssociaNsRef)"></button>
+  </div>
+  <div class="modal-body">
+    <ng-container *ngIf="nsLoading else ready">
+      <loading-message message="Caricamento nominativi..."></loading-message>
+    </ng-container>
+    <ng-template #ready>
+      <a-filter #filtroNs [data]="ns" [auto]="false" type="text" field="nominativo" placeholder="Ricerca nominativo..."></a-filter>
+      <div class="box rounded p-2 mt-2 bg-primary">
+        <a-data-paginator #nsPag [data]="filtroNs.kept"></a-data-paginator>
+      </div>
+      <div class="h-500 overflow-auto custom-scrollbar">
+        <ul class="toast-list mt-2" *ngIf="filtroNs.kept.length > 0; else message">
+          <li class="toast-list-item" *ngFor="let i of nsPag.currentPage!.content">
+            <div class="item-info">
+              <div class="item-title">{{ns[i].nominativo}}</div>
+              <!-- <div class="item-subtitle">{{ns[i].descrizione_composta}}</div> -->
+            </div>
+            <button type="button" class="btn associa-button" (click)="openModaleConferma({message: 'Associare nominativo selezionato?\n(' + ns[i].nominativo + ')',
+            confirmAction: associaNominativo, context: ns[i]})">
+              <i class="icon fa-solid fa-link"></i>
+              <span class="label">Associa</span>
+            </button>
+          </li>
+        </ul>
+      </div>
+      <ng-template #message>
+        <div class="text-center">Nessun elemento trovato.</div>
+      </ng-template>
+    </ng-template>
+  </div>
+</ng-template>
+
+<ng-template #modaleAssociaPartner>
+  <div class="modal-header">
+    <div class="modal-title">Associa Partner</div>
+    <button type="button" class="btn btn-close d-block ms-auto" (click)="closeModal(modaleAssociaPartnerRef)"></button>
+  </div>
+  <div class="modal-body">
+    <ng-container *ngIf="nsLoading else ready">
+      <loading-message message="Caricamento nominativi..."></loading-message>
+    </ng-container>
+    <ng-template #ready>
+      <a-filter #filtroPartner [data]="partnerDisponibili" [auto]="false" type="text" field="nominativo" placeholder="Ricerca partner..."></a-filter>
+      <div class="box rounded p-2 mt-2 bg-primary">
+        <a-data-paginator #partnerPag [data]="filtroPartner.kept"></a-data-paginator>
+      </div>
+      <div class="h-500 overflow-auto custom-scrollbar">
+        <ul class="toast-list mt-2" *ngIf="filtroPartner.kept.length > 0; else message">
+          <li class="toast-list-item" *ngFor="let i of partnerPag.currentPage!.content">
+            <div class="item-info">
+              <div class="item-title">{{ns[i].nominativo}}</div>
+              <!-- <div class="item-subtitle">{{ns[i].descrizione_composta}}</div> -->
+            </div>
+            <button type="button" class="btn associa-button" (click)="openModaleConferma({message: 'Associare nominativo selezionato?\n(' + ns[i].nominativo + ')',
+            confirmAction: associaPartner, context: ns[i]})">
+              <i class="icon fa-solid fa-link"></i>
+              <span class="label">Associa</span>
+            </button>
+          </li>
+        </ul>
+      </div>
+      <ng-template #message>
+        <div class="text-center">Nessun partner disponibile.</div>
+      </ng-template>
+    </ng-template>
+  </div>
+</ng-template>
+
+<ng-template #modaleModificaData>
+  <div class="modal-header">
+    <div>Modifica Data</div>
+    <button type="button" class="btn btn-close d-inline-block ms-auto" (click)="closeModal(modaleModificaDataRef)"></button>
+  </div>
+  <div class="modal-body">
+    <form [formGroup]="modificaDataForm" (ngSubmit)="modificaData()">
+      <div class="choice rounded px-2 py-4" [ngClass]="{'disabled': modalitaData !== 'data_esatta'}"
+        [ngStyle]="{'background-color': modalitaData !== 'data_esatta' ? 'var(--bs-gray-400)' : null}">
+        <div class="form-check">
+          <input type="radio" id="data_esatta" formControlName="modalita" value="data_esatta" class="form-check-input"
+            checked (change)="onModalitaDataChange()">
+          <label for="data_esatta" class="form-check-label">Data Esatta</label>
+        </div>
+        <date-input required [includeTime]="true" formControlName="data" [min]="getPeriodo().min" [max]="getPeriodo().max"></date-input>
+      </div>
+      <div class="separator wrapper align-items-center justify-content-center my-2">
+        <div class="line border border-1 border-dark border-opacity-25 w-100"></div>
+        <div class="text mx-2 mb-1">oppure</div>
+        <div class="line border border-1 border-dark border-opacity-25 w-100"></div>
+      </div>
+      <div class="choice rounded px-2 py-4" [ngClass]="{'disabled': modalitaData !== 'shift'}"
+        [ngStyle]="{'background-color': modalitaData !== 'shift' ? 'var(--bs-gray-400)' : null}">
+        <div class="form-check">
+          <input type="radio" id="shift" formControlName="modalita" value="shift" class="form-check-input"
+            (change)="onModalitaDataChange()">
+          <label for="shift" class="form-check-label">Shift</label>
+        </div>
+        <div class="wrapper align-items-center my-1">
+          <label for="grandezza_spostamento" class="form-label mb-0 me-2">Ammontare</label>
+          <number-input for="grandezza_spostamento" formControlName="shift"></number-input>
+          <label for="tipo_spostamento" class="form-label mb-0 mx-2">Tipo</label>
+          <select id="tipo_spostamento" formControlName="shift_type" class="form-select w-auto">
+            <option value="giorni" selected>Giorni</option>
+            <option value="settimane">Settimane</option>
+            <option value="mesi">Mesi</option>
+          </select>
+        </div>
+      </div>
+      <div class="my-2">
+        <button type="sumbit" class="btn btn-primary d-block ms-auto">Applica</button>
+      </div>
+    </form>
+  </div>
+</ng-template>
+
+<ng-template #modaleModificaValidita>
+  <div class="modal-header">
+    <div>Modifica Validità</div>
+    <button type="button" class="btn btn-close d-inline-block ms-auto" (click)="closeModal(modaleModificaValiditaRef)"></button>
+  </div>
+  <div class="modal-body">
+    <form #form="ngForm" [formGroup]="modificaValiditaForm" (ngSubmit)="modificaValidita()">
+      <div class="wrapper align-items-center mt-2">
+        <div class="form-group me-4">
+          <label for="valido_da" class="form-label">Valido da:</label>
+          <input #start type="date" id="valido_da" formControlName="valido_da" class="form-control"
+            [ngClass]="{'ng-invalid text-danger': form.errors}">
+        </div>
+        <div class="form-group">
+          <label for="valido_a" class="form-label">a:</label>
+          <input type="date" id="valido_a" formControlName="valido_a" class="form-control" [min]="start.value || null">
+        </div>
+      </div>
+      <small class="text-danger fade-down d-block position-absolute mt-1" *ngIf="form.errors">
+        La data di inizio non può superare quella di fine.
+      </small>
+      <div class="my-2">
+        <button type="submit" class="btn btn-primary d-block ms-auto" [disabled]="form.errors">Applica</button>
+      </div>
+    </form>
+  </div>
+</ng-template>

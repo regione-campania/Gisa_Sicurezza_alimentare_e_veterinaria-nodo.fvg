@@ -1,0 +1,27 @@
+#tariffario {
+  .sub-nav {
+
+    .nav-item.active {
+      background-color: var(--fvg-black);
+      color: var(--fvg-white);
+    }
+
+    .nav-link {
+      padding: 8px 12px;
+      border-radius: var(--border-radius);
+      color: inherit;
+    }
+  }
+
+  .toolbar {
+    &-item {
+      &:first-child {
+        padding-left: 0;
+      }
+
+      &:hover {
+        background-color: unset;
+      }
+    }
+  }
+}

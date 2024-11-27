@@ -1,0 +1,55 @@
+<!--
+Copyright (C) AGPL-3.0  
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.-->
+
+
+<div class="row align-items-center" style="overflow-x: auto;">
+<div *ngIf="listaDati; else noDataBlock" style="width: 100%">
+  <a-smart-table [selection]="false" [autolayout]="false" [paginator]="true"  [printable]="false"
+  [exportable]="false"  *ngIf="ui" [colsInfo]="ui.colonne" [src]="listaDati" [autolayout]="false"   >
+    <ng-template aTemplate="head">
+      <tr>
+        <th scope="col" *ngFor="let colonna of ui.colonne">
+          <div class="d-flex align-items-center">
+            <span class="label">{{colonna.intestazione}}</span>
+            <a-table-sorter [type]="colonna.tipo" [field]="colonna.campo"></a-table-sorter>
+            <a-table-filter [type]="colonna.tipo" [field]="colonna.campo" [options]="colonna.filterOptions"></a-table-filter>
+          </div>
+        </th>
+        <th scope="col"></th>
+        <th scope="col"></th>
+      </tr>
+    </ng-template>
+    <ng-template aTemplate="body" let-lista>
+      <tr [id]="lista.id">
+        <td *ngFor="let colonna of ui.colonne" style="text-align: end;">
+          <ng-container *ngIf="colonna.tipo == 'date'; else elseField">
+            {{lista[colonna.campo] | date: 'dd/MM/yyyy'}}
+          </ng-container>
+          <ng-template #elseField>
+            <ng-container *ngIf="colonna.tipo == 'number'; else normalFormat">
+              {{lista[colonna.campo] | numberPipe}}
+            </ng-container>
+            <ng-template #normalFormat>
+              {{lista[colonna.campo]}}
+            </ng-template>
+          </ng-template>
+        </td>
+
+
+      </tr>
+    </ng-template>
+  </a-smart-table>
+
+</div>
+<ng-template #noDataBlock>
+  <div class="col-md position-relative">
+    <span> Non sono presenti dati nella tabella </span>
+  </div>
+</ng-template>
+</div>

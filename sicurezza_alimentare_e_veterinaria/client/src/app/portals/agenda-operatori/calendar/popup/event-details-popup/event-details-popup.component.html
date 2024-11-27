@@ -1,0 +1,116 @@
+<!--
+Copyright (C) AGPL-3.0  
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.-->
+<div class="calendar-event-info" *ngIf="event">
+  <div class="popup-header">
+    <i class="icon check-icon bi bi-check" *ngIf="mode === 'read' && event.extendedProps['effettuata']"></i>
+    <div class="form-check" *ngIf="mode === 'write'">
+      <input type="checkbox" id="is-effettuata" name="is-effettuata" class="form-check-input"
+        [(ngModel)]="pendingChanges.effettuata">
+    </div>
+    <span class="event-info event-title">{{event.title}}</span>
+    <button type="button" class="btn-close d-block ms-auto" (click)="this.closeEvent.emit()"></button>
+  </div>
+  <div class="popup-body" [@switchMode]="popupAnimationState">
+    <ng-container *ngIf="mode !== 'delete'; else deleteMode">
+      <div class="event-info">
+        <span class="value">{{event.extendedProps['descrizione_breve']}}</span>
+      </div>
+      <hr class="border-0">
+      <div class="event-info">
+        <span class="label">Inizio:</span>
+        <span class="value">{{event.start | date:'dd MMM y, HH:mm'}}</span>
+        <!-- <input type="date" class="form-control" *ngIf="mode === 'write'" name="start" id="start" [(ngModel)]="pendingChanges.start"> -->
+      </div>
+      <div class="event-info">
+        <span class="label">Fine:</span>
+        <span class="value">{{event.end | date:'dd MMM y, HH:mm'}}</span>
+        <!-- <input type="date" class="form-control" *ngIf="mode === 'write'" name="end" id="end" [(ngModel)]="pendingChanges.end"> -->
+      </div>
+      <div class="event-info">
+        <span class="label">Durata:</span>
+        <span class="value">{{event.extendedProps['durata_int'].substring(0,
+          event.extendedProps['durata_int'].lastIndexOf(':'))}} h</span>
+      </div>
+      <div class="event-info" *ngIf="event.extendedProps['risorsa']">
+        <span class="label">{{event.extendedProps['ruolo']}}:</span>
+        <span class="value">{{event.extendedProps['risorsa']}}</span>
+      </div>
+      <div class="event-info" *ngIf="event.extendedProps['partner']">
+        <span class="label">{{event.extendedProps['ruolo_partner']}}:</span>
+        <span class="value">{{event.extendedProps['partner']}}</span>
+      </div>
+      <hr class="border-0">
+      <div class="event-info">
+        <span class="label">Presso:</span>
+        <span class="value">{{event.extendedProps['presso']}}</span>
+      </div>
+      <div class="event-info">
+        <span class="label">Indirizzo:</span>
+        <span class="value">{{event.extendedProps['indirizzo']}}</span>
+      </div>
+      <div class="event-info">
+        <span class="label">Comune:</span>
+        <span class="value">{{event.extendedProps['comune']}}</span>
+      </div>
+      <hr class="border-0">
+      <div class="event-info">
+        <span class="label">Valido da:</span>
+        <span class="value">{{event.extendedProps['valido_da'] | date:'dd MMM y'}}</span>
+      </div>
+      <div class="event-info">
+        <span class="label">a:</span>
+        <span class="value">{{event.extendedProps['valido_a'] | date:'dd MMM y'}}</span>
+      </div>
+      <div class="event-info">
+        <span class="label">Per conto di:</span>
+        <span class="value">{{event.extendedProps['per_conto']}}</span>
+      </div>
+    </ng-container>
+    <ng-template #deleteMode>
+      <p class="fw-medium my-3 text-center">Sei sicuro di voler eliminare questo evento?</p>
+    </ng-template>
+  </div>
+  <div class="popup-footer">
+    <ng-container *ngIf="mode === 'read'; else cancelButton">
+      <button type="button" class="action" (click)="apriCu()" *ngIf="event.extendedProps['apri_cu']; else crea">
+        <i class="icon fa-solid fa-arrow-up-right-from-square"></i>
+        <span class="button-label">Apri {{event.extendedProps['sigla_tipo_evento']}}</span>
+      </button>
+      <ng-template #crea>
+        <button type="button" class="action" (click)="creaCu()" *ngIf="event.extendedProps['crea_cu']">
+          <i class="icon fa-solid fa-square-plus"></i>
+          <span class="button-label">Crea {{event.extendedProps['sigla_tipo_evento']}}</span>
+        </button>
+      </ng-template>
+      <button type="button" class="action" (click)="enterWriteMode()" *ngIf="event.extendedProps['chiusura'] == 'SI'">
+        <i class="icon fas fa-edit"></i>
+        <span class="button-label">Modifica</span>
+      </button>
+    </ng-container>
+    <ng-template #cancelButton>
+      <button type="button" class="action" id="cancel-button" (click)="cancelAction()">
+        <i class="icon fas fa-xmark"></i>
+        <span class="button-label">Annulla</span>
+      </button>
+    </ng-template>
+    <ng-container *ngIf="mode === 'read'; else confirmButton">
+      <button type="button" class="action" id="confirm-button" (click)="enterDeleteMode()"
+        *ngIf="event.extendedProps['elimina']">
+        <i class="icon fa-solid fa-trash"></i>
+        <span class="button-label">Elimina</span>
+      </button>
+    </ng-container>
+    <ng-template #confirmButton>
+      <button type="button" class="action" (click)="confirmAction()">
+        <i class="icon fas fa-check"></i>
+        <span class="button-label">Conferma</span>
+      </button>
+    </ng-template>
+  </div>
+</div>

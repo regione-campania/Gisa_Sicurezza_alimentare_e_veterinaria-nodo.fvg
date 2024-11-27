@@ -1,0 +1,26 @@
+#gestione-deleghe {
+  .row {
+    margin-bottom: 0.5rem;
+  }
+
+  .info {
+    .label {
+      font-weight: 600;
+    }
+
+    .value {
+      margin-left: 0.5rem;
+    }
+
+    .label,
+    .value {
+      padding: var(--table-cell-padding);
+    }
+  }
+
+  .buttons {
+    button {
+      margin-left: 0.5rem;
+    }
+  }
+}

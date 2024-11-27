@@ -1,0 +1,40 @@
+<!--
+Copyright (C) AGPL-3.0  
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.-->
+<div id="piani">
+  <div class="row">
+    <div>
+      <div class="structure-name-section d-flex mb-3">
+        <h3 class="structure-name">Tipo Lista -> {{this.tipoListaDescr}} </h3>
+      </div>
+
+      <div class="structure-name-section d-flex mb-3">
+        <!-- <h3 class="structure-name w-50">{{strutturaSecondariaAttiva.descr}}</h3> -->
+        <div class="buttons-wrapper w-100 d-flex justify-content-end">
+          <!-- *ngIf="strutturaSecondariaAttiva.modality == 'modifica'"> -->
+          <button type="button" class="btn btn-primary save-button"
+            *ngIf="this.trackerModifiche && !this.trackerModifiche.isSame" (click)="salva()">
+
+            <i class="icon fa-solid fa-floppy-disk"></i>
+            <span class="label">Salva</span>
+          </button>
+
+        </div>
+      </div>
+
+      <loading-message *ngIf="pianiLoading; else pianiReady"></loading-message>
+      <ng-template #pianiReady>
+        <a-tree-filter [tree]="pianiTree" placeholder="Ricerca Piano..."></a-tree-filter>
+        <a-tree [src]="piani" [mapping]="mappaturaAlberi" #pianiTree (onLoad)="onPianiTreeLoad($event)"
+          (onClick)="onPianiTreeClick($event)"></a-tree>
+      </ng-template>
+
+
+    </div>
+  </div>
+</div>

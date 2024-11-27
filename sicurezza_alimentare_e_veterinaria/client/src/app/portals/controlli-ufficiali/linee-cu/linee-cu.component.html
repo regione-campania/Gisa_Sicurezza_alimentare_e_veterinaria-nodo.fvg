@@ -1,0 +1,64 @@
+<!--
+Copyright (C) AGPL-3.0  
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.-->
+<div id="ControlliUfficiali">
+  <div class="row align-items-center">
+    <div class="col">
+      <h5 class="d-flex align-items-center">
+        <ng-container *ngIf="cu">
+          <span>Dettaglio Controllo n° {{cu.codice}}</span>
+        </ng-container>
+      </h5>
+    </div>
+  </div>
+  <h2 class="d-flex align-items-center">
+    <span> Linee </span>
+    <button [disabled]="btnSalva ? null : true" class="btn btn-primary float-end ms-auto"
+      ngbTooltip="Salva linee selezionate" (click)="aggiungiLinee()">
+      Salva
+    </button>
+  </h2>
+  <a-smart-table #tabellaLinee *ngIf="ui" [selection]="true" [colsInfo]="ui.colonne" [src]="datiTab"
+    [autolayout]="false">
+    <ng-template aTemplate="head">
+      <tr>
+        <th scope="col" class="selector-th"></th>
+        <th scope="col" *ngFor="let colonna of ui.colonne">
+          <ng-container *ngIf="colonna.tipo === 'number'; else campoTestuale">
+            <div class="d-flex align-items-center justify-content-end">
+              <span class="label">{{colonna.intestazione}}</span>
+              <a-table-sorter [type]="colonna.tipo" [field]="colonna.campo"></a-table-sorter>
+              <a-table-filter [type]="colonna.tipo" [field]="colonna.campo" [options]="colonna.filterOptions"></a-table-filter>
+            </div>
+          </ng-container>
+          <ng-template #campoTestuale>
+            <div class="d-flex align-items-center">
+              <span class="label">{{colonna.intestazione}}</span>
+              <a-table-sorter [type]="colonna.tipo" [field]="colonna.campo"></a-table-sorter>
+              <a-table-filter [type]="colonna.tipo" [field]="colonna.campo" [options]="colonna.filterOptions"></a-table-filter>
+            </div>
+          </ng-template>
+      </tr>
+    </ng-template>
+    <ng-template aTemplate="body" let-ar>
+      <tr>
+        <td class="selector-td">
+          <a-table-selector [data]="ar"></a-table-selector>
+        </td>
+        <td *ngFor="let colonna of ui.colonne">
+          <ng-container *ngIf="colonna.tipo === 'date'; else campoNormale">
+            {{ar[colonna.campo] | date: 'dd/MM/yyyy'}}
+          </ng-container>
+          <ng-template #campoNormale>
+            {{ar[colonna.campo]}}
+          </ng-template>
+        </td>
+      </tr>
+    </ng-template>
+  </a-smart-table>
+</div>

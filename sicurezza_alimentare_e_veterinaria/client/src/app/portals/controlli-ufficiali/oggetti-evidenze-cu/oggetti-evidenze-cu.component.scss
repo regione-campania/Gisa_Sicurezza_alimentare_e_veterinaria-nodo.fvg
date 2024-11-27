@@ -1,0 +1,21 @@
+.stacca-label {
+    margin-bottom: 10px;
+}
+
+.card-header {
+    background: var(--us-blue);
+    color: var(--us-white);
+}
+
+.table-std thead th {
+    background-color: var(--table-toolbar-bg);
+    color: var(--table-toolbar-color);
+}
+
+.table-std thead th:is(:first-child) {
+    border-radius: 0.5rem 0 0 0;
+}
+
+.table-std thead th:is(:last-child) {
+    border-radius: 0 0.5rem 0 0;
+}

@@ -1,0 +1,56 @@
+<!--
+Copyright (C) AGPL-3.0  
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.-->
+<nav class="menu" id="app-menu">
+  <ul class="menu-items" id="app-menu-items">
+    <li
+      class="menu-item"
+      *ngFor="let item of menuItems"
+      (click)="menuItemClicked.emit()"
+    >
+      <button
+        type="button"
+        class="menu-item-button"
+        [disabled]="item.disabled"
+        (click)="
+          item.link
+            ? this.navigateTo(item.link || '')
+            : item.action
+            ? item.action()
+            : null
+        "
+      >
+        <div class="icon-box">
+          <span
+            *ngIf="item?.icon?.includes('png-icon')"
+            class="png-icon menu-icon"
+            [ngClass]="item?.icon"
+          ></span>
+          <i
+            *ngIf="item?.icon?.includes('fa-')"
+            class="icon menu-icon"
+            [ngClass]="item?.icon"
+            [ngbTooltip]="item?.label"
+          ></i>
+          <svg-icon
+            *ngIf="item?.icon?.includes('svg-icon')"
+            [src]="
+              'assets/icons/' +
+              item?.icon?.substring((item?.icon || '').indexOf(' ') + 1) +
+              '.svg'
+            "
+            [svgClass]="'menu-icon ' + item?.icon"
+          ></svg-icon>
+        </div>
+        <span class="button-label menu-item-button-label">{{
+          item.label
+        }}</span>
+      </button>
+    </li>
+  </ul>
+</nav>

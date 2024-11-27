@@ -1,0 +1,507 @@
+<!--
+Copyright (C) AGPL-3.0  
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.-->
+<div id="inserimento-nuova-attivita">
+  <div
+    class="loading-box"
+    style="min-height: 300px"
+    *ngIf="tipiAttivitaLoading; else ready"
+  >
+    <loading-message></loading-message>
+  </div>
+  <ng-template #ready>
+    <div class="top" [ngClass]="{ visible: fasePreliminareCompleta }">
+      <ng-container *ngIf="tipoAttivitaSelezionato && fasePreliminareCompleta">
+        <div class="buttons-wrapper">
+          <button
+            *ngIf="pianoSelezionato"
+            type="button"
+            class="aleo-btn bg-info-subtle"
+          >
+            <span class="label">Piano:</span>
+            <span class="label ms-1">{{
+              pianoSelezionato.descrizione_breve
+            }}</span>
+          </button>
+          <button
+            *ngIf="lineaSelezionata"
+            type="button"
+            class="aleo-btn bg-info-subtle"
+          >
+            <span class="label">Linea:</span>
+            <span class="label ms-1">{{
+              lineaSelezionata.denominazione_sede_operativa
+            }}</span>
+          </button>
+          <button
+            *ngIf="stabilimentoSelezionato"
+            type="button"
+            class="aleo-btn bg-info-subtle"
+          >
+            <span class="label">Stabilimento:</span>
+            <span class="label ms-1">{{
+              stabilimentoSelezionato.rag_soc
+            }}</span>
+          </button>
+          <button
+            type="button"
+            class="aleo-btn ms-auto"
+            id="indietro-button"
+            (click)="back()"
+          >
+            <i
+              class="icon fa-solid fa-arrow-left ms-0 me-1"
+              style="width: 18px; height: 18px"
+            ></i>
+            <span class="label">Indietro</span>
+          </button>
+        </div>
+      </ng-container>
+    </div>
+    <div
+      class="middle"
+      [ngClass]="{
+        'shrinked-top': fasePreliminareCompleta,
+        'shrinked-bottom': tipoAttivitaSelezionato || nsSelezionato,
+        'shrinked-both':
+          fasePreliminareCompleta && (tipoAttivitaSelezionato || nsSelezionato)
+      }"
+    >
+      <a-slider #slider>
+        <ng-template aSlide="main">
+          <div class="section" id="selezione-tipo-attivita-section">
+            <p>Selezionare il tipo di attività:</p>
+            <div class="buttons-wrapper">
+              <button
+                type="button"
+                *ngFor="let att of tipiAttivita"
+                class="aleo-btn"
+                [id]="'aleo-btn-' + att.sigla"
+                (click)="selezionaTipoAttivita(att)"
+                [ngClass]="{ selected: tipoAttivitaSelezionato?.id == att.id }"
+                [ngbTooltip]="att.descr"
+              >
+                <i class="icon svg-icon" [ngClass]="getIconClass(att)"></i>
+                <div class="label">{{ att.descr }}</div>
+              </button>
+            </div>
+          </div>
+          <div class="spacer"></div>
+          <div class="section" id="selezione-periodo-section">
+            <p>Indicare il periodo:</p>
+            <div [formGroup]="formPeriodo">
+              <date-input-range
+                formControlName="periodo"
+                [includeTime]="true"
+                [startMin]="startMin"
+                [startMax]="startMax"
+                [endMin]="endMin"
+                [endMax]="endMax"
+                (ngModelChange)="_setPeriodoInterval($event)"
+                required
+              ></date-input-range>
+            </div>
+          </div>
+          <div class="spacer"></div>
+          <div class="section" id="selezione-risorsa-section">
+            <ng-container *ngIf="nsLoading; else ready">
+              <div class="loading-box">
+                <loading-message
+                  message="Caricamento risorse..."
+                ></loading-message>
+              </div>
+            </ng-container>
+            <ng-template #ready>
+              <p>Selezionare una risorsa dalla lista:</p>
+              <a-filter
+                #filtroNs
+                [data]="ns"
+                [auto]="false"
+                type="text"
+                field="descrizione | descrizione_composta"
+                placeholder="Ricerca per nominativo o area..."
+              ></a-filter>
+              <div class="box rounded-top p-2 mt-2 bg-primary">
+                <a-data-paginator
+                  #nsPag
+                  [data]="filtroNs.kept"
+                ></a-data-paginator>
+              </div>
+              <div
+                class="list-container rounded-bottom custom-scrollbar"
+                id="risorse-list-container"
+              >
+                <ul
+                  class="toast-list"
+                  *ngIf="filtroNs.kept.length > 0; else message"
+                >
+                  <li
+                    class="toast-list-item"
+                    *ngFor="let i of nsPag.currentPage!.content"
+                  >
+                    <div class="item-info">
+                      <div class="item-title">{{ ns[i].descrizione }}</div>
+                      <div class="item-subtitle">
+                        {{ ns[i].descrizione_composta }}
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      class="btn seleziona-button"
+                      (click)="selezionaNs(ns[i])"
+                    >
+                      <span class="label">Seleziona</span>
+                    </button>
+                  </li>
+                </ul>
+              </div>
+              <ng-template #message>
+                <div class="text-center">Nessun elemento trovato.</div>
+              </ng-template>
+            </ng-template>
+          </div>
+        </ng-template>
+        <ng-container *ngIf="tipoAttivitaSelezionato">
+          <ng-template
+            aSlide="piano"
+            [disabled]="!canContinue"
+            *ngIf="isPianoRichiesto"
+          >
+            <div class="loading-box" *ngIf="pianiByNsLoading; else ready">
+              <loading-message message="Caricamento piani..."></loading-message>
+            </div>
+            <ng-template #ready>
+              <div class="section">
+                <h2>Piani</h2>
+                <p>Selezionare un piano:</p>
+                <a-tree-filter
+                  [tree]="pianiTree"
+                  placeholder="Ricerca piano..."
+                ></a-tree-filter>
+                <a-tree
+                  #pianiTree
+                  [src]="pianiByNs"
+                  (onClick)="selezionaPiano($event)"
+                ></a-tree>
+              </div>
+            </ng-template>
+          </ng-template>
+          <ng-template
+            aSlide="linea"
+            [disabled]="!canContinue"
+            *ngIf="isLineaRichiesta"
+          >
+            <div class="loading-box" *ngIf="lineeByNsPianoLoading; else ready">
+              <loading-message message="Caricamento linee..."></loading-message>
+            </div>
+            <ng-template #ready>
+              <div class="section">
+                <h2>Linee</h2>
+                <p>Selezionare una linea:</p>
+                <a-smart-table
+                  *ngIf="lineeByNsPiano"
+                  [autolayout]="false"
+                  [src]="lineeByNsPiano.dati"
+                  [colsInfo]="lineeByNsPiano.ui.colonne"
+                  [exportable]="false"
+                  [printable]="false"
+                >
+                  <ng-template aTemplate="head">
+                    <tr>
+                      <th
+                        scope="col"
+                        *ngFor="let col of lineeByNsPiano.ui.colonne"
+                      >
+                        <div class="d-flex align-items-center">
+                          <span class="label">{{ col.intestazione }}</span>
+                          <a-table-filter
+                            [type]="col.tipo"
+                            [field]="col.campo"
+                            [options]="col.filterOptions"
+                          ></a-table-filter>
+                          <a-table-sorter
+                            [type]="col.tipo"
+                            [field]="col.campo"
+                          ></a-table-sorter>
+                        </div>
+                      </th>
+                      <th scope="col"></th>
+                    </tr>
+                  </ng-template>
+                  <ng-template aTemplate="body" let-linea>
+                    <tr>
+                      <td *ngFor="let col of lineeByNsPiano.ui.colonne">
+                        {{ linea[col.campo] }}
+                      </td>
+                      <td>
+                        <button
+                          type="button"
+                          class="btn btn-primary"
+                          id="selLinea{{ linea.id }}"
+                          (click)="selezionaLinea(linea)"
+                        >
+                          Seleziona
+                        </button>
+                      </td>
+                    </tr>
+                  </ng-template>
+                </a-smart-table>
+              </div>
+            </ng-template>
+          </ng-template>
+          <ng-template
+            aSlide="stabilimenti"
+            [disabled]="!canContinue"
+            *ngIf="isStabilimentoRichiesto"
+          >
+            <div class="loading-box" *ngIf="stabilimentiLoading; else ready">
+              <loading-message
+                message="Caricamento stabilimenti..."
+              ></loading-message>
+            </div>
+            <ng-template #ready>
+              <div class="section">
+                <h2>Stabilimenti</h2>
+                <p>Selezionare uno stabilimento:</p>
+                <a-smart-table
+                  *ngIf="stabilimenti"
+                  [src]="stabilimenti"
+                  [autolayout]="false"
+                  [exportable]="false"
+                  [printable]="false"
+                >
+                  <ng-template aTemplate="head">
+                    <tr>
+                      <th scope="col">
+                        <div class="d-flex align-items-center">
+                          <span class="label">Rag. Soc.</span>
+                          <a-table-filter
+                            type="text"
+                            field="rag_soc"
+                          ></a-table-filter>
+                          <a-table-sorter
+                            type="text"
+                            field="rag_soc"
+                          ></a-table-sorter>
+                        </div>
+                      </th>
+                      <th scope="col">
+                        <div class="d-flex align-items-center">
+                          <span class="label">P. IVA</span>
+                          <a-table-filter
+                            type="text"
+                            field="piva"
+                          ></a-table-filter>
+                          <a-table-sorter
+                            type="text"
+                            field="piva"
+                          ></a-table-sorter>
+                        </div>
+                      </th>
+                      <th scope="col">
+                        <div class="d-flex align-items-center">
+                          <span class="label">Comune</span>
+                          <a-table-filter
+                            type="text"
+                            field="comune"
+                          ></a-table-filter>
+                          <a-table-sorter
+                            type="text"
+                            field="comune"
+                          ></a-table-sorter>
+                        </div>
+                      </th>
+                      <th scope="col">
+                        <div class="d-flex align-items-center">
+                          <span class="label">Indirizzo</span>
+                          <a-table-filter
+                            type="text"
+                            field="indirizzo"
+                          ></a-table-filter>
+                          <a-table-sorter
+                            type="text"
+                            field="indirizzo"
+                          ></a-table-sorter>
+                        </div>
+                      </th>
+                      <th scope="col"></th>
+                    </tr>
+                  </ng-template>
+                  <ng-template aTemplate="body" let-stab>
+                    <tr>
+                      <td>{{ stab.rag_soc }}</td>
+                      <td>{{ stab.piva }}</td>
+                      <td>{{ stab.comune }}</td>
+                      <td>{{ stab.indirizzo }}</td>
+                      <td>
+                        <button
+                          type="button"
+                          class="btn btn-primary"
+                          (click)="selezionaStabilimento(stab)"
+                        >
+                          Seleziona
+                        </button>
+                      </td>
+                    </tr>
+                  </ng-template>
+                </a-smart-table>
+              </div>
+            </ng-template>
+          </ng-template>
+          <ng-template
+            aSlide="partner"
+            [disabled]="!canContinue"
+            *ngIf="isPartnerRichiesto && partnerDisponibili.length > 0"
+          >
+            <div class="section">
+              <h2>Partner (opzionale)</h2>
+              <p>Selezionare una risorsa dalla lista:</p>
+              <a-filter
+                #filtroPartner
+                [data]="partnerDisponibili"
+                [auto]="false"
+                type="text"
+                field="descrizione | descrizione_composta"
+                placeholder="Ricerca per nominativo o area..."
+              ></a-filter>
+              <div class="box rounded-top p-2 mt-2 bg-primary">
+                <a-data-paginator
+                  #partnerPag
+                  [data]="filtroPartner.kept"
+                ></a-data-paginator>
+              </div>
+              <div class="list-container rounded-bottom custom-scrollbar">
+                <ul
+                  class="toast-list"
+                  *ngIf="filtroPartner.kept.length > 0; else message"
+                >
+                  <li
+                    class="toast-list-item"
+                    *ngFor="let i of partnerPag.currentPage!.content"
+                  >
+                    <div class="item-info">
+                      <div class="item-title">
+                        {{ partnerDisponibili[i].descrizione }}
+                      </div>
+                      <div class="item-subtitle">
+                        {{ partnerDisponibili[i].descrizione_composta }}
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      class="btn seleziona-button"
+                      (click)="selezionaPartner(partnerDisponibili[i])"
+                    >
+                      <span class="label">Seleziona</span>
+                    </button>
+                  </li>
+                </ul>
+              </div>
+              <ng-template #message>
+                <div class="text-center">Nessun elemento trovato.</div>
+              </ng-template>
+            </div>
+          </ng-template>
+        </ng-container>
+      </a-slider>
+    </div>
+    <div
+      class="bottom"
+      [ngClass]="{ visible: tipoAttivitaSelezionato || nsSelezionato }"
+    >
+      <div class="buttons-wrapper">
+        <div
+          class="wrapper align-items-center"
+          *ngIf="tipoAttivitaSelezionato as att"
+        >
+          <button type="button" class="aleo-btn" [id]="'aleo-btn-' + att.sigla">
+            <i class="icon svg-icon" [ngClass]="getIconClass(att)"></i>
+            <div class="label">{{ att.descr }}</div>
+          </button>
+          <button
+            type="button"
+            class="btn btn-danger aleo-btn bg-danger p-2 ms-1"
+            ngbTooltip="Deseleziona"
+            placement="right"
+            (click)="deselezionaTipoAttivita()"
+          >
+            <i
+              class="icon fa-solid fa-xmark m-0"
+              style="width: 18px; height: 18px"
+            ></i>
+          </button>
+        </div>
+        <div class="wrapper align-items-center" *ngIf="nsSelezionato">
+          <button type="button" class="aleo-btn" id="aleo-btn-risorsa">
+            <i class="icon svg-icon profile"></i>
+            <div class="label">{{ nsSelezionato.descrizione }}</div>
+          </button>
+          <button
+            type="button"
+            class="btn btn-danger aleo-btn bg-danger p-2 ms-1"
+            ngbTooltip="Deseleziona"
+            placement="right"
+            (click)="deselezionaNs()"
+          >
+            <i
+              class="icon fa-solid fa-xmark m-0"
+              style="width: 18px; height: 18px"
+            ></i>
+          </button>
+        </div>
+        <div class="wrapper align-items-center" *ngIf="partnerSelezionato">
+          <button type="button" class="aleo-btn" id="aleo-btn-partner">
+            <i class="icon svg-icon handshake"></i>
+            <div class="label">{{ partnerSelezionato.descrizione }}</div>
+          </button>
+          <button
+            type="button"
+            class="btn btn-danger aleo-btn bg-danger p-2 ms-1"
+            ngbTooltip="Deseleziona"
+            placement="right"
+            (click)="deselezionaPartner()"
+          >
+            <i
+              class="icon fa-solid fa-xmark m-0"
+              style="width: 18px; height: 18px"
+            ></i>
+          </button>
+        </div>
+        <ng-container *ngIf="canSave; else showContinueButton">
+          <button
+            type="button"
+            class="aleo-btn"
+            id="save-button"
+            (click)="save()"
+          >
+            <div class="label">Salva</div>
+            <i
+              class="icon fa-solid fa-floppy-disk ms-1 me-0"
+              style="width: 18px; height: 18px"
+            ></i>
+          </button>
+        </ng-container>
+        <ng-template #showContinueButton>
+          <button
+            *ngIf="canContinue && !fasePreliminareCompleta"
+            type="button"
+            class="aleo-btn"
+            id="avanti-button"
+            (click)="continue()"
+          >
+            <div class="label">Avanti</div>
+            <i
+              class="icon fa-solid fa-arrow-right ms-1 me-0"
+              style="width: 18px; height: 18px"
+            ></i>
+          </button>
+        </ng-template>
+      </div>
+    </div>
+  </ng-template>
+</div>

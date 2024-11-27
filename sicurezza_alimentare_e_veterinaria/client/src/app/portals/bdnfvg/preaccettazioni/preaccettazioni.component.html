@@ -1,0 +1,69 @@
+<!--
+Copyright (C) AGPL-3.0  
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.-->
+<div id="preaccettazioni">
+  <h1>Preaccettazioni</h1>
+  <ng-template [ngIf]="preaccettazioni" [ngIfElse]="noDataBlock">
+    <div class="box-3d rounded p-0">
+      <a-smart-table [colsInfo]="this.ui.colonne" class="table-striped" [src]="this.preaccettazioni" [autolayout]="false">
+        <ng-template aTemplate="head">
+          <tr>
+            <th scope="col" *ngFor="let colonna of this.ui.colonne">
+              <div class="d-flex align-items-center">
+                <span class="label">{{colonna.intestazione}}</span>
+                <a-table-sorter [type]="colonna.tipo" [field]="colonna.campo"></a-table-sorter>
+                <ng-container *ngIf="colonna.tipo == 'number' else normalFilter">
+                  <a-table-filter [type]="colonna.tipo" [field]="colonna.campo" [options]="{'minValue': 0}"></a-table-filter>
+                </ng-container>
+                <ng-template #normalFilter>
+                  <a-table-filter [type]="colonna.tipo" [field]="colonna.campo"></a-table-filter>
+                </ng-template>
+              </div>
+            </th>
+            <th scope="col"></th>
+            <th scope="col"></th>
+          </tr>
+        </ng-template>
+        <ng-template aTemplate="body" let-preacc>
+          <tr>
+            <td *ngFor="let colonna of this.ui.colonne" [ngClass]="{'text-end': colonna.tipo === 'number'}">
+              <ng-container *ngIf="colonna.campo == 'dt_invio'; else elseField">
+                {{preacc[colonna.campo] | date: 'dd/MM/yyyy HH:mm:ss'}}
+              </ng-container>
+                <ng-template #elseField>
+                <ng-container *ngIf="colonna.tipo === 'number'; else normalField">
+                  {{preacc[colonna.campo] | numberPipe}}
+                </ng-container>
+                <ng-template #normalField>
+                  {{preacc[colonna.campo]}}
+                </ng-template>
+              </ng-template>
+
+              <ng-template #elseField> {{preacc[colonna.campo]}} </ng-template>
+            </td>
+            <td>
+              <button routerLink="preaccettazioni-capi" [queryParams]="{idPreAcc: preacc.id_pre_acc, filter: true, fromAll: true}" class="btn btn-sm btn-primary">
+                Dettaglio Capi <i class="ms-1 fa fa-external-link" aria-hidden="true"></i>
+              </button>
+            </td>
+            <td>
+              <button routerLink="preaccettazioni-stati" [queryParams]="{idPreAcc: preacc.id_pre_acc, filter: true, fromAll: true}" class="btn btn-sm btn-primary">
+                Dettaglio Stati <i class="ms-1 fa fa-external-link" aria-hidden="true"></i>
+              </button>
+            </td>
+          </tr>
+        </ng-template>
+      </a-smart-table>
+    </div>
+  </ng-template>
+  <ng-template #noDataBlock>
+    <div class="col-md position-relative">
+      <span>Non sono presenti dati in tabella</span>
+    </div>
+  </ng-template>
+</div>

@@ -1,0 +1,225 @@
+<!--
+Copyright (C) AGPL-3.0  
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.-->
+<div>
+    <div class="row align-items-center">
+        <div class="col">
+            <h5 class="d-flex align-items-center">
+                <ng-container *ngIf="cu">
+                    <span>Dettaglio Controllo n° {{cu.codice}}</span>
+                </ng-container>
+            </h5>
+        </div>
+    </div>
+    <div class="row align-items-center">
+        <div class="col">
+            <h2 class="d-flex align-items-center">
+                <span>Indirizzo</span>
+                <button *ngIf="!indirizzo" [disabled]="btnMode || controllo_chiuso" type="button"
+                    class="btn btn-primary ms-auto" (click)="openModalIndirizzo('add', null)">
+                    <i class="icon fa-solid fa-plus"></i>
+                    <span>Aggiungi</span>
+                </button>
+                <button *ngIf="indirizzo" [disabled]="btnMode || controllo_chiuso" type="button"
+                    class="btn btn-secondary ms-auto" (click)="openModalIndirizzo('upd', null)">
+                    <i class="icon fa-solid fa-edit"></i>
+                    <span>Modifica</span>
+                </button>
+            </h2>
+        </div>
+    </div>
+    <div>
+        <div class="row">
+            <ng-container *ngIf="indirizzo; else noIndirizzo">
+                <div class="col">
+                    <div class="card">
+                        <div class="card-body d-flex flex-wrap gap-2">
+                            <div class="item flex-fill col-2" *ngFor="let colonna of ui_indirizzo.colonne">
+                                <label>{{colonna.intestazione}}</label><br>
+                                <ng-container *ngIf="colonna.tipo === 'date'; else campoNormale">
+                                    <span><b>{{indirizzo[colonna.campo] | date : "dd/MM/yyyy"}}</b></span>
+                                </ng-container>
+                                <ng-template #campoNormale>
+                                    <span><b>{{indirizzo[colonna.campo]}}</b></span>
+                                </ng-template>
+                                &nbsp;
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </ng-container>
+            <ng-template #noIndirizzo>
+                <div class="col">
+                    <div class="card">
+                        <div class="card-body d-flex flex-wrap gap-2">
+                            <div class="item flex-fill col-2">
+                                <span>Aggiungere Indirizzo</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </ng-template>
+        </div>
+    </div>
+    <br>
+    <div class="row align-items-center">
+        <div class="col">
+            <h2 class="d-flex align-items-center">
+                <span>Automezzi Controllati</span>
+                <button [disabled]="btnMode || controllo_chiuso" type="button" class="btn btn-primary ms-auto"
+                    (click)="openModalAutomezzi('add', null)">
+                    <i class="icon fa-solid fa-plus"></i>
+                    <span>Aggiungi</span>
+                </button>
+            </h2>
+        </div>
+    </div>
+    <a-smart-table *ngIf="ui_automezzi" [colsInfo]="ui_automezzi.colonne" class="table-striped" [src]="automezzi"
+        [autolayout]="false" [paginator]="false">
+        <!-- definire head -->
+        <ng-template aTemplate="head">
+            <tr>
+                <th scope="col" *ngFor="let colonna of ui_automezzi.colonne">
+                    <ng-container *ngIf="colonna.tipo === 'number'; else campoTestuale">
+                        <div class="d-flex align-items-center justify-content-end">
+                            <span class="label">{{colonna.intestazione}}</span>
+                            <a-table-sorter [type]="colonna.tipo" [field]="colonna.campo"></a-table-sorter>
+                            <a-table-filter [type]="colonna.tipo" [field]="colonna.campo"
+                                [options]="colonna.filterOptions"></a-table-filter>
+                        </div>
+                    </ng-container>
+                    <ng-template #campoTestuale>
+                        <div class="d-flex align-items-center">
+                            <span class="label">{{colonna.intestazione}}</span>
+                            <a-table-sorter [type]="colonna.tipo" [field]="colonna.campo"></a-table-sorter>
+                            <a-table-filter [type]="colonna.tipo" [field]="colonna.campo"
+                                [options]="colonna.filterOptions"></a-table-filter>
+                        </div>
+                    </ng-template>
+                </th>
+                <th scope="col"></th>
+            </tr>
+        </ng-template>
+        <!-- definire body -->
+        <ng-template aTemplate="body" let-ar>
+            <tr>
+                <td *ngFor="let colonna of ui_automezzi.colonne">
+                    <ng-container *ngIf="colonna.tipo == 'date' else elseField">
+                        {{ar[colonna.campo] | date:'dd/MM/yyyy'}}
+                    </ng-container>
+                    <ng-template #elseField>
+                        <ng-container *ngIf="colonna.tipo == 'number' else normalField">
+                            <div class="d-flex align-items-center justify-content-end">
+                                <span>{{ar[colonna.campo] | numberPipe}}</span>
+                            </div>
+                        </ng-container>
+                        <ng-template #normalField>
+                            {{ar[colonna.campo]}}
+                        </ng-template>
+                    </ng-template>
+
+                </td>
+                <td>
+                    <div class="d-flex align-items-center">
+                        <button [disabled]="btnMode || controllo_chiuso" type="button" class="btn btn-danger ms-auto"
+                            (click)="delAutomezzo(ar.id_automezzo)">
+                            <i class="icon fa-solid fa-trash"></i>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        </ng-template>
+    </a-smart-table>
+
+    <!-- creare modale con selezione automezzo e component per inserire indirizzo -->
+</div>
+
+
+
+
+
+
+<div class="modal fade" id="modal-automezzi" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-scrollable modal-xl" role="document">
+        <div class="modal-content">
+            <!-- modal-header -->
+            <div class="modal-header">
+                <h2 class="modal-title">Automezzi</h2>
+                <div class="justify-content-end">
+                    <button [disabled]="btnMode || controllo_chiuso || btnSave" type="button"
+                        class="btn btn-secondary ms-auto" (click)="addAutomezzi()">
+                        <i class="icon fa-solid fa-save"></i>
+                        <span>Salva</span>
+                    </button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="close"></button>
+                </div>
+            </div>
+
+            <!-- modal-body -->
+            <div class="modal-body">
+                <table *ngIf="ui_automezzi_stab && automezzi_stab" class="table table-assistiti">
+                    <thead>
+                        <tr>
+                            <th scope="col" *ngFor="let colonna of ui_automezzi_stab.colonne">
+                                {{ colonna.intestazione }}
+                            </th>
+                            <th scope="col"></th>
+                        </tr>
+                    </thead>
+                    <tbody class="border">
+                        <tr *ngFor="let ar of automezzi_stab">
+                            <td *ngFor="let colonna of ui_automezzi_stab.colonne">
+                                {{ ar[colonna.campo] }}
+                            </td>
+                            <td>
+                                <button id="riga_{{ar.id_automezzo}}" type="button" class="btn btn-secondary ms-auto"
+                                    (click)="selezionaAutomezzi(ar.id_automezzo)">
+                                    <i class="fa-regular fa-square"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- modal-footer -->
+            <div class="modal-footer"></div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modal-indirizzo" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-scrollable modal-xl" role="document">
+        <div class="modal-content">
+            <!-- modal-header -->
+            <div class="modal-header">
+                <h2 class="modal-title">Indirizzo</h2>
+                <div class="justify-content-end">
+                    <button [disabled]="!this.formIndirizzo?.formModificaIndirizzo?.valid" type="button"
+                        class="btn btn-secondary ms-auto" (click)="upsertIndirizzo()">
+                        <i class="icon fa-solid fa-save"></i>
+                        <span>Salva</span>
+                    </button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="close"></button>
+                </div>
+            </div>
+
+            <!-- modal-body -->
+            <div class="modal-body">
+                <div *ngIf="id_indirizzo || indiMode == 'Aggiungi'">
+                    <app-form-indirizzo-main #formIndirizzo [_id_indirizzo_preso]="id_indirizzo" [_flag]="true"
+                        [_labelBottone]="indiMode" [_id_cu_trasportatori_preso]="cu.id_cu" [showButton]="false">
+                    </app-form-indirizzo-main>
+                </div>
+            </div>
+
+            <!-- modal-footer -->
+            <div class="modal-footer"></div>
+        </div>
+    </div>
+</div>

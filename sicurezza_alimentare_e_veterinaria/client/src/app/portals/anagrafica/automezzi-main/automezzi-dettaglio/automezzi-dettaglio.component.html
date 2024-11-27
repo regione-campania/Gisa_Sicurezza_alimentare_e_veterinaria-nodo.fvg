@@ -1,0 +1,105 @@
+<!--
+Copyright (C) AGPL-3.0  
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.-->
+<div class="row">
+    <div class="col">
+        <h2 class="d-flex align-items-center">
+            <span>Automezzo</span>
+            <button class="btn btn-secondary ms-auto" (click)="goToModifica()" [disabled]="disabilitaModificaAutomezzo">
+                <i class="icon fa-solid fa-edit"></i>
+                <span>Modifica</span>
+            </button>
+        </h2>
+    </div>
+</div>
+<div class="row">
+    <div class="col" *ngIf="automezzo">
+        <div class="card">
+            <div class="card-body d-flex flex-wrap gap-2">
+                <div class="item flex-fill col-2" *ngFor="let colonna of ui_automezzo.colonne">
+                    <label>{{colonna.intestazione}}</label><br>
+                    <ng-container *ngIf="colonna.tipo === 'date'; else norm">
+                        <span><b>{{automezzo[colonna.campo] | date : "dd/MM/yyyy"}}</b></span>
+                    </ng-container>
+                    <ng-template #norm>
+                        <span><b>{{automezzo[colonna.campo]}}</b></span>
+                    </ng-template>
+                    &nbsp;
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<br>
+<div class="row">
+    <div class="col">
+        <h2 class="d-flex align-items-center">
+            <span>Stabilimenti</span>
+            <button class="btn btn-primary ms-auto" (click)="goToAggiungiStabilimento()"
+                [disabled]="disabilitaModificaEAggiungiStab">
+                <i class="icon fa-solid fa-plus"></i>
+                <span>Aggiungi</span>
+            </button>
+        </h2>
+    </div>
+</div>
+<div class="row">
+    <div class="col">
+        <ng-container *ngIf="stabilimenti_automezzi; else message">
+            <a-smart-table [colsInfo]="ui_stabilimenti_automezzi.colonne" [src]="stabilimenti_automezzi">
+                <ng-template aTemplate="head">
+                    <tr>
+                        <th scope="col" *ngFor="let colonna of ui_stabilimenti_automezzi.colonne">
+                            <div class="d-flex align-items-center">
+                                <span class="label">{{ colonna.intestazione }}</span>
+                                <a-table-sorter [type]="colonna.tipo" [field]="colonna.campo"></a-table-sorter>
+                                <a-table-filter [type]="colonna.tipo" [field]="colonna.campo"
+                                    [options]="colonna.filterOptions"></a-table-filter>
+                            </div>
+                        </th>
+                        <th scope="col"></th>
+                    </tr>
+                </ng-template>
+                <ng-template aTemplate="body" let-ar>
+                    <tr>
+                        <td [ngClass]="{'align-middle': colonna.campo === 'verificato'}"
+                            *ngFor="let colonna of ui_stabilimenti_automezzi.colonne">
+                            <ng-container *ngIf="colonna.tipo === 'date'; else campoNormale">
+                                {{ ar[colonna.campo] | date : "dd/MM/yyyy" }}
+                            </ng-container>
+                            <ng-template #campoNormale>
+                                <ng-container *ngIf="colonna.campo === 'verificato'; else campoNormale2">
+                                    <ng-container *ngIf="ar['verificato']; else verificatoNo">
+                                        <i class="fa-solid fa-check-square d-block m-auto" aria-hidden="true"
+                                            style="color:green;"></i>
+                                    </ng-container>
+                                    <ng-template #verificatoNo>
+                                        <i class="fa-solid fa-window-close d-block m-auto" aria-hidden="true"
+                                            style="color:red;"></i>
+                                    </ng-template>
+                                </ng-container>
+                                <ng-template #campoNormale2>
+                                    {{ ar[colonna.campo] }}
+                                </ng-template>
+                            </ng-template>
+                        </td>
+                        <td>
+                            <button class="btn btn-secondary ms-auto" (click)="goToModificaStabilimento(ar)"
+                                [disabled]="disabilitaModificaStab">
+                                <i class="icon fa-solid fa-edit"></i>
+                            </button>
+                        </td>
+                    </tr>
+                </ng-template>
+            </a-smart-table>
+        </ng-container>
+        <ng-template #message>
+            Nessun elemento presente.
+        </ng-template>
+    </div>
+</div>

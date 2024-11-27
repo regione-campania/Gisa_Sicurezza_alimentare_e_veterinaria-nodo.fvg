@@ -1,0 +1,46 @@
+<!--
+Copyright (C) AGPL-3.0  
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.-->
+<div id="uos">
+  <div class="row">
+    <div class="col-lg-5" id="left-section">
+      <div class="structure-name-section d-flex mb-3">
+        <h3 class="structure-name">{{info?.descr}}</h3>
+      </div>
+      <loading-message *ngIf="uosLoading; else uosReady"></loading-message>
+      <ng-template #uosReady>
+        <a-tree-filter [tree]="t" placeholder="Ricerca UOS..."></a-tree-filter>
+        <div #scrollbox class="box scrollbox custom-scrollbar mt-2 overflow-y-auto p-0 rounded shadow-sm"
+          [ngStyle]="{'max-height': 'calc(100vh - ' + utils.getAbsoluteOffsetTop(scrollbox) + 'px)'}">
+          <a-tree #t [root]="uosTree?.root" (onClick)="getUosComuni($event)"></a-tree>
+        </div>
+      </ng-template>
+    </div>
+    <div class="col-lg" id="right-section">
+      <div class="structure-name-section d-flex mb-3" *ngIf="infoComuni">
+        <h3 class="structure-name">{{infoComuni.descr}}</h3>
+        <button type="button" class="btn btn-primary save-button ms-auto" (click)="salva()"
+          *ngIf="infoComuni.modality == 'modifica' && infoComuni.trackerModifiche && !infoComuni.trackerModifiche.isSame">
+          <i class="icon fa-solid fa-floppy-disk"></i>
+          <span class="label">Salva</span>
+        </button>
+      </div>
+      <div *ngIf="!selectedUos; else comuniBlock">Selezionare un elemento dalla lista.</div>
+      <ng-template #comuniBlock>
+        <loading-message *ngIf="comuniLoading; else comuniReady"></loading-message>
+        <ng-template #comuniReady>
+          <div #scrollbox2 class="box scrollbox custom-scrollbar mt-2 overflow-y-auto p-0 rounded shadow-sm"
+            [ngStyle]="{'max-height': 'calc(100vh - ' + utils.getAbsoluteOffsetTop(scrollbox2) + 'px)'}">
+            <letter-list [data]="comuni" labelKey="comune"
+              [selectionEnabled]="infoComuni?.modality == 'modifica'"></letter-list>
+          </div>
+        </ng-template>
+      </ng-template>
+    </div>
+  </div>
+</div>

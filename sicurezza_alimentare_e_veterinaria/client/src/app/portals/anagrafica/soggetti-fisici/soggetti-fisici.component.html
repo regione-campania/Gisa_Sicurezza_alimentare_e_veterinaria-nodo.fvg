@@ -1,0 +1,390 @@
+<!--
+Copyright (C) AGPL-3.0  
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.-->
+<div id="formSoggettiFisici">
+  <h2> Cerca Soggetto Fisico </h2>
+  <!-- Form per la ricerca dei soggetti fisici -->
+  <form [formGroup]="formRicercaSoggettiFisici">
+    <div class="row mb-2">
+      <div class="col">
+        <label>Nome: </label>
+        <input type="text" class="form-control border" formControlName="nome">
+      </div>
+      <div class="col">
+        <label>Cognome: </label>
+        <input type="text" class="form-control border" formControlName="cognome">
+      </div>
+      <div class="col">
+        <label>Codice Fiscale: </label>
+        <input type="text" class="form-control border" formControlName="cf">
+      </div>
+      <div class="col">
+        <label>Comune Di Nascita: </label>
+        <input type="text" class="form-control border" formControlName="comune_nascita">
+      </div>
+      <div class="col">
+        <label>Data Di Nascita: </label>
+        <input type="date" class="form-control border" formControlName="data_nascita" [min]="1900-01-01"
+          (blur)="checkDate($event, formRicercaSoggettiFisici)">
+      </div>
+      <div class="col-4">
+        <!-- Ricerca dei dati nel loro DB parte Friuli -->
+        <div class="row">
+          <label> &nbsp; </label>
+        </div>
+        <button class="ms-2 btn btn-primary float-end" ngbTooltip="Verifica anagrafica assistito"
+          (click)="verificaAnagraficaAssistiti()">
+          Verifica anagrafica assistito
+        </button>
+        <!-- Ricerca dei dati nel nostro DB -->
+        <button class="ms-2 btn btn-primary float-end" ngbTooltip="Cerca Soggetto Fisico"
+          (click)="filtraSoggettiFisici()">
+          Cerca
+        </button>
+        <button class="ms-2 btn btn-primary float-end" ngbTooltip="Aggiungi Soggetto Fisico" data-bs-toggle="modal"
+          data-bs-target="#soggettoFisico">
+          Aggiungi
+        </button>
+      </div>
+      <!-- <div class="col">
+        <label>Sesso: </label>
+        <input type="text" class="form-control border" formControlName="sesso">
+      </div> -->
+    </div>
+  </form>
+  <br>
+</div>
+<br>
+<!-- Stampa tabella dei soggetti fisici lato nostro -->
+<div id="soggettiFisici" *ngIf="retDati">
+  <h2 class="d-flex align-items-center">
+    <span> Soggetti Fisici </span>
+  </h2>
+  <a-smart-table [colsInfo]="ui.colonne" [src]="retDati" [autolayout]="false">
+    <ng-template aTemplate="head">
+      <tr>
+        <th scope="col" id="intestazione-soggetti-fisici" *ngFor="let colonna of ui.colonne">
+          <div class="d-flex align-items-center justify-content-center">
+            <span class="label">{{colonna.intestazione}}</span>
+            <a-table-sorter [type]="colonna.tipo" [field]="colonna.campo"></a-table-sorter>
+            <a-table-filter [type]="colonna.tipo" [field]="colonna.campo" [options]="colonna.filterOptions"></a-table-filter>
+          </div>
+        </th>
+        <th scope="col"></th>
+      </tr>
+    </ng-template>
+    <ng-template aTemplate="body" let-ar>
+      <tr>
+        <td *ngFor="let colonna of ui.colonne">
+          <ng-container *ngIf="colonna.tipo === 'date'; else campoNormale">
+            {{ar[colonna.campo] | date: 'dd/MM/yyyy'}}
+          </ng-container>
+          <ng-template #campoNormale>
+            {{ar[colonna.campo]}}
+          </ng-template>
+        </td>
+        <td>
+          <div class="row">
+            <div class="d-flex gap-1">
+              <button class="btn btn-primary float-end ms-auto" ngbTooltip="Apri la figura del soggetto fisico"
+                container="body" (click)="mostraFigure(ar)">
+                Dettaglio
+              </button>
+              <button class="btn btn-primary float-end ms-2" ngbTooltip="Modifica soggetto fisico" container="body"
+                (click)="apriModalModificaSogg(ar)">
+                Modifica
+              </button>
+            </div>
+          </div>
+          <div class="row">
+            <div class="d-flex gap-1" style="padding-top: 0.8%; padding-left: 1.5%;">
+              <button class="btn btn-primary float-end ms-2" ngbTooltip="Visualizza soggetto fisico" container="body"
+                (click)="apriModalVisualizzaSogg(ar)">
+                Visualizza
+              </button>
+            </div>
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+  </a-smart-table>
+  <br>
+</div>
+<ng-template #messaggioNoSogg>
+  Non sono presenti soggetti fisici per quel filtro
+</ng-template>
+<br>
+<!-- Stampa in un modal del risultato dell'anagrafica trovata nella loro banca dati-->
+<div class="modal fade modal-dialog-scrollable" id="anagraficaAssistiti" data-bs-backdrop="static"
+  data-bs-keyboard="false" tabindex="-1" aria-labelledby="new-piano-label" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title">Anagrafica Assistiti</h2>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="close"></button>
+      </div>
+      <div class="modal-body">
+        <div *ngIf="retDatiAnag; else messaggioAnag">
+          <!--
+          <a-smart-table [colsInfo]="uiAnag.colonne" [src]="retDatiAnag" [autolayout]="false">
+            <ng-template aTemplate="head">
+              <tr>
+                <th id="intestazione-anagrafica" *ngFor="let colonna of uiAnag.colonne">
+                  <div class="d-flex align-items-center justify-content-center">
+                    <span class="label">{{colonna.intestazione}}</span>
+                    <a-table-sorter [type]="colonna.tipo" [field]="colonna.campo"></a-table-sorter>
+                    <a-table-filter [type]="colonna.tipo" [field]="colonna.campo" [options]="colonna.filterOptions"></a-table-filter>
+                  </div>
+                </th>
+                <th scope="col"></th>
+              </tr>
+            </ng-template>
+            <ng-template aTemplate="body" let-ar>
+              <tr>
+                <td *ngFor="let colonna of uiAnag.colonne">
+                  <ng-container *ngIf="colonna.tipo === 'date'; else campoNormale">
+                    {{ar[colonna.campo] | date: 'dd/MM/yyyy'}}
+                  </ng-container>
+                  <ng-template #campoNormale>
+                    {{ar[colonna.campo]}}
+                  </ng-template>
+                </td>
+                <td>
+                  <button class="btn btn-primary float-end ms-auto" ngbTooltip="Apri la figura del soggetto fisico"
+                    container="body" (click)="aggiungiAssistito(ar)">
+                    Apri
+                  </button>
+                </td>
+              </tr>
+            </ng-template>
+          </a-smart-table>
+          -->
+
+          <table class="table table-assistiti">
+            <thead>
+              <tr>
+                <th scope="col" *ngFor="let colonna of uiAnag.colonne">
+                  {{colonna.intestazione}}
+                </th>
+                <th scope="col"></th>
+              </tr>
+            </thead>
+            <tbody class="border">
+              <tr *ngFor="let ar of retDatiAnagTot">
+                <td *ngFor="let colonna of uiAnag.colonne">
+                  {{ar.Anagrafica[colonna.campo]}}
+                </td>
+                <td>
+                  <button class="btn btn-primary float-end ms-auto" container="body" (click)="aggiungiAssistito(ar)">
+                    <i class="icon fa-solid fa-plus"></i>
+                    Aggiungi
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <ng-template #messaggioAnag>
+          Non sono presenti anagrafiche per quel filtro
+        </ng-template>
+      </div>
+      <div class="modal-footer">
+      </div>
+    </div>
+  </div>
+</div>
+<ng-template #templateModaleModificaSogg>
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2 class="modal-title">Modifica Soggetto Fisico</h2>
+      <button type="button" class="btn btn-close d-inline-block ms-auto" (click)="modaleModificaSogg?.close()"></button>
+    </div>
+    <div class="modal-body">
+      <form [formGroup]="formModificaSogg">
+
+        <label>Titolo: </label>
+        <input type="text" class="form-control border" formControlName="titolo">
+
+        <label>Nome: </label>
+        <input type="text" class="form-control border" formControlName="nome">
+
+        <label>Cognome: </label>
+        <input type="text" class="form-control border" formControlName="cognome">
+
+        <label>Comune di Nascita: </label>
+        <input type="text" class="form-control border" formControlName="comune_nascita">
+
+        <label>Codice Fiscale: </label>
+        <input type="text" class="form-control border" formControlName="codice_fiscale" readonly>
+
+        <label>Sesso: </label>
+        <select class="form-select" formControlName="sesso">
+          <option value='M'>M</option>
+          <option value='F'>F</option>
+        </select>
+
+        <label>Telefono: </label>
+        <input type="text" class="form-control border" formControlName="telefono">
+
+        <label>Email: </label>
+        <input type="text" class="form-control border" formControlName="email">
+
+        <label>PEC: </label>
+        <input type="text" class="form-control border" formControlName="pec">
+
+        <label>Telefono 2: </label>
+        <input type="text" class="form-control border" formControlName="telefono2">
+
+        <label>Data di Nascita: </label>
+        <input type="date" class="form-control border" formControlName="data_nascita">
+
+        <label>Documento di identità: </label>
+        <input type="text" class="form-control border" formControlName="documento_identita">
+      </form>
+      <!-- <app-form-indirizzo [_id_preso]="arAppSogg.indirizzo_id"></app-form-indirizzo> -->
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-primary float-end" ngbTooltip="Modifica dati soggetto" (click)="updSogg(arAppSogg)"
+        [disabled]="!this.formModificaSogg.valid">
+        Modifica
+      </button>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #templateModaleVisualizzaSogg>
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2 class="modal-title">Visualizza Soggetto Fisico</h2>
+      <button type="button" class="btn btn-close d-inline-block ms-auto"
+        (click)="modaleVisualizzaSogg?.close()"></button>
+    </div>
+    <div class="modal-body">
+      <form [formGroup]="formVisualizzaSogg">
+
+        <label>Titolo: </label>
+        <input type="text" class="form-control border" formControlName="titolo" readonly>
+
+        <label>Nome: </label>
+        <input type="text" class="form-control border" formControlName="nome" readonly>
+
+        <label>Cognome: </label>
+        <input type="text" class="form-control border" formControlName="cognome" readonly>
+
+        <label>Comune di Nascita: </label>
+        <input type="text" class="form-control border" formControlName="comune_nascita" readonly>
+
+        <label>Codice Fiscale: </label>
+        <input type="text" class="form-control border" formControlName="codice_fiscale" readonly>
+
+        <label>Sesso: </label>
+        <select class="form-select" formControlName="sesso">
+          <option value='M' disabled>M</option>
+          <option value='F' disabled>F</option>
+        </select>
+
+        <label>Telefono: </label>
+        <input type="text" class="form-control border" formControlName="telefono" readonly>
+
+        <label>Email: </label>
+        <input type="text" class="form-control border" formControlName="email" readonly>
+
+        <label>PEC: </label>
+        <input type="text" class="form-control border" formControlName="pec" readonly>
+
+        <label>Telefono 2: </label>
+        <input type="text" class="form-control border" formControlName="telefono2" readonly>
+
+        <label>Data di Nascita: </label>
+        <input type="date" class="form-control border" formControlName="data_nascita" readonly>
+
+        <label>Documento di identità: </label>
+        <input type="text" class="form-control border" formControlName="documento_identita" readonly>
+
+        <label>Indirizzo: </label>
+        <input type="text" class="form-control border" formControlName="indirizzo_luogo" readonly>
+
+        <label>Comune: </label>
+        <input type="text" class="form-control border" formControlName="comune_testo" readonly>
+
+        <label>Nazione: </label>
+        <input type="text" class="form-control border" formControlName="nazione" readonly>
+      </form>
+    </div>
+    <div class="modal-footer">
+    </div>
+  </div>
+</ng-template>
+
+<div class="modal fade" id="soggettoFisico" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+  aria-labelledby="new-piano-label" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title">Aggiungi Soggetto Fisico</h2>
+        <div class="justify-content-end">
+          <button [disabled]="formAggiungiSogg.invalid" class="btn btn-primary" (click)="addSogg()">
+            Aggiungi
+          </button>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="close"></button>
+        </div>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="formAggiungiSogg">
+
+          <label>Titolo: </label>
+          <input type="text" class="form-control border" formControlName="titolo">
+
+          <label>Nome: </label>
+          <input type="text" class="form-control border" formControlName="nome">
+
+          <label>Cognome: </label>
+          <input type="text" class="form-control border" formControlName="cognome">
+
+          <label>Comune di Nascita: </label>
+          <input type="text" class="form-control border" formControlName="comune_nascita">
+
+          <label>Codice Fiscale: </label>
+          <input type="text" class="form-control border" formControlName="codice_fiscale"
+            (blur)="checkCodiceFiscale(formAggiungiSogg)">
+
+          <label>Sesso: </label>
+          <select class="form-select" formControlName="sesso">
+            <option value='M'>M</option>
+            <option value='F'>F</option>
+          </select>
+
+          <label>Telefono: </label>
+          <input type="text" class="form-control border" formControlName="telefono">
+
+          <label>Email: </label>
+          <input type="text" class="form-control border" formControlName="email">
+
+          <label>PEC: </label>
+          <input type="text" class="form-control border" formControlName="pec">
+
+          <label>Telefono 2: </label>
+          <input type="text" class="form-control border" formControlName="telefono2">
+
+          <label>Data di Nascita: </label>
+          <input type="date" class="form-control border" formControlName="data_nascita" [min]="1900-01-01"
+            (blur)="checkDate($event, formRicercaSoggettiFisici)">
+
+          <label>Documento di identità: </label>
+          <input type="text" class="form-control border" formControlName="documento_identita">
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button [disabled]="formAggiungiSogg.invalid" class="ms-2 btn btn-primary float-end" (click)="addSogg()">
+          Aggiungi
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

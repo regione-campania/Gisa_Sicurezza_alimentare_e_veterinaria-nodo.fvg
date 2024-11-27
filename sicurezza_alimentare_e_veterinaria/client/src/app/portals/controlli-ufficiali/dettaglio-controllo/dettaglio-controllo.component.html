@@ -1,0 +1,710 @@
+<!--
+Copyright (C) AGPL-3.0  
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.-->
+<div id="dettaglio-controllo">
+  <h2 class="d-flex">
+    <span>Dettaglio Controllo</span>
+    <span class="float-end ms-auto">Stato: {{controllo?.cu?.chiuso ? 'Chiuso - '+ controllo.cu.descr_stato : 'Aperto'}}
+    </span>
+
+    <button [style.display]="controlloChiuso ? 'none' : 'block'" type="button"
+      [disabled]="mode_sezione('cuInfo') == 'upd' && btnChiudi ? null : true" class="btn btn-secondary float-end ms-2"
+      (click)="openModal()">
+      <i class="icon fa-solid fa-lock-open"></i>
+      <span>Chiudi</span>
+    </button>
+    <button [style.display]="!controlloChiuso ? 'none' : 'block'" type="button" [disabled]="btnChiudi ? null : true"
+      class="btn btn-primary float-end ms-2" (click)="generaPDF()">
+      <!-- <i class="icon fa-solid fa-lock"></i> -->
+      <span>Genera PDF</span>
+    </button>
+  </h2>
+
+  <div class="row">
+    <div class="col-lg-6">
+      <div class="info box-3d rounded mb-2 mb-lg-0" *ngIf="controllo">
+        <div class="sezione intestazione-sezione d-block fw-semibold">
+          <div class="d-flex">
+            Controllo n° {{controllo.cu.codice}} del {{controllo.cu.dt | italianDate}} -
+            {{controllo.cu.descr_tecnica}}
+          </div>
+          <div class="d-flex">{{controllo.cu.denominazione_sede_operativa}}
+            <div [style.display]="checkStabilimento" class="ms-auto" [ngbTooltip]="checkStabilimentoTooltip"><i
+                class="fa-solid fa-hammer fa-xl" style="color: #ff0000;"></i></div>
+          </div>
+          <div>Responsabile {{controllo.cu.nominativo_responsabile ?? ''}}</div>
+          <!-- <button type="button" class="btn d-inline-block ms-auto" id="gestisci-button" ngbTooltip="Gestisci"
+            placement="right" container="body" (click)="openGestioneControllo(gestioneControlloModal)">
+            <i class="icon fa-solid fa-cog"></i>
+          </button> -->
+        </div>
+        <div #cuNucleo [style.display]="display_sezione('cuNucleo')" class="sezione clickable"
+          routerLink="./nucleo-ispettivo" [queryParams]="{id_cu: controllo.cu.id}">
+          <div class="icon-box">
+            <div class="png-icon team"></div>
+          </div>
+          <div class="nome-sezione">Nucleo Ispettivo</div>
+          <div [style.display]="checkNucleo" class="ms-auto" [ngbTooltip]="checkNucleoTooltip"><i
+              class="fa-solid fa-hammer  fa-xl" style="color: #ff0000;"></i></div>
+          <div class="preview-sezione">
+            <div class="d-inline-block label" [ngClass]="{'me-1': !isLast}"
+              *ngFor="let nucleo of controllo.cu_nucleo; last as isLast">
+              <span>{{nucleo.nominativo}}</span>
+              <span *ngIf="!isLast">,</span>
+            </div>
+          </div>
+        </div>
+        <div #cuLinee [style.display]="display_sezione('cuLinee')" class="sezione clickable" routerLink="./linee"
+          [queryParams]="{id_cu: controllo.cu.id}">
+          <div class="icon-box">
+            <div class="png-icon barn-color"></div>
+          </div>
+          <div class="nome-sezione">Linee</div>
+          <div [style.display]="checkLinee" class="ms-auto" [ngbTooltip]="checkLineeTooltip"><i
+              class="fa-solid fa-hammer  fa-xl" style="color: #ff0000;"></i></div>
+          <div class="preview-sezione">
+            <div class="d-inline-block label" [ngClass]="{'me-1': !isLast}"
+              *ngFor="let linea of controllo.cu_linee; last as isLast">
+              <span>{{linea.desc_tipo_linea}}</span>
+              <span *ngIf="!isLast">,</span>
+            </div>
+          </div>
+        </div>
+        <div #cuPiani [style.display]="display_sezione('cuPiani')" class="sezione clickable" routerLink="./piani"
+          [queryParams]="{id_cu: controllo.cu.id}">
+          <div class="icon-box">
+            <div class="png-icon accounting"></div>
+          </div>
+          <div class="nome-sezione">Piani</div>
+          <div [style.display]="checkPiani" class="ms-auto" [ngbTooltip]="checkPianiTooltip"><i
+              class="fa-solid fa-hammer fa-xl" style="color: #ff0000;"></i></div>
+          <div class="preview-sezione">
+            <div class="d-inline-block label" [ngClass]="{'me-1': !isLast}"
+              *ngFor="let piano of controllo.cu_piani; last as isLast">
+              <span>{{piano.descrizione_completa_piano}}</span>
+              <span *ngIf="!isLast">,</span>
+            </div>
+          </div>
+        </div>
+        <div #cuOggetti [style.display]="display_sezione('cuOggetti')" class="sezione clickable"
+          routerLink="./associa-oggetti" [queryParams]="{id_cu: controllo.cu.id}">
+          <div class="icon-box">
+            <div class="png-icon clipboard-check-color"></div>
+          </div>
+          <div class="nome-sezione">Oggetti</div>
+          <div [style.display]="checkOggetti" class="ms-auto" [ngbTooltip]="checkOggettiTooltip"><i
+              class="fa-solid fa-hammer  fa-xl" style="color: #ff0000;"></i></div>
+          <div class="preview-sezione">
+            <div class="d-inline-block label" [ngClass]="{'me-1': !isLast}"
+              *ngFor="let oggetto of controllo.cu_oggetti; last as isLast">
+              <span>{{oggetto.sigla_oggetto}}</span>
+              <span *ngIf="!isLast">,</span>
+            </div>
+          </div>
+        </div>
+        <!-- [style.display]="controllo.cu.sigla_tecnica == 'CU' ? 'flex' : 'none'"  -->
+        <div #cuProvvedimenti [style.display]="display_sezione('cuProvvedimenti')" class="sezione clickable"
+          routerLink="./provvedimenti" [queryParams]="{id_cu: controllo.cu.id}">
+          <div class="icon-box">
+            <div class="png-icon bill-blue"></div>
+          </div>
+          <div class="nome-sezione">Provvedimenti</div>
+          <div [style.display]="checkProvvedimenti" class="ms-auto" [ngbTooltip]="checkProvvedimentiTooltip"><i
+              class="fa-solid fa-hammer fa-xl" style="color: #ff0000;"></i></div>
+          <div class="preview-sezione">
+            <div class="d-inline-block label" [ngClass]="{'me-1': !isLast}"
+              *ngFor="let provv of controllo.cu_provv; last as isLast">
+              <span>{{provv.descr_provv}}</span>
+              <span *ngIf="!isLast"> - </span>
+            </div>
+          </div>
+        </div>
+
+        <div #fuProvvedimenti [style.display]="display_sezione('fuProvvedimenti')" class="sezione clickable"
+          routerLink="./verifica-provvedimenti" [queryParams]="{id_cu: controllo.cu.id}">
+          <div class="icon-box">
+            <div class="png-icon bill-blue"></div>
+          </div>
+          <div class="nome-sezione">Verifica Provvedimenti</div>
+          <div [style.display]="checkProvvedimentiFU" class="ms-auto" [ngbTooltip]="checkProvvedimentiTooltipFU"><i
+              class="fa-solid fa-hammer fa-xl" style="color: #ff0000;"></i></div>
+          <div class="preview-sezione">
+            <div class="d-inline-block label" [ngClass]="{'me-1': !isLast}"
+              *ngFor="let provv of controllo.cu_provv_fu; last as isLast">
+              <span>{{provv.descr_provv}}</span>
+              <span *ngIf="!isLast"> - </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- commentato x bugfix effettuare bugfix su #11444 e #11563 -->
+        <div #asProvvedimenti [style.display]="display_sezione('asProvv')" class="sezione clickable"
+          routerLink="./provvedimenti-sopralluogo" [queryParams]="{id_cu: controllo.cu.id}">
+          <div class="icon-box">
+            <div class="png-icon bill-blue"></div>
+          </div>
+          <div class="nome-sezione">Provvedimenti per Sopralluogo</div>
+          <div [style.display]="checkProvvedimentiAS" class="ms-auto" [ngbTooltip]="checkProvvedimentiTooltipAS"><i
+              class="fa-solid fa-hammer fa-xl" style="color: #ff0000;"></i></div>
+          <div class="preview-sezione">
+            <div class="d-inline-block label" [ngClass]="{'me-1': !isLast}"
+              *ngFor="let provv of controllo.cu_provv_s; last as isLast">
+              <span>{{provv.descr_provv}}</span>
+              <span *ngIf="!isLast"> - </span>
+            </div>
+          </div>
+        </div>
+
+        <div #fsProvvedimenti [style.display]="display_sezione('fsProvv')" class="sezione clickable"
+          routerLink="./verifica-provvedimenti-fs" [queryParams]="{id_cu: controllo.cu.id}">
+          <div class="icon-box">
+            <div class="png-icon bill-blue"></div>
+          </div>
+          <div class="nome-sezione">Verifica Provvedimenti per Sopralluogo</div>
+          <div [style.display]="checkProvvedimentiAS" class="ms-auto" [ngbTooltip]="checkProvvedimentiTooltipAS"><i
+              class="fa-solid fa-hammer fa-xl" style="color: #ff0000;"></i></div>
+          <div class="preview-sezione">
+            <!-- <div class="d-inline-block label" [ngClass]="{'me-1': !isLast}"
+              *ngFor="let provv of controllo.cu_provv; last as isLast">
+              <span>{{provv.descr_provv}}</span>
+              <span *ngIf="!isLast"> - </span>
+            </div> -->
+          </div>
+        </div>
+
+        <div #cuCategRischio
+          [style.display]="display_sezione('cuCategRischio') == 'flex' && controllo.cu_categ.descr != undefined ? 'flex' : 'none'"
+          class="sezione clickable" routerLink="./categoria-rischio" [queryParams]="{id_cu: controllo.cu.id}">
+          <div class="icon-box">
+            <div class="png-icon bill-blue"></div>
+          </div>
+          <div class="nome-sezione">Categoria Rischio</div>
+          <div [style.display]="checkCategoriaRischio" class="ms-auto" [ngbTooltip]="checkCategoriaRischioTooltip"><i
+              class="fa-solid fa-hammer fa-xl" style="color: #ff0000;"></i></div>
+          <div class="preview-sezione">
+            {{controllo.cu_categ.descr}}
+          </div>
+        </div>
+
+        <div #ctTrasportatori [style.display]="display_sezione('ctTrasportatori')" class="sezione clickable"
+          routerLink="./trasportatori" [queryParams]="{id_cu: controllo.cu.id}">
+          <div class="icon-box">
+            <div class="png-icon bill-blue"></div>
+          </div>
+          <div class="nome-sezione">Automezzi</div>
+          <div [style.display]="checkTrasportatori" class="ms-auto" [ngbTooltip]="checkTrasportatoriTooltip"><i
+              class="fa-solid fa-hammer fa-xl" style="color: #ff0000;"></i></div>
+          <!-- <div class="preview-sezione">
+            {{controllo.cu_categ.descr}}
+          </div> -->
+        </div>
+
+        <div #cuInfo class="sezione clickable" (click)="openModalInfo()">
+          <div class="icon-box">
+            <div><i class="fa fa-info-circle" aria-hidden="true"></i></div>
+          </div>
+          <div class="nome-sezione">Informazioni Generali</div>
+          <div [style.display]="allegatiPresenti" class="ms-auto p-2" [ngbTooltip]="'Presente almeno un allegato'"><i
+              class=" fa-solid fa-paperclip fa-xl">
+            </i></div>
+        </div>
+        <div #cuNoteVerbale [style.display]="display_sezione('cuNoteVerbale')" class="sezione clickable"
+          (click)="openNoteVerbale()">
+          <div class="icon-box">
+            <div><i class="fa fa-info-circle" aria-hidden="true"></i></div>
+          </div>
+          <div class="nome-sezione">Note al Verbale</div>
+          <!-- <div class="preview-sezione">
+            <div class="d-inline-block label">
+            </div>
+          </div> -->
+        </div>
+        <div class="sezione clickable" (click)="openNoteGenerali()">
+          <div class="icon-box">
+            <div><i class="fa fa-info-circle" aria-hidden="true"></i></div>
+          </div>
+          <div class="nome-sezione">Note</div>
+          <!-- <div class="preview-sezione">
+            <div class="d-inline-block label">
+            </div>
+          </div> -->
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-6">
+      <div class="info box-3d rounded mb-2 mb-lg-0" *ngIf="controllo">
+        <div class="sezione intestazione-sezione d-block fw-semibold">
+          <br> <br> <br>
+          <!-- <button type="button" class="btn d-inline-block ms-auto" id="gestisci-button" placement="right"
+            container="body" (click)="openGestioneControllo(gestioneControlloModal)">
+            <i class="icon fa-solid fa-cog"></i>
+          </button> -->
+        </div>
+        <div #cuProvvInCorso class="sezione clickable">
+          <div class="icon-box">
+            <div class="png-icon bill-clock"></div>
+          </div>
+          <div class="nome-sezione">Provvedimenti in Corso</div>
+          <div class="preview-sezione">
+            <!-- aggiunto provvisoriamente -->
+            <div class="d-inline-block label" [ngClass]="{'me-1': !isLast}"
+              *ngFor="let provv of controllo.cu_provv_in_corso; last as isLast">
+              <span>{{provv.descr_provv}}</span>
+              <span *ngIf="!isLast"> - </span>
+            </div>
+          </div>
+        </div>
+        <div #cuControlliProg class="sezione clickable">
+          <div class="icon-box">
+            <div class="png-icon calendar-clock"></div>
+          </div>
+          <div class="nome-sezione">Controlli Programmati</div>
+          <div class="preview-sezione">
+            <div class="d-flex label" *ngFor="let controllo of controllo.cu_programmati">
+              <span class="w-25">{{ controllo.dt | date:'dd/MM/yyyy HH:mm' }}</span>
+              <span class="w-75">{{ controllo.descr_tecnica }} {{ controllo.alias }}</span>
+            </div>
+          </div>
+        </div>
+        <div #cuControlliEffe class="sezione clickable">
+          <div class="icon-box">
+            <div class="png-icon check-mark"></div>
+          </div>
+          <div class="nome-sezione">Controlli Effettuati</div>
+          <div class="preview-sezione">
+            <div class="d-flex label" *ngFor="let controllo of controllo.cu_effettuati">
+              <span class="w-25">{{ controllo.dt | italianDate }}</span>
+              <span class="w-75">{{ controllo.descr_tecnica }} {{ controllo.alias }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <ng-template #templateAlternativo>
+    <!-- template alternativo (unused)  -->
+    <h2>Dettaglio Controllo</h2>
+    <h4 class="mb-3">Controllo n° {{controllo.cu.codice}} del {{controllo.cu.dt | italianDate}} -
+      {{controllo.cu.descr_tecnica}}</h4>
+    <ng-container *ngIf="controllo">
+      <div class="row mb-lg-4">
+        <div class="col-lg-4">
+          <div class="box-3d sum-box rounded clickable mb-2 mb-lg-0" id="nucleo-box" routerLink="./nucleo-ispettivo"
+            [queryParams]="{id_cu: controllo.cu.id}">
+            <div class="sum-box-header">
+              <div class="sum-box-icon-box">
+                <i class="icon fa-solid fa-user-group"></i>
+              </div>
+              <div class="sum-box-title">Nucleo Ispettivo</div>
+            </div>
+            <div class="sum-box-body">
+              <div class="d-inline-block label" [ngClass]="{'me-1': !isLast}"
+                *ngFor="let nucleo of controllo.cu_nucleo; last as isLast">
+                <span>{{nucleo.nominativo}}</span>
+                <span *ngIf="!isLast">,</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-4">
+          <div class="box-3d sum-box rounded clickable mb-2 mb-lg-0" id="linee-box" routerLink="./linee"
+            [queryParams]="{id_cu: controllo.cu.id}">
+            <div class="sum-box-header">
+              <div class="sum-box-icon-box">
+                <i class="icon fa-solid fa-industry"></i>
+              </div>
+              <div class="sum-box-title">Linee</div>
+            </div>
+            <div class="sum-box-body">
+              <div class="d-inline-block label" [ngClass]="{'me-1': !isLast}"
+                *ngFor="let linea of controllo.cu_linee; last as isLast">
+                <span>{{linea.denominazione_sede_operativa}}</span>
+                <span *ngIf="!isLast">,</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-4">
+          <div class="box-3d sum-box rounded clickable mb-2 mb-lg-0" id="piani-box" routerLink="./piani"
+            [queryParams]="{id_cu: controllo.cu.id}">
+            <div class="sum-box-header">
+              <div class="sum-box-icon-box">
+                <i class="icon fa-solid fa-list-ul"></i>
+              </div>
+              <div class="sum-box-title">Piani</div>
+            </div>
+            <div class="sum-box-body">
+              <div class="d-inline-block label" [ngClass]="{'me-1': !isLast}"
+                *ngFor="let piano of controllo.cu_piani; last as isLast">
+                <span>{{piano.sigla_piano}}</span>
+                <span *ngIf="!isLast">,</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-lg-4">
+          <div class="box-3d sum-box rounded clickable mb-2 mb-lg-0" id="oggetti-box" routerLink="./associa-oggetti"
+            [queryParams]="{id_cu: controllo.cu.id}">
+            <div class="sum-box-header">
+              <div class="sum-box-icon-box">
+                <i class="icon fa-regular fa-clipboard"></i>
+              </div>
+              <div class="sum-box-title">Oggetti</div>
+            </div>
+            <div class="sum-box-body">
+              <div class="d-inline-block label" [ngClass]="{'me-1': !isLast}"
+                *ngFor="let oggetto of controllo.cu_oggetti; last as isLast">
+                <span>{{oggetto.sigla_oggetto}}</span>
+                <span *ngIf="!isLast">,</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-4">
+          <div class="box-3d sum-box rounded clickable mb-2 mb-lg-0" id="sanzioni-box">
+            <div class="sum-box-header">
+              <div class="sum-box-icon-box">
+                <i class="icon fa-solid fa-coins"></i>
+              </div>
+              <div class="sum-box-title">Sanzioni</div>
+            </div>
+            <div class="sum-box-body">
+              <!-- Sanzioni non presenti nel JSON -->
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-4">
+          <!-- intenzionalmente vuota -->
+        </div>
+      </div>
+    </ng-container>
+  </ng-template>
+</div>
+
+<ng-template #gestioneControlloModal>
+  <div class="modal-header">
+    <div class="modal-title">GestioneControllo</div>
+    <button type="button" class="btn btn-close" (click)="closeGestioneControllo()"></button>
+  </div>
+  <div class="modal-body">
+    <p>gestione</p>
+  </div>
+</ng-template>
+
+
+
+<!-- modal -->
+<div class="modal fade" id="modal-info-cu" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-dialog-scrollable modal-xl" role="document">
+    <div class="modal-content">
+      <!-- modal-header -->
+      <div class="modal-header">
+        <h2 class="modal-title">Informazioni Generali</h2>
+        <div class="justify-content-end">
+          <button [disabled]="mode_sezione('cuInfo') == 'upd' && !controllo.cu.chiuso && btnSave ? null : true"
+            type="button" class="btn btn-secondary ms-auto" (click)="saveCheck()">
+            <i class="icon fa-solid fa-save"></i>
+            <span>Salva</span>
+          </button>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="close"></button>
+        </div>
+      </div>
+
+      <!-- modal-body -->
+      <div class="modal-body">
+        <div [formGroup]="formInfo">
+          <div class="row">
+            <div class="col">
+              <input type="checkbox" formControlName="rilievi"
+                [readonly]="controllo.cu.chiuso || mode_sezione('cuInfo') == 'view'" [checked]="controllo.cu.rilievi">
+              Rilievi fotografici
+            </div>
+          </div>
+          <br>
+          <div class="row">
+            <div class="col">
+              <input type="checkbox" formControlName="preavviso"
+                [readonly]="controllo.cu.chiuso || mode_sezione('cuInfo') == 'view'" (change)="togglePreavviso()"
+                [checked]="controllo.cu.preavviso">
+              Preavviso
+            </div>
+          </div>
+          <div class="d-flex align-items-center">
+            <div class="form-group d-flex flex-column">
+              <label for="dt_preavviso" class="me-2">Data:</label>
+              <input type="date" [max]="data_min" class="form-control border" (blur)="checkDate($event, formInfo)"
+                id="dt_preavviso" formControlName="dt_preavviso"
+                [readonly]="controllo.cu.chiuso || !showPreavviso || mode_sezione('cuInfo') == 'view'">
+            </div>
+            <div class="form-group d-flex flex-column m-2">
+              <label for="ora_preavviso" class="me-2">Ora:</label>
+              <input type="time" [max]="ora_min" class="form-control border" (blur)="checkDate($event, formInfo)"
+                id="ora_preavviso" formControlName="ora_preavviso"
+                [readonly]="controllo.cu.chiuso || !showPreavviso || mode_sezione('cuInfo') == 'view'">
+            </div>
+          </div>
+          <div *ngIf="errore_data" class="d-flex align-items-center">
+            <span class="err_msg">Inserire date precedenti all'apertura del controllo {{data_min | date:'dd/MM/yyyy' }}
+              alle ore {{ora_min}} e nel formato corretto.</span>
+          </div>
+          <div class="d-flex align-items-center">
+            <div class="form-group d-flex flex-column w-100">
+              <label for="mezzo_preavviso" class="me-2">Mezzo:</label>
+              <input type="text" class="form-control border" id="mezzo_preavviso" formControlName="mezzo_preavviso"
+                [readonly]="controllo.cu.chiuso || !showPreavviso || mode_sezione('cuInfo') == 'view'">
+            </div>
+          </div>
+          <br>
+          <div class="row">
+            <div class="col">
+              Chilometri Percorsi
+            </div>
+          </div>
+          <div class="d-flex align-items-center">
+            <div class="form-group d-flex flex-column w-50">
+              <!-- [style.display]="showPec ? 'block' : 'none'"  -->
+              <label for="km_az" class="me-2">Auto Aziendale:</label>
+              <input type="text" class="form-control border" id="km_az" formControlName="km_az"
+                [readonly]="controllo.cu.chiuso || mode_sezione('cuInfo') == 'view'"
+                (keydown)="checkNaN($event);resetKM('az')">
+            </div>
+            <div class="form-group d-flex flex-column w-50 ms-2">
+              <!-- [style.display]="showPec ? 'block' : 'none'"  -->
+              <label for="km_pr" class="me-2">Auto Propria:</label>
+              <input type="text" class="form-control border" id="km_pr" formControlName="km_pr"
+                [readonly]="controllo.cu.chiuso || mode_sezione('cuInfo') == 'view'"
+                (keydown)="checkNaN($event);resetKM('pr')">
+            </div>
+          </div>
+          <br>
+          <div class="row">
+            <div class="col">
+              <input type="checkbox" id="invia_pec" formControlName="invia_pec"
+                [readonly]="controllo.cu.chiuso || mode_sezione('cuInfo') == 'view'" (change)="togglePec()"
+                [checked]="controllo.cu.pec != null ? true : false">
+              Salva PEC
+            </div>
+          </div>
+          <div class="d-flex align-items-center">
+            <div class="form-group d-flex flex-column w-100">
+              <!-- [style.display]="showPec ? 'block' : 'none'"  -->
+              <!-- <label for="pec" class="me-2">Pec:</label> -->
+              <input type="text" class="form-control border" id="pec" formControlName="pec"
+                [readonly]="controllo.cu.chiuso || !showPec || mode_sezione('cuInfo') == 'view'">
+            </div>
+          </div>
+        </div>
+        <br>
+        <div class="row">
+          <div class="form-group">
+            <div class="col">
+              <h4>Allegati:</h4>
+            </div>
+            <!-- <div class="row">
+              <div class="col">
+                <span *ngFor="let listaNomi of nomeFile"> {{listaNomi.nome}} <br> </span>
+                <button class="btn btn-danger float-end ms-2" *ngFor="let listaNomi of nomeFile">
+                  <i class="icon fa-solid fa-trash" aria-hidden="true"></i>
+                </button>
+              </div>
+            </div> -->
+            <div>
+              <table>
+                <tr>
+                  <th scope="col"></th>
+                  <th scope="col"></th>
+                </tr>
+                <tr *ngFor="let listaNomi of nomeFile">
+                  <td> {{listaNomi.filename}}
+                    <button class="btn btn-danger float-end ms-2" (click)="delAllegato(listaNomi.id)"
+                      [disabled]="controllo.cu.chiuso || mode_sezione('cuInfo') == 'view'">
+                      <i class="icon fa-solid fa-trash" aria-hidden="true"></i>
+                    </button>
+                  </td>
+                  <td>
+                    <button class="btn btn-primary float-end ms-2" (click)="downloadPDF(listaNomi.id)">Download
+                    </button>
+                  </td>
+                </tr>
+              </table>
+            </div>
+            <div class="row">
+              <div class="col">
+                <input [readonly]="controllo.cu.chiuso || mode_sezione('cuInfo') == 'view'" class="form-control"
+                  type="file" accept="application/pdf" #inputFile
+                  (change)="allegaVerbaleDaConfigurare($event, id_cu_app)" multiple>
+              </div>
+              <div class="col">
+                <button type="button" class="btn btn-primary ms-auto" (click)="uploadFile()"
+                  [disabled]="controllo.cu.chiuso || mode_sezione('cuInfo') == 'view'">
+                  <i class="icon fa-solid fa-upload" aria-hidden="true"></i>
+                  <span>Carica PDF</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- modal-footer -->
+      <div class="modal-footer"> </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+<!-- modal -->
+<div class="modal fade" id="modal-chiudi-cu" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-dialog-scrollable" role="document">
+    <div class="modal-content">
+      <!-- modal-header -->
+      <div class="modal-header">
+        <h2 class="modal-title">Chiudi {{controllo.cu.sigla_tecnica}}</h2>
+        <div class="justify-content-end">
+          <button [disabled]="btnClose ? null : true" type="button" class="btn btn-secondary ms-2" (click)="close()">
+            <i class="icon fa-solid fa-lock"></i>
+            <span>Chiudi</span>
+          </button>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="close"></button>
+        </div>
+      </div>
+
+      <!-- modal-body -->
+      <div class="modal-body">
+        <div [formGroup]="formChiusura">
+
+          <div class="d-flex align-items-center">
+            <div class="form-group d-flex flex-column w-100">
+              <div class="d-flex align-items-center">
+                <div class="form-group d-flex flex-column w-35">
+                  <label for="dt" class="me-2">Data Chiusura:</label>
+                  <input type="date" [min]="data_min_periodo" class="form-control border"
+                    (blur)="checkDate($event, formChiusura)" id="dt" formControlName="dt">
+                </div>
+                <div class="form-group d-flex flex-column m-2">
+                  <label for="ora_chiusura" class="me-2">Ora Chiusura:</label>
+                  <input type="time" [min]="ora_min_periodo" class="form-control border"
+                    (blur)="checkDate($event, formChiusura)" id="ora_chiusura" formControlName="ora_chiusura">
+                </div>
+              </div>
+            </div>
+          </div>
+          <div *ngIf="errore_data" class="d-flex align-items-center">
+            <span class="err_msg">Inserire date posteriori al {{data_min_periodo | date:'dd/MM/yyyy'
+              }} {{ora_min_periodo}}.</span>
+          </div>
+          <br><label class="me-2">Seleziona Stato:</label>
+          <div>
+            <table class="table table-striped">
+              <thead>
+                <th scope="col"></th>
+                <th scope="col"></th>
+              </thead>
+              <tbody>
+                <ng-container *ngFor="let el of stati_cu">
+                  <tr>
+                    <td>{{el.descr}}</td>
+                    <td>
+                      <div class="float-end">
+                        <button id="riga_{{el.id_stato_cu}}" [disabled]="!el.selezionabile" type="button"
+                          class="btn btn-secondary ms-auto" (click)="selezionaStato(el.id_stato_cu)">
+                          <!-- <span>Seleziona</span> -->
+                          <i class="fa-regular fa-square"></i>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                </ng-container>
+              </tbody>
+            </table>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- modal-footer -->
+      <div class="modal-footer"></div>
+    </div>
+  </div>
+</div>
+
+<!-- modal -->
+<div class="modal fade" id="modal-note-cu" role="dialog">
+  <div class="modal-dialog modal-dialog-scrollable" role="document">
+    <div class="modal-content">
+      <!-- modal-header -->
+      <div class="modal-header">
+        <h2 class="modal-title">Note</h2>
+        <div class="justify-content-end">
+          <button type="button" [disabled]="controllo.cu.chiuso || mode_sezione('cuNoteGenerali') == 'view'"
+            class="btn btn-secondary ms-auto" (click)="addNoteGenerali()">
+            <i class="icon fa-solid fa-save"></i>
+            <span>Salva</span>
+          </button>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="close"></button>
+        </div>
+      </div>
+
+      <!-- modal-body -->
+      <div class="modal-body">
+        <div [formGroup]="formNoteCu">
+          <div class="d-flex align-items-center">
+            <div class="form-group d-flex flex-column w-100">
+              <!-- <label for="note" class="me-2"></label> -->
+              <textarea [readonly]="controllo.cu.chiuso || mode_sezione('cuNoteGenerali') == 'view'"
+                class="form-control border" id="note_generali" formControlName="note"></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- modal-footer -->
+      <div class="modal-footer"></div>
+    </div>
+  </div>
+</div>
+
+<!-- modal -->
+<div class="modal fade" id="modal-note-verbale" role="dialog">
+  <div class="modal-dialog modal-dialog-scrollable" role="document">
+    <div class="modal-content">
+      <!-- modal-header -->
+      <div class="modal-header">
+        <h2 class="modal-title">Note al Verbale</h2>
+        <div class="justify-content-end">
+          <button [disabled]="controllo.cu.chiuso || mode_sezione('cuNoteVerbale') == 'view'" type="button"
+            class="btn btn-secondary ms-auto" (click)="addNoteVerbale()">
+            <i class="icon fa-solid fa-save"></i>
+            <span>Salva</span>
+          </button>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="close"></button>
+        </div>
+      </div>
+
+      <!-- modal-body -->
+      <div class="modal-body">
+        <div [formGroup]="formNoteVerbale">
+          <div class="d-flex align-items-center">
+            <div class="form-group d-flex flex-column w-100">
+              <!-- <label for="note" class="me-2"></label> -->
+              <textarea [readonly]="controllo.cu.chiuso || mode_sezione('cuNoteVerbale') == 'view'"
+                class="form-control border" id="note_generali" formControlName="note"></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- modal-footer -->
+      <div class="modal-footer"></div>
+    </div>
+  </div>
+</div>

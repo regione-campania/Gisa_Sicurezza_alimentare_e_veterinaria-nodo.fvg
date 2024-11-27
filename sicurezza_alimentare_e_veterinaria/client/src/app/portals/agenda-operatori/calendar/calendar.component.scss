@@ -1,0 +1,46 @@
+@use "./popup/calendar-popup.scss";
+
+#calendar-container {
+  padding: 0;
+  margin: 2rem auto;
+}
+
+#riepilogo-operatore {
+  display: flex;
+  justify-content: space-between;
+
+  .info {
+    flex: 1 0 0;
+    padding: .5rem;
+
+    &:first-child {
+      padding-left: 0;
+    }
+
+    &:last-child {
+      padding-right: 0;
+    }
+  }
+}
+
+.fc {
+
+  a {
+    text-decoration: none !important;
+  }
+
+  .fc-event {
+    cursor: pointer;
+  }
+
+  .fc-daygrid-event {
+    &-dot {
+      border-color: var(--cal-primary-color);
+    }
+  }
+
+  .fc-v-event {
+    background-color: var(--cal-primary-color);
+    border-color: var(--cal-primary-color);
+  }
+}

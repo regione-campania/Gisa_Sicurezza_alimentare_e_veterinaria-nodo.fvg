@@ -1,0 +1,135 @@
+<!--
+Copyright (C) AGPL-3.0  
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.-->
+<div id="configurazioni">
+  <div class="header">
+    <h2>Configurazione</h2>
+  </div>
+  <div class="my-3" id="riga-azioni">
+    <a id="export-link" class="clickable" (click)="openExportModal()">Esporta</a>
+  </div>
+  <div class="row" id="riga-bottoni">
+    <div class="col-lg-5">
+      <div class="buttons-section mb-3">
+        <button type="button" class="btn btn-outline-black" *ngFor="let struttura of infoStrutture"
+          [ngClass]="{'active': struttura.active}" (click)="setStrutturaAttiva(struttura.label)">
+          <span class="label">{{struttura.label}}</span>
+        </button>
+      </div>
+    </div>
+    <div class="col-lg">
+      <div class="buttons-section mb-3">
+        <ng-container *ngIf="strutturaPrimariaAttiva">
+          <button type="button" class="btn btn-outline-black" *ngFor="let struttura of strutturaPrimariaAttiva.struttureAssociate"
+            [ngClass]="{'active': struttura.active}" (click)="setStrutturaAttiva(strutturaPrimariaAttiva.label, struttura.label)">
+            <span class="label">{{struttura.label}}</span>
+          </button>
+        </ng-container>
+      </div>
+    </div>
+  </div>
+  <div id="container-strutture" [ngSwitch]="strutturaPrimariaAttiva?.label">
+    <uos-conf *ngSwitchCase="'UOS'" [info]="$any(getInfoStruttura('UOS'))"></uos-conf>
+    <uoc-conf *ngSwitchCase="'UOC'" [info]="$any(getInfoStruttura('UOC'))"></uoc-conf>
+    <risorse-conf *ngSwitchCase="'Risorse'" [info]="$any(getInfoStruttura('Risorse'))"></risorse-conf>
+    <piani-conf #pianiConf *ngSwitchCase="'Piani'" [info]="$any(getInfoStruttura('Piani'))"></piani-conf>
+    <classyfarm-conf *ngSwitchCase="'ClassyFarm'" [info]="$any(getInfoStruttura('ClassyFarm'))"></classyfarm-conf>
+    <tipo-liste *ngSwitchCase="'Liste'" [info]="$any(getInfoStruttura('Liste'))"></tipo-liste>
+    <tipologia-stabilimento *ngSwitchCase="'Tipologia Stabilimento'" [info]="$any(getInfoStruttura('Tipologia Stabilimento'))"></tipologia-stabilimento>
+  </div>
+</div>
+
+<!-- templates import/export -->
+
+<ng-template #exportModalTemplate>
+  <div class="modal-header">
+    <button class="btn-close d-block ms-auto" (click)="closeExportModal()"></button>
+  </div>
+  <div class="modal-body rounded">
+    <div class="d-flex flex-column justify-content-center" style="height: 300px"
+      *ngIf="!exportChecklist; else checklist">
+      <loading-message></loading-message>
+    </div>
+    <ng-template #checklist>
+      <p class="fs-5 fw-semibold">Selezionare le configurazioni da esportare:</p>
+      <form [formGroup]="exportChecklist!">
+        <ul class="checklist" id="config-checklist" formArrayName="dati">
+          <li class="checklist-item" *ngFor="let control of exportChecklistControls; index as i">
+            <div class="form-check" [formGroupName]="i">
+              <input type="checkbox" class="form-check-input" [id]="control.get('id')" formControlName="selezionato">
+              <label class="form-check-label" [id]="control.get('id')">{{control.get('descr')?.value}}</label>
+            </div>
+          </li>
+        </ul>
+      </form>
+      <hr>
+      <div class="d-flex my-2">
+        <button type="button" class="btn btn-primary mx-auto" style="min-width:200px"
+          (click)="openExportFilenameModal()" [disabled]="exportChecklist!.invalid">Esporta</button>
+      </div>
+    </ng-template>
+  </div>
+</ng-template>
+
+<ng-template #exportFilenameModalTemplate>
+  <div class="modal-header">
+    <button class="btn-close d-block ms-auto" (click)="closeExportFilenameModal()"></button>
+  </div>
+  <div class="modal-body">
+    <p class="fs-5 fw-semibold">Nome file:</p>
+    <input class="form-control" id="filename" [formControl]="filenameControl">
+    <button type="button" class="btn btn-primary d-block w-25 mx-auto my-3" (click)="esportaConfigurazioni()"
+      [disabled]="filenameControl.invalid">OK</button>
+  </div>
+</ng-template>
+
+<ng-template #exportInfoModalTemplate>
+  <div class="modal-header">
+    <button class="btn-close d-block ms-auto" (click)="closeExportInfoModal()"></button>
+  </div>
+  <div class="modal-body">
+    <p class="fs-5 fw-semibold">Dati esportati (record totali per configurazione):</p>
+    <div class="d-flex justify-content-center" *ngFor="let dati of datiEsportazione">
+      <span class="fw-semibold">{{dati.nome_foglio}}:</span>
+      <span class="ms-2">{{dati.dati.length}}</span>
+    </div>
+    <button type="button" class="btn btn-primary d-block w-25 mx-auto my-3" (click)="closeExportInfoModal()">OK</button>
+  </div>
+</ng-template>
+
+<ng-template #importFileModalTemplate>
+  <div class="modal-header">
+    <button class="btn-close d-block ms-auto" (click)="closeImportFileModal()"></button>
+  </div>
+  <div class="modal-body">
+    <p class="fs-5 fw-semibold">Selezionare file da importare:</p>
+    <input class="form-control" type="file" id="import-file" (change)="fileSelezionato = $any($event.target).files[0]"
+      accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">
+    <button type="button" [disabled]="!fileSelezionato" class="btn btn-primary d-block w-25 mx-auto my-3"
+      (click)="importaConfigurazioni()">Importa</button>
+  </div>
+</ng-template>
+
+<ng-template #importModalTemplate>
+  <div class="modal-header">
+    <button class="btn-close d-block ms-auto" (click)="closeImportModal()"></button>
+  </div>
+  <div class="modal-body" *ngIf="importChecklist">
+    <p class="fs-5 fw-semibold">Selezionare configurazioni da importare:</p>
+    <ul id="fogli-da-importare" [formGroup]="importChecklist">
+      <li *ngFor="let sheet of fogliDaImportareKeys">
+        <div class="form-check">
+          <input type="checkbox" class="form-check-input" [id]="sheet" [formControlName]="sheet">
+          <label [for]="sheet">{{sheet}}</label>
+        </div>
+      </li>
+    </ul>
+    <button type="button" [disabled]="!importChecklist.valid" class="btn btn-primary d-block w-25 mx-auto my-3"
+      (click)="confermaImportazione()">Conferma</button>
+  </div>
+</ng-template>

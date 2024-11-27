@@ -1,0 +1,13 @@
+export const environment = {
+  production: false,
+  protocol: 'http',
+  host: '',
+  port: '80',
+  root: 'nodeFvg/',
+  hideProfilassi: false,
+  hideRepo: false
+};
+
+export const baseUri = `${environment.protocol}://${environment.host}:${environment.port}/${environment.root}`;
+
+export const gisaSpid = "";

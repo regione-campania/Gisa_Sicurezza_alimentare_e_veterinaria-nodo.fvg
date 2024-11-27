@@ -1,0 +1,446 @@
+<!--
+Copyright (C) AGPL-3.0  
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.-->
+<div id="imprese-main">
+  <h2 class="d-flex align-items-center">Lista Attività</h2>
+  <div class="form-box box rounded shadow-sm p-0">
+    <div class="form-container">
+      <div class="form-column border-end rounded-start" style="background-color: var(--us-gray-1)">
+        <div class="d-flex flex-column gap-2">
+          <a-form [src]="formConfig" flexDirection="column" (onSubmit)="ricercaAttivita($event)"></a-form>
+        </div>
+      </div>
+      <div class="result-column">
+        <ng-container *ngIf="attivitaSel; else message">
+          <a-smart-table *ngIf="userInfo && attivitaSel"
+            [printInfo]="{tableName: 'Lista attività', userName: userInfo.nome}" [colsInfo]="ui_attivita.colonne"
+            [src]="attivitaSel" [autolayout]="false" [dataMapping]="mappingAttivita" class="table-striped">
+            <ng-template aTemplate="head">
+              <tr>
+                <!--<th scope="col" class="selector-th"></th>-->
+                <th scope="col" *ngFor="let colonna of ui_attivita.colonne">
+                  <div class="d-flex align-items-center">
+                    <span class="label">{{ colonna.intestazione }}</span>
+                    <a-table-sorter [type]="colonna.tipo" [field]="colonna.campo"></a-table-sorter>
+                    <a-table-filter [type]="colonna.tipo" [field]="colonna.campo"></a-table-filter>
+                  </div>
+                </th>
+                <th scope="col"></th>
+                <th scope="col"></th>
+              </tr>
+            </ng-template>
+            <ng-template aTemplate="body" let-att>
+              <ng-template [ngIf]="att.id_tariffa && att.id_cliente" [ngIfElse]="noAttivitaECliente">
+                <tr class="clickable" [id]="att.id">
+                  <!--<td>
+                      <a-table-selector *ngIf="att.selezionabile" [data]="att"></a-table-selector>
+                    </td>-->
+                  <td [ngClass]="{ 'text-end': colonna.format === 'currency2' }" *ngFor="let colonna of ui_attivita.colonne"
+                    (click)="onClick(att)">
+                    <!-- <td [ngClass]="{'text-end': colonna.format === 'currency2'}" *ngFor="let colonna of ui.colonne"> -->
+                    <ng-container *ngIf="colonna.tipo == 'date'; else elseField">
+                      {{ att[colonna.campo] | date : "dd/MM/yyyy" }}
+                    </ng-container>
+                    <ng-template #elseField>
+                      <ng-container *ngIf="colonna.format && colonna.format === 'currency2'; else normalField">
+                        {{att[colonna.campo] !== null ? (att[colonna.campo] | numberPipe : "1.2-2") : null}}
+                      </ng-container>
+                      <ng-template #normalField>
+                        {{ att[colonna.campo] }}
+                      </ng-template>
+                    </ng-template>
+                  </td>
+                  <td>
+                    <button class="btn btn-primary float-end ms-auto" data-bs-toggle="modal"
+                      data-bs-target="#aggiungiCliente" (click)="resetModaleCliente(); getIdTariffa(att)"
+                      [disabled]="!att.selezionabile_cliente">
+                      Cliente
+                    </button>
+                  </td>
+                  <td>
+                    <button class="btn btn-primary float-end ms-auto" data-bs-toggle="modal"
+                      data-bs-target="#modificaTariffa" (click)="clickModifica(att)"
+                      [disabled]="att.closed == 'Chiusa' || !att.selezionabile">
+                      Tariffa
+                    </button>
+                  </td>
+                </tr>
+              </ng-template>
+              <ng-template #noAttivitaECliente>
+                <tr [id]="att.id">
+                  <!--<td>
+                        <a-table-selector *ngIf="att.selezionabile" [data]="att"></a-table-selector>
+                      </td>-->
+                  <td [ngClass]="{ 'text-end': colonna.format === 'currency2' }" *ngFor="let colonna of ui_attivita.colonne"
+                    (click)="onClick(att)">
+                    <!-- <td [ngClass]="{'text-end': colonna.format === 'currency2'}" *ngFor="let colonna of ui.colonne"> -->
+                    <ng-container *ngIf="colonna.tipo == 'date'; else elseField">
+                      {{ att[colonna.campo] | date : "dd/MM/yyyy" }}
+                    </ng-container>
+                    <ng-template #elseField>
+                      <ng-container *ngIf="colonna.format && colonna.format === 'currency2'; else normalField">
+                        {{att[colonna.campo] !== null ? (att[colonna.campo] | numberPipe : "1.2-2") : null}}
+                      </ng-container>
+                      <ng-template #normalField>
+                        {{ att[colonna.campo] }}
+                      </ng-template>
+                    </ng-template>
+                  </td>
+                  <td>
+                    <button class="btn btn-primary float-end ms-auto" data-bs-toggle="modal"
+                      data-bs-target="#aggiungiCliente" (click)="resetModaleCliente(); getIdTariffa(att)"
+                      [disabled]="!att.selezionabile_cliente">
+                      Cliente
+                    </button>
+                  </td>
+                  <td>
+                    <button class="btn btn-primary float-end ms-auto" data-bs-toggle="modal"
+                      data-bs-target="#modificaTariffa" (click)="clickModifica(att)"
+                      [disabled]="att.closed == 'Chiusa' || !att.selezionabile">
+                      Tariffa
+                    </button>
+                  </td>
+                </tr>
+              </ng-template>
+            </ng-template>
+          </a-smart-table>
+        </ng-container>
+        <ng-template #message>
+          <div class="h-100 d-flex align-items-center justify-content-center">
+            <p *ngIf="!loadingAttivita">
+              I risultati della ricerca saranno visualizzati qui.
+            </p>
+            <loading-message *ngIf="loadingAttivita" message="Caricamento Attività"></loading-message>
+          </div>
+        </ng-template>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Modal albero tariffa  -->
+<!-- <div class="modal fade" id="selectTariffa" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
+  <div class="modal-dialog modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title fs-5" id="selectTariffaLabel">Seleziona Tariffa</h2>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <a-tree-filter [tree]="tariffarioTree" placeholder="Ricerca tariffa..."></a-tree-filter>
+        <div class="scrollbox h-100 overflow-auto custom-scrollbar" id="tariffario-tree-scrollbox">
+          <a-tree #tariffarioTree [root]="tariffarioParsed" (onClick)="selectVoice($event)"></a-tree>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" ngbTooltip="Aggiorna Tariffa" (click)="updateIDTariffa()"
+          [disabled]="!voceSelected">
+          Aggiorna<i class="fa fa-pencil ms-2"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+</div> -->
+<!-- Modal modifica della tariffa-->
+<div class="modal fade" id="modificaTariffa" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
+  <div class="modal-dialog modal-lg modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title fs-5" id="selectTariffaLabel">
+          Seleziona Tariffa Da Modificare
+        </h2>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body custom-scrollbar">
+        <a-tree-filter [tree]="tariffarioTree" placeholder="Ricerca tariffa..."></a-tree-filter>
+        <div class="scrollbox h-100 overflow-auto custom-scrollbar" id="tariffario-tree-scrollbox">
+          <a-tree #tariffarioTree [root]="tariffarioParsed" (onClick)="prendiValoreTariffa($event)"></a-tree>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" ngbTooltip="Aggiorna Tariffa" (click)="updateIDTariffa()"
+          [disabled]="!voceSelected">
+          Salva<i class="fa fa-pencil ms-2"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Modal aggiungi cliente -->
+<div class="modal fade" id="aggiungiCliente" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+  aria-labelledby="new-piano-label" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-xl">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title fs-5" id="selectTariffaLabel">
+          Seleziona Cliente
+        </h2>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div id="formSoggettiFisici">
+          <h2>Cerca Soggetto Fisico</h2>
+          <form [formGroup]="formRicercaSoggettiFisici">
+            <div class="col d-flex align-items-end gap-2">
+              <div class="flex-fill">
+                <label>Nome</label>
+                <input class="form-control" type="text" formControlName="nome" />
+              </div>
+              <div class="flex-fill">
+                <label>Cognome</label>
+                <input class="form-control" type="text" formControlName="cognome" />
+              </div>
+              <div class="flex-fill">
+                <label>Codice Fiscale</label>
+                <input class="form-control" type="text" formControlName="cf" />
+              </div>
+              <!-- <div class="flex-fill">
+                <label>Comune di Nascita</label>
+                <input class="form-control" type="text" formControlName="comune_nascita">
+              </div>
+              <div class="flex-fill">
+                <label>Data Nascita</label>
+                <input class="form-control" type="date" formControlName="data_nascita">
+              </div> -->
+              <div class="flex-fill">
+                <label>Limite Risultati</label>
+                <select class="form-select" formControlName="limite">
+                  <option value="1000">1000</option>
+                  <option value="2000">2000</option>
+                  <option value="null">Nessuno</option>
+                </select>
+              </div>
+              <div>
+                <button class="btn btn-primary" (click)="filtraSoggettiFisici()">
+                  <i class="icon fa-solid fa-search"></i>
+                  <span>Ricerca</span>
+                </button>
+              </div>
+              <div class="row mt-1">
+                <div class="col">
+                  <button class="btn btn-primary float-end" (click)="verificaAnagraficaAssistiti()"
+                    [disabled]="disabilitaAnag">
+                    <span>Verifica Anagrafica Assistiti</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </form>
+          <br />
+
+          <!-- Stampa tabella dei soggetti fisici lato nostro -->
+          <div id="soggettiFisici" *ngIf="retDatiSogg">
+            <h2 class="d-flex align-items-center">
+              <span> Soggetti Fisici </span>
+            </h2>
+            <a-smart-table [colsInfo]="uiSogg.colonne" [src]="retDatiSogg" [autolayout]="false">
+              <ng-template aTemplate="head">
+                <tr>
+                  <th scope="col" id="intestazione-soggetti-fisici" *ngFor="let colonna of uiSogg.colonne">
+                    <div class="d-flex align-items-center justify-content-center">
+                      <span class="label">{{ colonna.intestazione }}</span>
+                      <a-table-sorter [type]="colonna.tipo" [field]="colonna.campo"></a-table-sorter>
+                      <a-table-filter [type]="colonna.tipo" [field]="colonna.campo"></a-table-filter>
+                    </div>
+                  </th>
+                  <th scope="col"></th>
+                </tr>
+              </ng-template>
+              <ng-template aTemplate="body" let-ar>
+                <tr>
+                  <td *ngFor="let colonna of uiSogg.colonne">
+                    <ng-container *ngIf="colonna.tipo === 'date'; else campoNormale">
+                      {{ ar[colonna.campo] | date : "dd/MM/yyyy" }}
+                    </ng-container>
+                    <ng-template #campoNormale>
+                      {{ ar[colonna.campo] }}
+                    </ng-template>
+                  </td>
+                  <td>
+                    <div class="d-flex flex-column gap-1">
+                      <button class="btn btn-primary float-end ms-auto" ngbTooltip="Seleziona soggetto" container="body"
+                        (click)="selectSogg(ar)">
+                        Seleziona
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              </ng-template>
+            </a-smart-table>
+            <br />
+          </div>
+          <ng-template #messaggioNoSogg>
+            Non sono presenti soggetti fisici per quel filtro
+          </ng-template>
+        </div>
+        <div id="formStabilimenti">
+          <h2>Cerca Stabilimento</h2>
+          <form [formGroup]="formRicercaStabilimento">
+            <div class="col d-flex align-items-end gap-2">
+              <div class="flex-fill">
+                <label>Nome</label>
+                <input class="form-control" type="text" formControlName="nome" />
+              </div>
+              <div class="flex-fill">
+                <label>Codice Regionale</label>
+                <input class="form-control" type="text" formControlName="cod_regionale" />
+              </div>
+              <div class="flex-fill">
+                <label>Partita IVA</label>
+                <input class="form-control" type="text" formControlName="p_iva" />
+              </div>
+              <div class="flex-fill">
+                <label>Comune</label>
+                <input class="form-control" type="text" formControlName="comune" />
+              </div>
+              <div class="flex-fill">
+                <label>Tipologia Struttura</label>
+                <select class="form-select" formControlName="tipologia_struttura">
+                  <option value="null"></option>
+                  <option *ngFor="let tipo of tipologia_struttura" [value]="tipo.id_tipologia_struttura">
+                    {{ tipo.descrizione }}
+                  </option>
+                </select>
+              </div>
+              <div>
+                <label>Limite Risultati</label>
+                <select class="form-select" formControlName="limite">
+                  <option value="1000">1000</option>
+                  <option value="2000">2000</option>
+                  <option value="null">Nessuno</option>
+                </select>
+              </div>
+              <div>
+                <button class="btn btn-primary" (click)="filtraStabilimenti()">
+                  <i class="icon fa-solid fa-search"></i>
+                  <span>Ricerca</span>
+                </button>
+              </div>
+            </div>
+          </form>
+          <br />
+
+          <div id="stabilimenti" *ngIf="retDatiStab">
+            <h2 class="d-flex align-items-center">
+              <span> Stabilimenti </span>
+            </h2>
+            <a-smart-table [colsInfo]="uiStab.colonne" [src]="retDatiStab" [autolayout]="false"
+              [boxStyle]="{ 'maxHeight.px': 600 }">
+              <ng-template aTemplate="head">
+                <tr>
+                  <th scope="col" id="instestazione-stabilimenti" *ngFor="let colonna of uiStab.colonne">
+                    <div class="d-flex align-items-center justify-content-center">
+                      <span class="label">{{ colonna.intestazione }}</span>
+                      <a-table-sorter [type]="colonna.tipo" [field]="colonna.campo"></a-table-sorter>
+                      <a-table-filter [type]="colonna.tipo" [field]="colonna.campo"></a-table-filter>
+                    </div>
+                  </th>
+                  <th scope="col"></th>
+                </tr>
+              </ng-template>
+              <ng-template aTemplate="body" let-ar>
+                <tr id="dati-stabilimento">
+                  <td *ngFor="let colonna of uiStab.colonne">
+                    <ng-container *ngIf="colonna.tipo === 'time'; else campoNormale">
+                      {{ ar[colonna.campo] | date : "dd/MM/yyyy hh-mm-ss" }}
+                    </ng-container>
+                    <ng-template #campoNormale>
+                      {{ ar[colonna.campo] }}
+                    </ng-template>
+                  </td>
+                  <td>
+                    <div class="d-flex flex-column gap-1">
+                      <button class="btn btn-primary float-end ms-auto" ngbTooltip="Seleziona stabilimento"
+                        (click)="selectStab(ar)">
+                        Seleziona
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              </ng-template>
+            </a-smart-table>
+            <br />
+          </div>
+          <ng-template #messaggioNoStab>
+            Non sono presenti stabilimenti per quel filtro
+          </ng-template>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Stampa in un modal del risultato dell'anagrafica trovata nella loro banca dati-->
+  <div class="modal fade modal-dialog-scrollable" id="anagraficaAssistiti" data-bs-backdrop="static"
+    data-bs-keyboard="false" tabindex="-1" aria-labelledby="new-piano-label" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title">Anagrafica Assistiti</h2>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="close"></button>
+        </div>
+        <div class="modal-body">
+          <div *ngIf="retDatiAnag; else messaggioAnag">
+            <table class="table table-assistiti">
+              <thead>
+                <tr>
+                  <th scope="col" *ngFor="let colonna of uiAnag.colonne">
+                    {{ colonna.intestazione }}
+                  </th>
+                  <th scope="col"></th>
+                </tr>
+              </thead>
+              <tbody class="border">
+                <tr *ngFor="let ar of retDatiAnagTot">
+                  <td *ngFor="let colonna of uiAnag.colonne">
+                    {{ ar.Anagrafica[colonna.campo] }}
+                  </td>
+                  <td>
+                    <button class="btn btn-primary float-end ms-auto" container="body" (click)="aggiungiAssistito(ar)">
+                      <i class="icon fa-solid fa-plus"></i>
+                      Aggiungi
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+
+            <!-- <br>
+            <a-smart-table [colsInfo]="uiAnag.colonne" [src]="retDatiAnag" [autolayout]="false">
+              <ng-template aTemplate="head">
+                <tr>
+                  <th id="intestazione-anagrafica" *ngFor="let colonna of uiAnag.colonne">
+                    <div class="d-flex align-items-center justify-content-center">
+                      <span class="label">{{colonna.intestazione}}</span>
+                      <a-table-sorter [type]="colonna.tipo" [field]="colonna.campo"></a-table-sorter>
+                      <a-table-filter [type]="colonna.tipo" [field]="colonna.campo" [options]="colonna.filterOptions"></a-table-filter>
+                    </div>
+                  </th>
+                </tr>
+              </ng-template>
+              <ng-template aTemplate="body" let-ar>
+                <tr>
+                  <td *ngFor="let colonna of uiAnag.colonne">
+                    <ng-container *ngIf="colonna.tipo === 'date'; else campoNormale">
+                      {{ar[colonna.campo] | date: 'dd/MM/yyyy'}}
+                    </ng-container>
+                    <ng-template #campoNormale>
+                      {{ar[colonna.campo]}}
+                    </ng-template>
+                  </td>
+                </tr>
+              </ng-template>
+            </a-smart-table> -->
+          </div>
+          <ng-template #messaggioAnag>
+            Non sono presenti stabilimenti per quel filtro
+          </ng-template>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

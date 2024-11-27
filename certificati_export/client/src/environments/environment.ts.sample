@@ -1,0 +1,11 @@
+export const environment = {
+  production: false,
+  protocol: 'http',
+  host: '',
+  port: '',
+  root: 'nodeCe/',
+  gisaSpid: '',
+  hideTest: true
+};
+
+export const baseUri = `/${environment.root}`;

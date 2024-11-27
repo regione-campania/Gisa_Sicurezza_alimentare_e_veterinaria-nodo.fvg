@@ -1,0 +1,173 @@
+<!--
+Copyright (C) AGPL-3.0  
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.-->
+<div id="tipo-liste">
+
+  <h3 class="d-flex align-items-center">
+
+    <span>Elenco Tipo Liste </span>
+    <button type="button" *ngIf="isRuoloAbilitato" class="btn btn-primary ms-auto"
+      (click)="finestraTipoLista = openPopup($event, modal, 'add_lista')">
+      <i class="icon fa-solid fa-plus"></i>
+      <span>Nuovo Tipo Lista </span>
+    </button>
+
+  </h3>
+
+  <div class="row">
+    <div class="col">
+      <div *ngIf="tipoliste; else noDataBlock" class="table-container box-3d rounded p-0">
+        <a-smart-table [colsInfo]="this.ui.colonne" [src]="tipoliste" [selection]="false" [autolayout]="false"
+          [exportable]="false">
+
+          <ng-template aTemplate="head">
+            <tr>
+              <th scope="col" class="selector-th"></th>
+              <th scope="col" *ngFor="let colonna of this.ui.colonne">
+                <div class="d-flex align-items-center">
+                  <span class="label">{{colonna.intestazione}}</span>
+                  <a-table-sorter [type]="colonna.tipo" [field]="colonna.campo"></a-table-sorter>
+                  <a-table-filter [type]="colonna.tipo" [field]="colonna.campo" [options]="colonna.filterOptions"></a-table-filter>
+                </div>
+              </th>
+              <th scope="col" *ngIf="isRuoloAbilitato"></th>
+
+              <th scope="col"></th>
+              <th scope="col"></th>
+
+            </tr>
+          </ng-template>
+          <ng-template aTemplate="body" let-tipolista>
+            <tr class="clickable">
+              <td>
+                <a-table-selector *ngIf="tipolista.selezionabile" [data]="tipolista"></a-table-selector>
+              </td>
+              <td *ngFor="let colonna of this.ui.colonne" [ngClass]="{'text-end': colonna.tipo == 'number'}">
+                <ng-container *ngIf="colonna.tipo == 'date'; else elseBlock">
+                  {{tipolista[colonna.campo] | date: 'dd/MM/yyyy'}}
+                </ng-container>
+                <ng-template #elseBlock>
+                  <ng-container *ngIf="colonna.tipo == 'number'; else normalFormat">
+                    {{tipolista[colonna.campo] | numberPipe}}
+                  </ng-container>
+                  <ng-template #normalFormat>
+                    {{tipolista[colonna.campo]}}
+                  </ng-template>
+                </ng-template>
+              </td>
+              <td *ngIf="isRuoloAbilitato">
+                <button type="button" class="btn btn-danger" (click)="deleteTipoLista(tipolista.id_tipo_lista)">
+                  <i class="fa fa-trash me-1" aria-hidden="true"></i>
+                  <span>Elimina</span>
+                </button>
+              </td>
+              <td>
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#configura"
+                  (click)="openPopupConfiguraListe($event, tipolista,configura_tag)">
+                  <i class="fa-solid fa-gear"></i> <span> Configura Liste</span>
+                </button>
+              </td>
+              <td>
+                <button type="button" [disabled]="!tipolista.liste_associate" class="btn btn-primary"
+                  data-bs-toggle="modal" data-bs-target="#tipolista-piani"
+                  (click)="openPopupAssociaPiani($event, tipolista,tipolistapiani_tag)">
+                  <i class="fa-solid fa-gear"></i><span> Associa Piani</span>
+                </button>
+              </td>
+            </tr>
+          </ng-template>
+        </a-smart-table>
+      </div>
+      <ng-template #noDataBlock>
+        <div class="col-md position-relative">
+          <span> Non sono presenti dati nella tabella </span>
+        </div>
+      </ng-template>
+    </div>
+  </div>
+
+
+
+
+  <ng-template #modal>
+    <div class="modal-header">
+      <button type="button" class="btn btn-close d-inline-block ms-auto" (click)="closePopup()"></button>
+    </div>
+    <div class="modal-body">
+      <h3 class="modal-title text-center mb-2">Aggiungi {{operazione}}</h3>
+      <label>Descrizione</label>
+      <input type="text" class="form-control" id="descr">
+      <br>
+      <label>Codice</label>
+      <input type="text" class="form-control" id="cod">
+      <br>
+
+      <p>Seleziona formato:</p>
+      <div class="form-check">
+        <div *ngFor="let elemento of this.formatoliste">
+          <input type="radio" id={{elemento.cod}} name="formato" value={{elemento.cod}} class="form-check-input">
+          <label class="form-check-label">{{elemento.descr}}</label>
+        </div>
+      </div>
+
+
+      <br>
+    </div>
+
+    <div class="modal-footer border-0 wrapper justify-content-around">
+      <button type="button" class="btn btn-primary action-button" (click)="save($event)"
+        [disabled]="disableAddButton">Aggiungi</button>
+
+      <button type="button" class="btn btn-danger action-button" (click)="closePopup()">Annulla</button>
+    </div>
+  </ng-template>
+
+
+
+
+
+  <!-- Modale Info Piano -->
+  <div class="modal fade" id="tipolista-piani" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    aria-hidden="true">
+    <div class="modal-dialog modal-lg system-modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <div class="modal-title fs-4">Associa Piani</div>
+          <button type="button" class="btn btn-close" data-bs-dismiss="modal" aria-label="close"
+            (click)="closePopupAssociaPiani()">
+
+          </button>
+        </div>
+        <div class="modal-body" style="height: 600px;overflow-y: auto;width: 600;">
+          <tipolista-piani #tipolistapiani_tag></tipolista-piani>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Modale Info Configura -->
+  <div class="modal fade" id="configura" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header">
+          <div class="modal-title fs-4">Configura Liste</div>
+          <button type="button" class="btn btn-close" data-bs-dismiss="modal" aria-label="close"
+            (click)="closePopupConfiguraListe()">
+
+          </button>
+        </div>
+        <div class="modal-body" style="height: 1000px; width: 800;overflow-x: auto;">
+          <lista #configura_tag></lista>
+        </div>
+
+      </div>
+    </div>
+  </div>

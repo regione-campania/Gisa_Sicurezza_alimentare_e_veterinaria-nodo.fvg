@@ -1,0 +1,171 @@
+@import "node_modules/bootstrap/scss/bootstrap.scss";
+
+#portals-home {
+  &.desktop-mode {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+
+    &,
+    .portals-home-header,
+    .portals-home-main,
+    .portals-home-footer {
+      position: relative;
+      top: 0;
+      left: 0;
+    }
+
+    .portals-home-header {
+      width: 100%;
+      background: var(--top-bar-bg);
+      box-shadow: var(--top-bar-shadow);
+      flex: 1 0 auto;
+    }
+
+    .portals-home-main {
+      width: 100%;
+      height: calc(100vh - var(--top-bar-height) - var(--bottom-bar-height) - 46px);
+      overflow: auto;
+      flex: 1 1 auto;
+    }
+
+    .portals-home-footer {
+      bottom: 0;
+      width: 100%;
+      background: var(--bottom-bar-bg);
+      box-shadow: var(--bottom-bar-shadow);
+      flex: 1 0 auto;
+    }
+
+    .fvg-logo {
+      margin: 1rem auto;
+      max-width: 300px;
+    }
+  }
+}
+
+#app-version {
+  color: var(--fvg-white);
+  height: var(--bottom-bar-height);
+}
+
+#portals-container {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  flex-direction: column;
+  row-gap: 1rem;
+}
+
+.portal {
+  flex: 1 0 100%;
+}
+
+.portal-card {
+  height: 400px;
+  width: 315px;
+  margin: auto;
+  overflow: hidden;
+  box-shadow: var(--box-shadow-3d);
+  transition: var(--box-shadow-transition);
+}
+
+.portal-card:hover {
+  box-shadow: var(--box-shadow-3d-hover);
+}
+
+.portal-card .card-body {
+  padding: 0 !important;
+  overflow: hidden;
+  justify-content: center;
+}
+
+.portal-card,
+.portal-card .card-body {
+  display: flex;
+  flex-direction: column;
+}
+
+.portal-card .card-footer {
+  font-size: 1.5em;
+  font-weight: 600;
+  text-align: center;
+  background-color: white;
+}
+
+.fill-height {
+  transform: scale(1.05);
+}
+
+#gestione-attivita-card {
+  background-color: #512ba2;
+
+  img {
+    transform: scale(1.11);
+  }
+}
+
+#configurazioni-card {
+  background-color: #73b3e6;
+}
+
+#organizzazione-card {
+  border-color: #5ee5a9;
+}
+
+#agenda-operatori-card {
+  background-color: #ffecce;
+}
+
+#matrix-card {
+  background-color: #9ccc65;
+}
+
+#matrix-formule-card {
+  background-color: #701510;
+
+  img {
+    transform: scale(1.0755);
+  }
+}
+
+#bdn-card {
+  img {
+    transform: scale(1.198);
+  }
+}
+
+#controlli-ufficiali-card {
+  background-color: #8dd2be;
+}
+
+#anagrafica-card {
+  background-color: #d6c09f;
+
+  img {
+    transform: scale(1.15);
+  }
+}
+
+#reportistica-card {
+  background-color: #23c2b3;
+}
+
+@media screen and (min-width: 768px) {
+  #portals-container {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+}
+
+@include media-breakpoint-up(md) {
+  .portal {
+    flex-basis: 50%;
+  }
+}
+
+@include media-breakpoint-up(lg) {
+  .portal {
+    flex-basis: #{calc(100 / 3)} + "%";
+  }
+}

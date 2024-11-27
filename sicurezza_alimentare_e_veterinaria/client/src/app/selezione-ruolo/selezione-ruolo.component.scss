@@ -1,0 +1,22 @@
+:host {
+  margin: auto;
+}
+
+#selezione-ruolo {
+
+  #selezione-ruolo-box {
+    margin: auto;
+  }
+
+  .role-button {
+    max-width: 300px;
+  }
+
+}
+
+#roles-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+}

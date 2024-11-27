@@ -1,0 +1,26 @@
+#bottoni-azione-pool {
+  button {
+    margin-right: 0.5rem;
+  }
+}
+
+.activity-buttons {
+  button {
+    margin-left: 0.5rem;
+  }
+}
+
+.btn-group {
+  button {
+    margin-left: 0.5rem;
+  }
+}
+
+#intestazione-bottoni {
+  background-color: var(--fvg-black);
+  color: var(--fvg-white);
+  button {
+    background-color: var(--fvg-white);
+    color: var(--fvg-black);
+  }
+}

@@ -1,0 +1,238 @@
+<!--
+Copyright (C) AGPL-3.0  
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.-->
+<div id="indirizzi">
+    <form [formGroup]="formModificaIndirizzo">
+        <ng-template [ngIf]="_flag" [ngIfElse]="noStabIndirizzo">
+            <br>
+            <div class="form-group mb-2">
+                <label>Comune: <span class="text-danger mb-3 ms-1">
+                        *
+                    </span> </label>
+                <input type="text" class="form-control border" formControlName="comune" [autofiller]="datiComuni"
+                    autofillerKey="denominazione_it" (valueChange)="patchValue($event, 'comune')">
+            </div>
+            <!-- Autocompletamento per i toponimi-->
+            <div class="form-group mb-2">
+                <label>Toponimo: <span class="text-danger mb-3 ms-1">
+                        *
+                    </span> </label>
+                <input type="text" class="form-control border" formControlName="toponimo" [autofiller]="datiToponimi"
+                    autofillerKey="descrizione" (valueChange)="patchValue($event, 'toponimo')">
+            </div>
+            <div class="form-group mb-2">
+                <label>Indirizzo: <span class="text-danger mb-3 ms-1">
+                        *
+                    </span> </label>
+                <input type="text" class="form-control border" formControlName="indirizzo" [autofiller]="datiIndirizzi"
+                autofillerKey="descrizione_indirizzo" (valueChange)="patchValue($event, 'indirizzo')">
+
+            </div>
+            <div class="form-group mb-2">
+                <label>Civico: <span class="text-danger mb-3 ms-1">
+                        *
+                    </span> </label>
+                <input type="text" class="form-control border" formControlName="civico">
+
+            </div>
+            <ng-template [ngIf]="!flagCap" [ngIfElse]="flagTrue">
+                <div class="form-group mb-2">
+                    <label>CAP: <span class="text-danger mb-3 ms-1">
+                            *
+                        </span> </label>
+                    <input type="text" class="form-control border" formControlName="cap" readonly>
+                </div>
+            </ng-template>
+            <ng-template #flagTrue>
+                <div class="form-group mb-2">
+                    <label>CAP: <span class="text-danger mb-3 ms-1">
+                            *
+                        </span> </label>
+                    <select class="form-select" formControlName="cap">
+                        <option></option>
+                        <option *ngFor="let el of caps">{{el}}
+                        </option>
+                    </select>
+                </div>
+            </ng-template>
+            <div class="form-group mb-2">
+                <label>Latitudine: <!-- <span class="text-danger mb-3 ms-1">
+                    *
+                </span> --> </label>
+                <input type="text" class="form-control border" formControlName="latitudine">
+            </div>
+            <div class="form-group mb-2">
+                <label>Longitudine: <!-- <span class="text-danger mb-3 ms-1">
+                    *
+                </span> --> </label>
+                <input type="text" class="form-control border" formControlName="longitudine">
+            </div>
+            <br>
+            <button class="btn btn-primary float-end ms-2" (click)="geoLocalizzazione()"
+                [disabled]="!this.formModificaIndirizzo.valid">
+                Calcola coordinate
+            </button>
+        </ng-template>
+        <ng-template #noStabIndirizzo>
+            <br>
+            <div class="row">
+                <div class="col">
+                    <label>Estero: <span class="text-danger mb-3 ms-1">
+                            *
+                        </span> </label>
+                    <input type="radio" class="form-check-input ms-4" formControlName="valore" value="si"
+                        autocomplete="off" (change)="checkValore($event)">
+                    <label class="form-check-label"> SI </label>
+                    <input type="radio" class="form-check-input ms-4" formControlName="valore" value="no"
+                        autocomplete="off" (change)="checkValore($event)">
+                    <label class="form-check-label"> NO </label>
+                </div>
+            </div>
+            <br>
+            <div *ngIf="valoreCheckbox === 'si'">
+                <div class="form-group mb-2">
+                    <label>Nazione: <span class="text-danger mb-3 ms-1">
+                            *
+                        </span> </label>
+                    <input type="text" class="form-control border" formControlName="nazione" [autofiller]="datiNazioni"
+                        autofillerKey="descrizione_upper" (valueChange)="patchValue($event, 'nazione')">
+                </div>
+                <div class="form-group mb-2">
+                    <label>Stato/Provincia: 
+                        <!-- <span class="text-danger mb-3 ms-1">
+                            *
+                        </span>  -->
+                    </label>
+                    <input type="text" class="form-control border" formControlName="stato_provincia">
+
+                </div>
+                <div class="form-group mb-2">
+                    <label>Comune:
+                        <!-- <span class="text-danger mb-3 ms-1">
+                            *
+                        </span> -->
+                     </label>
+                    <!-- Autocompletamento con funzione che prende anche i comuni esteri -->
+                    <input type="text" class="form-control border" formControlName="comune_estero">
+                </div>
+                <div class="form-group mb-2">
+                    <label>Toponimo:
+                         <!-- <span class="text-danger mb-3 ms-1">
+                            *
+                        </span>  -->
+                    </label>
+                    <!-- Autocompletamento per i toponimi  [autofiller]="datiToponimi" autofillerKey="descrizione"
+                        (valueChange)="patchValue($event, 'toponimo_estero')"-->
+                    <input type="text" class="form-control border" formControlName="toponimo_estero">
+                </div>
+                <div class="form-group mb-2">
+                    <label>Indirizzo:
+                         <!-- <span class="text-danger mb-3 ms-1">
+                            *
+                        </span> -->
+                     </label>
+                    <input type="text" class="form-control border" formControlName="indirizzo_estero">
+                </div>
+                <div class="form-group mb-2">
+                    <label>Civico:
+                         <!-- <span class="text-danger mb-3 ms-1">
+                            *
+                        </span>  -->
+                    </label>
+                    <input type="text" class="form-control border" formControlName="civico_estero">
+                </div>
+                <div class="form-group mb-2">
+                    <label>CAP:
+                         <!-- <span class="text-danger mb-3 ms-1">
+                            *
+                        </span>  -->
+                    </label>
+                    <input type="text" class="form-control border" formControlName="cap_estero">
+                </div>
+            </div>
+
+            <div *ngIf="valoreCheckbox === 'no'">
+                <div class="form-group mb-2">
+                    <label>Comune: <span class="text-danger mb-3 ms-1">
+                            *
+                        </span> </label>
+                    <input type="text" class="form-control border" formControlName="comune" [autofiller]="datiComuni"
+                        autofillerKey="denominazione_it" (valueChange)="patchValue($event, 'comune')">
+                </div>
+                <div class="form-group mb-2">
+                    <!-- Autocompletamento per i toponimi-->
+                    <label>Toponimo: <span class="text-danger mb-3 ms-1">
+                            *
+                        </span> </label>
+                    <input type="text" class="form-control border" formControlName="toponimo"
+                        [autofiller]="datiToponimi" autofillerKey="descrizione"
+                        (valueChange)="patchValue($event, 'toponimo')">
+                </div>
+                <div class="form-group mb-2">
+                    <label>Indirizzo: <span class="text-danger mb-3 ms-1">
+                            *
+                        </span> </label>
+                    <input type="text" class="form-control border" formControlName="indirizzo" [autofiller]="datiIndirizzi"
+                    autofillerKey="descrizione_indirizzo" (valueChange)="patchValue($event, 'indirizzo')">
+                </div>
+                <div class="form-group mb-2">
+                    <label>Civico: <span class="text-danger mb-3 ms-1">
+                            *
+                        </span> </label>
+                    <input type="text" class="form-control border" formControlName="civico">
+                </div>
+                <ng-template [ngIf]="!flagCap" [ngIfElse]="flagTrue">
+                    <div class="form-group mb-2">
+                        <label>CAP: <span class="text-danger mb-3 ms-1">
+                                *
+                            </span> </label>
+                        <input type="text" class="form-control border" formControlName="cap" readonly>
+                    </div>
+                </ng-template>
+                <ng-template #flagTrue>
+                    <div class="form-group mb-2">
+                        <label>CAP: <span class="text-danger mb-3 ms-1">
+                                *
+                            </span> </label>
+                        <select class="form-select" formControlName="cap">
+                            <option></option>
+                            <option *ngFor="let el of caps" [value]="el">{{el}}
+                            </option>
+                        </select>
+                    </div>
+                </ng-template>
+                <div class="form-group mb-2">
+                    <label>Latitudine: <!-- <span class="text-danger mb-3 ms-1">
+                        *
+                    </span> --> </label>
+                    <input type="text" class="form-control border" formControlName="latitudine">
+                </div>
+                <div class="form-group mb-2">
+                    <label>Longitudine: <!-- <span class="text-danger mb-3 ms-1">
+                        *
+                    </span> --> </label>
+                    <input type="text" class="form-control border" formControlName="longitudine">
+                </div>
+                <br>
+                <button class="btn btn-primary float-end ms-2" (click)="geoLocalizzazione()"
+                    [disabled]="!this.formModificaIndirizzo.valid">
+                    Calcola coordinate
+                </button>
+            </div>
+        </ng-template>
+
+
+    </form>
+    <!-- <br> -->
+    <div *ngIf="showButton == true">
+        <button class="btn btn-primary float-end ms-auto" ngbTooltip="Modifica dati indirizzo" (click)="updIndirizzo()"
+            [disabled]="!this.formModificaIndirizzo.valid">
+            {{ labelBottone }}
+        </button>
+    </div>
+</div>

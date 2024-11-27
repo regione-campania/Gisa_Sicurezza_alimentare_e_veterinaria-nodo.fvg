@@ -1,0 +1,138 @@
+.sezione {
+    border-bottom: 1px solid var(--fvg-black);
+    margin-bottom: 10px;
+}
+#dettaglio-controllo-stab {
+
+    .info {
+  
+      .sezione-controllo {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+  
+        &.clickable:hover {
+          background-color: var(--fvg-light-gray);
+        }
+  
+        .icon-box {
+          flex: 0 0 50px;
+          text-align: center;
+          padding: 0.5rem;
+        }
+  
+        .nome-sezione-controllo {
+          padding: 0.5rem 0;
+          font-weight: 600;
+          font-size: 1.5rem;
+        }
+  
+        .preview-sezione-controllo {
+          padding: 0.5rem 0 0.5rem 50px;
+          flex: 1 1 100%;
+        }
+      }
+    }
+  
+    .sezione-controllo {
+      border-bottom: 1px solid var(--fvg-black);
+    }
+  
+    .intestazione-sezione-controllo{
+      display: block;
+      position: relative;
+    }
+  
+    #gestisci-button {
+      position: absolute;
+      top: 0;
+      right: 0;
+    }
+  
+    .intestazione-sezione-controllo,
+    .sezione-controllo:last-child {
+      border-bottom: 3px solid var(--fvg-black);
+    }
+  
+    .png-icon {
+      width: 32px;
+      height: 32px;
+    }
+  
+    .sum-box {
+      max-width: 400px;
+      height: 200px;
+      transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+      box-shadow: rgba(0, 0, 0, 0.1) 0px 10px 15px -3px,
+        rgba(0, 0, 0, 0.05) 0px 4px 6px -2px;
+  
+      &:hover {
+        transform: translateY(-4px);
+        box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+      }
+  
+      .sum-box-header {
+        border-bottom: 2px solid var(--fvg-black);
+      }
+  
+      .badge {
+        //background-color: var(--fvg-gray);
+        color: var(--fvg-black);
+        max-width: 100px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        position: relative;
+  
+        * {
+          position: relative;
+        }
+  
+        &::before {
+          content: "";
+          display: block;
+          width: 100%;
+          height: 100%;
+          background-color: rgba(255, 255, 255, 0.8);
+          position: absolute;
+          top: 0;
+          left: 0;
+        }
+      }
+    }
+  
+    #nucleo-box {
+      .sum-box-header,
+      .badge {
+        background-color: var(--us-indigo);
+      }
+    }
+  
+    #linee-box {
+      .sum-box-header,
+      .badge {
+        background-color: var(--fvg-blue);
+      }
+    }
+  
+    #piani-box {
+      .sum-box-header,
+      .badge {
+        background-color: var(--us-orange);
+      }
+    }
+  
+    #oggetti-box {
+      .sum-box-header,
+      .badge {
+        background-color: var(--us-yellow);
+      }
+    }
+  
+    #sanzioni-box {
+      .sum-box-header,
+      .badge {
+        background-color: var(--us-red);
+      }
+    }
+  }
+  

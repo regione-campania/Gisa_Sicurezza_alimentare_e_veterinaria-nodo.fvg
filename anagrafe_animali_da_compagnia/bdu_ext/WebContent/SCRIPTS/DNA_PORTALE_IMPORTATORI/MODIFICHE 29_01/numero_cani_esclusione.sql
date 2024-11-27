@@ -1,2 +1,0 @@
-alter TABLE  dati_convocazione 
-ADD numero_cani_esclusione_proprietario integer;

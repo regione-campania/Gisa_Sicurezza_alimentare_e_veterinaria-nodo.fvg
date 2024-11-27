@@ -1,0 +1,89 @@
+<!--
+Copyright (C) AGPL-3.0  
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.-->
+<div id="linee">
+  <div class="loading-box" *ngIf="loading; else ready">
+    <loading-message message="Caricamento linee..."></loading-message>
+  </div>
+  <ng-template #ready>
+    <!-- Intestazione Linee e Bottoni -->
+    <h2>Linee</h2>
+    <!-- <div class="row align-items-center mb-1">
+      <div class="col-auto ps-0">
+        <input class="form-control" type="file" id="formFile" placeholder="Carica file xlsx"
+          (change)="addFile($event)" accept=".xlsx">
+      </div>
+      <div *ngIf="dataFromFile" class="col-auto ps-0">
+        <button class="btn btn-primary" ngbTooltip="Carica Linee" (click)="uploadLinee()">
+          Carica<i class="ms-2 fa fa-upload" aria-hidden="true"></i>
+        </button>
+      </div>
+      <div class="col-auto ps-0">
+        <button class="btn btn-success float-end" ngbTooltip="Scarica Template" (click)="downloadTemplateXLSX()">
+          Scarica<i class="ms-2 fa fa-file-excel" aria-hidden="true"></i>
+        </button>
+      </div>
+    </div> -->
+    <a-smart-table
+      #lineeTable
+      *ngIf="elab && linee"
+      [colsInfo]="ui.colonne"
+      [src]="linee"
+      [autolayout]="false"
+      [selection]="true"
+      [dataMapping]="mappaturaLinee"
+      errorMessage="Linee non trovate per le impostazioni attuali."
+    >
+      <ng-template aTemplate="head">
+        <tr>
+          <th scope="col" class="selector-th"></th>
+          <th scope="col" *ngFor="let colonna of ui.colonne">
+            <div class="d-flex align-items-center">
+              <span class="label">{{ colonna.intestazione }}</span>
+              <a-table-sorter
+                [type]="colonna.tipo"
+                [field]="colonna.campo"
+              ></a-table-sorter>
+              <a-table-filter
+                [type]="colonna.tipo"
+                [field]="colonna.campo"
+              ></a-table-filter>
+            </div>
+          </th>
+        </tr>
+      </ng-template>
+      <ng-template aTemplate="body" let-linea>
+        <tr>
+          <td>
+            <a-table-selector
+              class="d-flex justify-content-center"
+              [data]="linea"
+              [disabled]="elab.bloccato || elab.elaborato || false"
+            ></a-table-selector>
+          </td>
+          <td
+            *ngFor="let colonna of ui.colonne"
+            [ngClass]="{ 'text-end': colonna.tipo == 'number' }"
+          >
+            <ng-container *ngIf="colonna.tipo == 'date'; else elseBlock">
+              {{ linea[colonna.campo] | date : "dd/MM/yyyy" }}
+            </ng-container>
+            <ng-template #elseBlock>
+              <ng-container *ngIf="colonna.tipo == 'number'; else normalFormat">
+                {{ linea[colonna.campo] | numberPipe }}
+              </ng-container>
+              <ng-template #normalFormat>
+                {{ linea[colonna.campo] }}
+              </ng-template>
+            </ng-template>
+          </td>
+        </tr>
+      </ng-template>
+    </a-smart-table>
+  </ng-template>
+</div>

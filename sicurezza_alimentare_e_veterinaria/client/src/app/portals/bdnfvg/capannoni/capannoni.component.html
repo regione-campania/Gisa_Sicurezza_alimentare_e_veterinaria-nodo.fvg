@@ -1,0 +1,50 @@
+<!--
+Copyright (C) AGPL-3.0  
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.-->
+<div id="capannoni">
+  <h1>Capannoni</h1>
+  <div id="info-allevamento" class="d-flex my-2" *ngIf="all_info">
+    <div class="info" *ngFor="let item of all_info | keyvalue; last as last" [ngClass]="{'me-2': !last}">
+      <span class="fw-semibold">{{item.key}}: </span>
+      <span>{{item.value}}</span>
+    </div>
+  </div>
+  <ng-template [ngIf]="capannoni" [ngIfElse]="noData">
+    <div class="box-3d rounded p-0">
+      <a-smart-table class="table-striped" [colsInfo]="ui.colonne" [src]="capannoni" [autolayout]="false">
+        <ng-template aTemplate="head">
+          <tr>
+            <th scope="col" *ngFor="let colonna of ui.colonne">
+              <div class="d-flex">
+                <span class="label">{{colonna.intestazione}}</span>
+                <a-table-sorter [type]="colonna.tipo" [field]="colonna.campo"></a-table-sorter>
+                <a-table-filter [type]="colonna.tipo" [field]="colonna.campo"></a-table-filter>
+              </div>
+            </th>
+          </tr>
+        </ng-template>
+        <ng-template aTemplate="body" let-cap>
+          <tr>
+            <td *ngFor="let colonna of ui.colonne">
+              <ng-container *ngIf="colonna.tipo == 'date'; else elseField">
+                {{cap[colonna.campo] | date: 'dd/MM/yyyy'}}
+              </ng-container>
+              <ng-template #elseField>{{cap[colonna.campo]}}<ng-container *ngIf="colonna.intestazione == 'Superficie'">
+                  m<sup>2</sup></ng-container></ng-template>
+            </td>
+          </tr>
+        </ng-template>
+      </a-smart-table>
+    </div>
+  </ng-template>
+  <ng-template #noData>
+    <div class="col-md position-relative">
+      <span>Non sono presenti dati in tabella</span>
+    </div>
+  </ng-template>
+</div>

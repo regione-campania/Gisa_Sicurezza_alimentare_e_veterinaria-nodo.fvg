@@ -1,0 +1,47 @@
+<!--
+Copyright (C) AGPL-3.0  
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.-->
+<div id="uoc">
+  <div class="row">
+    <div class="col-lg-5" id="left-section">
+      <div class="structure-name-section d-flex mb-3">
+        <h3 class="structure-name">{{info?.descr}}</h3>
+      </div>
+      <loading-message *ngIf="uocLoading; else uocReady"></loading-message>
+      <ng-template #uocReady>
+        <a-tree-filter [tree]="t1" placeholder="Ricerca UOC..."></a-tree-filter>
+        <div #scrollbox class="box scrollbox custom-scrollbar mt-2 overflow-y-auto p-0 rounded shadow-sm"
+          [ngStyle]="{'max-height': 'calc(100vh - ' + utils.getAbsoluteOffsetTop(scrollbox) + 'px)'}">
+          <a-tree #t1 [root]="uocTree?.root" (onClick)="getUocPiani($event)"></a-tree>
+        </div>
+      </ng-template>
+    </div>
+    <div class="col-lg" id="right-section">
+      <div class="structure-name-section d-flex mb-3" *ngIf="infoPiani">
+        <h3 class="structure-name">{{infoPiani.descr}}</h3>
+        <button type="button" class="btn btn-primary save-button ms-auto" (click)="salva()"
+          *ngIf="infoPiani.modality == 'modifica' && infoPiani.trackerModifiche && !infoPiani.trackerModifiche.isSame">
+          <i class="icon fa-solid fa-floppy-disk"></i>
+          <span class="label">Salva</span>
+        </button>
+      </div>
+      <div *ngIf="!selectedUoc; else pianiBlock">Selezionare un elemento dalla lista.</div>
+      <ng-template #pianiBlock>
+        <loading-message *ngIf="pianiLoading; else pianiReady"></loading-message>
+        <ng-template #pianiReady>
+          <a-tree-filter [tree]="t2" placeholder="Ricerca Piano..."></a-tree-filter>
+          <div #scrollbox2 class="box scrollbox custom-scrollbar mt-2 overflow-y-auto p-0 rounded shadow-sm"
+            [ngStyle]="{'max-height': 'calc(100vh - ' + utils.getAbsoluteOffsetTop(scrollbox2) + 'px)'}">
+            <a-tree #t2 [root]="pianiTree?.root" (onLoad)="onPianiTreeLoad($event)"
+              (onClick)="onPianiTreeClick()"></a-tree>
+          </div>
+        </ng-template>
+      </ng-template>
+    </div>
+  </div>
+</div>

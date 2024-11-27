@@ -1,0 +1,132 @@
+<!--
+Copyright (C) AGPL-3.0  
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.-->
+<div id="tipo-liste">
+
+    <h1 class="d-flex align-items-center" >
+      <span>Elenco Anagrafiche</span>
+      <button *ngIf="this.utenteASL" type="button" class="btn btn-primary ms-auto" (click)="finestraTipoLista =openPopup($event, modal, 'add_lista')">
+        <i class="icon fa-solid fa-plus"></i>
+        <span>Nuova Anagrafica</span>
+      </button>
+    </h1>
+
+  <div class="row">
+    <div class="col"> 
+      <div *ngIf="tipoliste; else noDataBlock" class="table-container box-3d rounded p-0">
+        <a-smart-table
+          [colsInfo]="this.ui.colonne" [src]="tipoliste"  [selection]="false" [autolayout]="false"
+           [exportable]="false">
+       
+          <ng-template aTemplate="head">
+            <tr>
+              <th scope="col" class="selector-th"></th>
+              <th scope="col" *ngFor="let colonna of this.ui.colonne">
+                <div class="d-flex align-items-center">
+                  <span class="label">{{colonna.intestazione}}</span>
+                  <a-table-sorter [type]="colonna.tipo" [field]="colonna.campo"></a-table-sorter>
+                  <a-table-filter [type]="colonna.tipo" [field]="colonna.campo"></a-table-filter>
+                </div>
+              </th>
+              <th scope="col"></th>
+             <th scope="col" ></th>
+            </tr>
+          </ng-template>
+        <ng-template aTemplate="body" let-tipolista>
+          
+            <tr class="clickable">
+              <td>
+                <a-table-selector *ngIf="tipolista.selezionabile" [data]="tipolista"></a-table-selector>
+              </td> 
+              <td *ngFor="let colonna of this.ui.colonne" [ngClass]="{'text-end': colonna.tipo == 'number'}">
+                    <ng-container *ngIf="colonna.tipo == 'boolean'; else elseField">
+                      {{tipolista[colonna.campo] === true ? 'SI' : 'NO'}}
+                    </ng-container>
+                    <ng-template #elseField>
+                      <ng-container *ngIf="colonna.tipo === 'number'; else normalField">
+                        {{tipolista[colonna.campo] | numberPipe}}
+                      </ng-container>
+                      <ng-template #normalField>
+                        {{tipolista[colonna.campo]}}
+                      </ng-template>
+                    </ng-template>
+             </td>
+             
+
+             <td> 
+                <!-- *ngIf="calendario.eliminabile" -->
+                <button  *ngIf="this.utenteASL" type="button" class="btn btn-danger" (click)="deleteTipoLista(tipolista.id)">
+                  <i class="fa fa-trash me-1" aria-hidden="true"></i>
+                  <span >Elimina</span>
+                </button>
+              </td>
+              <td>    
+                 <button   *ngIf="(this.utenteASL && tipolista['tipo_gestore']=='ASL')||!this.utenteASL" (click)="onClick(tipolista)" class="btn btn-primary">
+                  <i class="ms-1 fa fa-external-link" aria-hidden="true"></i>
+                  <span> Dettaglio </span>
+                </button>
+              </td>
+    
+              
+                        
+            </tr>
+          </ng-template>
+        </a-smart-table>
+      </div>
+      <ng-template #noDataBlock>
+        <div class="col-md position-relative">
+          <span> Non sono presenti dati nella tabella </span>
+        </div>
+      </ng-template>
+    </div>
+  </div>
+
+
+
+
+<ng-template #modal>
+  <div class="modal-header">
+    <button type="button" class="btn btn-close d-inline-block ms-auto" (click)="closePopup()"></button>
+  </div>
+  <div class="modal-body">
+    <h3 class="modal-title text-center mb-2">Aggiungi {{operazione}}</h3>
+    <label>Descrizione</label>
+    <input type="text" class="form-control" id="descr">
+    <br> 
+  
+    <p>Gestita da :</p>
+    <div class="form-check">
+         <div  *ngFor="let elemento of this.gestoriliste">
+           <input type="radio" id={{elemento.id}} name="gestore" value={{elemento.id}} class="form-check-input" (click)="hide($event)" >  
+           <label class="form-check-label">{{elemento.descr}}</label>
+         </div >
+    </div>
+    
+
+    <br> 
+    <div *ngIf="this.hideTipoProd" >
+    <p>Legata al Tipo Prodotto : </p>
+    <div>         
+      <input type="radio" id="1" name="rifTipoProd" value='true' class="form-check-input" >  
+      <label class="form-check-label">&nbsp;SI</label>
+    </div >
+      <div>         
+      <input type="radio" id="0" name="rifTipoProd" value='false' class="form-check-input" >  
+      <label class="form-check-label">&nbsp;NO</label>
+    </div >
+  </div>
+</div>
+
+  <div class="modal-footer border-0 wrapper justify-content-around">
+    <button type="button" class="btn btn-primary action-button" (click)="save($event)"  >Aggiungi</button>
+  
+    <button type="button" class="btn btn-danger action-button" (click)="closePopup()">Annulla</button>
+  </div>
+</ng-template>
+
+

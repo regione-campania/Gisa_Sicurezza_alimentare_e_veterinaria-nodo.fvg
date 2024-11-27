@@ -1,0 +1,44 @@
+<!--
+Copyright (C) AGPL-3.0  
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.-->
+<div class="menu" id="side-bar">
+  <ul class="side-bar-links">
+    <li class="side-bar-link">
+      <button
+        type="button"
+        class="side-bar-link-button"
+        id="menu-button"
+        ngbTooltip="Menu"
+        (click)="openMenu()"
+      >
+        <i class="icon fa-solid fa-bars"></i>
+      </button>
+    </li>
+    <li class="side-bar-link">
+      <back-button></back-button>
+    </li>
+  </ul>
+  <div class="side-bar-separator"></div>
+  <ul class="side-bar-links quick-links">
+    <li class="side-bar-link quick-link nav-link" *ngFor="let item of quickLinks">
+      <quick-link-button [config]="item"></quick-link-button>
+    </li>
+  </ul>
+  <div class="side-bar-separator"></div>
+  <ul class="side-bar-links">
+    <li class="side-bar-link" id="back-home-link">
+      <back-home-button></back-home-button>
+    </li>
+    <li class="side-bar-link" id="logout-link">
+      <logout-button></logout-button>
+    </li>
+  </ul>
+</div>
+<ng-template #offcanvasContent>
+  <app-menu-offcanvas (onClose)="closeMenu()"></app-menu-offcanvas>
+</ng-template>

@@ -1,0 +1,73 @@
+<!--
+Copyright (C) AGPL-3.0  
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.-->
+<!-- <div class="sezione" id="attivita-inviate">
+  <h2 class="d-flex align-items-center">
+    <span>Lista Attività Inviate </span>
+    <button class="btn btn-primary float-end ms-auto" ngbTooltip="Rigenera" (click)="rigeneraJSON()"
+      [disabled]="!tabellaAttInviate.hasSelectedData">
+      Rigenera
+    </button>
+    <button class="btn btn-primary float-end ms-4" ngbTooltip="Invia attività a SICER" (click)="inviaAttivita()"
+      [disabled]="!tabellaAttInviate.hasSelectedData">
+      Invia
+    </button>
+  </h2>
+  <fvg-table #tabellaAttInviate [src]="getTrfAttInviate" [selection]="true">
+      <ng-template aTemplate="action" let-ar>
+        <button type="button" class="btn btn-primary float-end" (click)="mostraUltimoStato(ar)">Mostra ultimo stato</button>
+    </ng-template>
+  </fvg-table>
+</div> -->
+
+
+<div id="imprese-main">
+  <h2 class="d-flex align-items-center">
+    <span>Lista Attività Inviate</span>
+    <ng-container *ngIf="tabella_att_inviate">
+      <button class="btn btn-primary float-end ms-auto" ngbTooltip="Rigenera" (click)="rigeneraJSON()"
+        [disabled]="!tabella_att_inviate.hasSelectedData">
+        Rigenera
+      </button>
+      <button class="btn btn-primary float-end ms-4" ngbTooltip="Invia attività a SICER" (click)="inviaAttivita()"
+        [disabled]="!tabella_att_inviate.hasSelectedData">
+        Invia
+      </button>
+    </ng-container>
+  </h2>
+  <div class="form-box box rounded shadow-sm p-0">
+    <div class="form-container">
+      <div class="form-column border-end rounded-start" style="background-color: var(--us-gray-1)">
+        <div class="d-flex flex-column gap-2">
+          <a-form [src]="formConfig" flexDirection="column" (onSubmit)="ricercaAttivitaInviate($event)"></a-form>
+        </div>
+      </div>
+      <div class="result-column">
+        <ng-container *ngIf="getTrfAttInviate; else message">
+          <!-- dovrà andare la fvg-table -->
+          <!-- <div class="h-100 d-flex align-items-center justify-content-center"> -->
+            <fvg-table #tabellaAttInviate [src]="getTrfAttInviate" [selection]="true">
+              <ng-template aTemplate="action" let-ar>
+                <button type="button" class="btn btn-primary float-end" (click)="mostraUltimoStato(ar)">Mostra ultimo
+                  stato</button>
+              </ng-template>
+            </fvg-table>
+          <!-- </div> -->
+        </ng-container>
+        <ng-template #message>
+          <div class="h-100 d-flex align-items-center justify-content-center">
+            <p *ngIf="!loadingAttivitaInviate">
+              I risultati della ricerca saranno visualizzati qui.
+            </p>
+            <loading-message *ngIf="loadingAttivitaInviate" message="Caricamento Attività Inviate"></loading-message>
+          </div>
+        </ng-template>
+      </div>
+    </div>
+  </div>
+</div>

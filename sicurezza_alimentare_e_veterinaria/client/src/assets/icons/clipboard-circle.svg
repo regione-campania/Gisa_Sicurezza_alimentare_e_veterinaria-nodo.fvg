@@ -1,0 +1,27 @@
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g clip-path="url(#clip0_214_1863)">
+<path d="M32 64C49.6731 64 64 49.6731 64 32C64 14.3269 49.6731 0 32 0C14.3269 0 0 14.3269 0 32C0 49.6731 14.3269 64 32 64Z" fill="#77B3D4"/>
+<g opacity="0.2">
+<path d="M48 14H16C13.8 14 12 15.8 12 18V23.5V50C12 52.2 13.8 54 16 54H48C50.2 54 52 52.2 52 50V23.5V18C52 15.8 50.2 14 48 14Z" fill="#231F20"/>
+</g>
+<path d="M48 12H16C13.8 12 12 13.8 12 16V21.5V48C12 50.2 13.8 52 16 52H48C50.2 52 52 50.2 52 48V21.5V16C52 13.8 50.2 12 48 12Z" fill="#E0995E"/>
+<g opacity="0.2">
+<path d="M48 18H16V50H48V18Z" fill="#231F20"/>
+</g>
+<path d="M48 16H16V48H48V16Z" fill="white"/>
+<path d="M42 24H22V26H42V24Z" fill="#E0E0D1"/>
+<path d="M42 28H22V30H42V28Z" fill="#E0E0D1"/>
+<path d="M42 32H22V34H42V32Z" fill="#E0E0D1"/>
+<path d="M42 36H22V38H42V36Z" fill="#E0E0D1"/>
+<path d="M42 40H22V42H42V40Z" fill="#E0E0D1"/>
+<g opacity="0.2">
+<path d="M37 12H27H24V15V16V17C24 18.7 25.3 20 27 20H37C38.7 20 40 18.7 40 17V16V15V12H37Z" fill="#231F20"/>
+</g>
+<path d="M37 10H27H24V13V14V15C24 16.7 25.3 18 27 18H37C38.7 18 40 16.7 40 15V14V13V10H37Z" fill="#4F5D73"/>
+</g>
+<defs>
+<clipPath id="clip0_214_1863">
+<rect width="64" height="64" fill="white"/>
+</clipPath>
+</defs>
+</svg>

@@ -1,0 +1,101 @@
+<!--
+Copyright (C) AGPL-3.0  
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.-->
+<form [formGroup]="formPiano" *ngIf="combos">
+  <!-- Malattia -->
+  <div class="input-group mb-1" [ngClass]="!formPiano.get('malattia')?.hasError('required') ? 'mb-3' : ''">
+    <span class="input-group-text" id="malattia-span" for="malattia">Malattia</span>
+    <input type="text" class="form-control border" placeholder="Malattia..." aria-label="Malattia"
+      aria-describedby="malattia-described" formControlName="malattia">
+  </div>
+  <p class="text-danger mb-3 ms-1" *ngIf="formPiano.get('malattia')?.hasError('required')">
+    Malattia richiesta
+  </p>
+
+  <!-- Codice Malattia -->
+  <div class="input-group mb-1" [ngClass]="!formPiano.get('codice_malattia')?.hasError('required') ? 'mb-3' : ''">
+    <span class="input-group-text" id="codice_malattia-span" for="codice_malattia">Codice Malattia BDN</span>
+    <input type="text" class="form-control border" placeholder="Codice Malattia BDN..." aria-label="codice_malattia"
+      aria-describedby="codice_malattia-described" formControlName="codice_malattia"
+      oninput="this.value = this.value.toUpperCase()" (keypress)="onlyText($event)">
+  </div>
+  <p class="text-danger mb-3 ms-1" *ngIf="formPiano.get('codice_malattia')?.hasError('required')">
+    Codice Malattia BDN richiesto
+  </p>
+
+  <!-- Specie -->
+  <select class="form-select border mt-2 mb-1"
+    [ngClass]="!formPiano.get('id_gruppo_specie')?.hasError('required') ? 'mb-3' : ''" aria-label="gruppo-specie"
+    formControlName="id_gruppo_specie" (ngModelChange)="onChange($event)">
+    <option value=null selected>Specie...</option>
+    <option *ngFor="let g of gruppi_specie" [value]="g.grspe_id">{{g.descrizione}}</option>
+  </select>
+  <p class="text-danger mb-3 ms-1" *ngIf="formPiano.get('id_gruppo_specie')?.hasError('required')">
+    Specie richiesta
+  </p>
+
+  <!-- Età Mesi Min -->
+  <ng-container *ngIf="hasMarchio">
+    <div class="input-group mt-2" [ngClass]="!formPiano.get('eta_in')?.hasError('required') ? 'mb-3' : ''">
+      <span class="input-group-text" id="eta_in-label" for="eta_in">Mesi età minima</span>
+      <input type="number" class="form-control border" placeholder="Mesi età minima..." aria-label="Mesi età minima"
+        aria-describedby="eta_in-described" formControlName="eta_in">
+    </div>
+    <p class="text-danger ms-1" *ngIf="formPiano.get('eta_in')?.hasError('required')">
+      Mesi età minima richiesto
+    </p>
+  </ng-container>
+
+  <!-- Età Mesi Max -->
+  <ng-container *ngIf="hasMarchio">
+    <div class="input-group mt-2" [ngClass]="!formPiano.get('eta_fin')?.hasError('required') ? 'mb-3' : ''">
+      <span class="input-group-text" id="eta_fin-label" for="eta_fin">Mesi età massima</span>
+      <input type="number" class="form-control border" placeholder="Mesi età massima..." aria-label="Mesi età massima"
+        aria-describedby="eta_fin-described" formControlName="eta_fin">
+    </div>
+    <p class="text-danger ms-1" *ngIf="formPiano.get('eta_fin')?.hasError('required')">
+      Mesi età massima richiesto
+    </p>
+  </ng-container>
+
+  <div class="input-group mt-2 mb-3">
+    <span class="input-group-text">D.L.gs. 32</span>
+    <select class="form-select border mt-2" aria-label="dl32" formControlName="dl32"
+      [ngClass]="!formPiano.get('dl32')?.hasError('required') ? 'mb-3' : ''">
+      <option value=false>NO</option>
+      <option value=true>SI</option>
+    </select>
+  </div>
+    <p class="text-danger ms-1" *ngIf="formPiano.get('dl32')?.hasError('required')">Se DL32 richiesto
+    </p>
+
+  <!-- Note -->
+  <div class="input-group mt-2 mb-3">
+    <span class="input-group-text">Note</span>
+    <textarea class="form-control" aria-label="note" formControlName="note" placeholder="Note..."></textarea>
+  </div>
+
+  <!-- Matrici -->
+  <span class="fs-5">Matrici</span>
+
+  <ng-container formArrayName="matrici">
+    <div class="row">
+      <ng-container *ngFor="let m of matriciFormArray.controls; let i = index" [formGroupName]="i">
+        <div class="col">
+          <div class="form-check">
+            <input type="checkbox" class="form-check-input" formControlName="selected" id="m_{{m.value.id_matrice}}">
+            <label for="m_{{m.value.id_matrice}}" class="form-check-label">{{m.value.descr}}</label>
+          </div>
+        </div>
+        <!-- Crea una nuova riga ogni tre colonne -->
+        <div *ngIf="(i + 1) % 3 == 0" class="w-100"></div>
+      </ng-container>
+    </div>
+  </ng-container>
+
+</form>

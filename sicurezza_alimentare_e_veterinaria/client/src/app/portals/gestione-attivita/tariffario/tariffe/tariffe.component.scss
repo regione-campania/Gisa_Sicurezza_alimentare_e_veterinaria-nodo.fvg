@@ -1,0 +1,60 @@
+#tariffe {
+  input[type="number"],
+  #simulazione input,
+  output {
+    text-align: end;
+  }
+
+  #tabella-tariffa {
+    th:not(.row-controls-th) {
+      min-width: 80px;
+    }
+
+    th,
+    td {
+      &:nth-child(3) {
+        border-right: 6px solid var(--black, black);
+      }
+    }
+
+    thead tr {
+      color: var(--fvg-black) !important;
+    }
+  }
+
+  .row-controls {
+    .btn {
+      width: 32px;
+      height: 32px;
+      padding: 0;
+
+      .icon {
+        width: 14px;
+      }
+    }
+  }
+
+  #tab-storico {
+    th:not(.row-controls-th) {
+      min-width: 80px;
+    }
+
+    th,
+    td {
+      &:nth-child(2) {
+        border-right: 6px solid var(--black, black);
+      }
+    }
+
+    thead tr {
+      color: var(--fvg-black) !important;
+    }
+  }
+
+  // Bottoni di intestazione della tabella (Salva e Aggiungi)
+  #headerTableButtons {
+    .btn {
+      margin-left: 0.5rem !important;
+    }
+  }
+}

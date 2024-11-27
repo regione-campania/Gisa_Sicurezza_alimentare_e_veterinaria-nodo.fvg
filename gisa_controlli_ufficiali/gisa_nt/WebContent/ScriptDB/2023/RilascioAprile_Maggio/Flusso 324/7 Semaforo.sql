@@ -1,1 +1,0 @@
-CREATE TABLE pagopa_semaforo (id serial primary key, id_sanzione integer, enteredby integer, inizio timestamp without time zone default now(), fine timestamp without time zone, trashed_date timestamp without time zone);

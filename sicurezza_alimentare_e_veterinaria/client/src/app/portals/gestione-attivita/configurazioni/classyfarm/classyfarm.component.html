@@ -1,0 +1,86 @@
+<!--
+Copyright (C) AGPL-3.0  
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.-->
+<h3 class="d-flex">
+  ClassyFarm Allevamenti
+  <button ype="button" class="btn btn-primary save-button ms-auto" (click)="addAnno()">
+    <i class="icon fa-solid fa-plus"></i>
+    <span class="label">Aggiungi Anno</span>
+  </button>
+</h3>
+<div style="width: fit-content;">
+  <a-smart-table *ngIf="ui" [colsInfo]="ui.colonne" [src]="liste" [autolayout]="false"
+    class="table table-sm table-striped">
+    <ng-template aTemplate="head">
+      <tr>
+        <th scope="col" *ngFor="let colonna of ui.colonne">
+          <div class="d-flex align-items-center">
+            <span class="label">{{colonna.intestazione}}</span>
+            <a-table-sorter [type]="colonna.tipo" [field]="colonna.campo"></a-table-sorter>
+            <a-table-filter [type]="colonna.tipo" [field]="colonna.campo" [options]="colonna.filterOptions"></a-table-filter>
+          </div>
+        </th>
+        <th scope="col"></th>
+        <th scope="col"></th>
+      </tr>
+    </ng-template>
+    <ng-template aTemplate="body" let-lista>
+      <tr [id]="lista.id">
+        <td *ngFor="let colonna of ui.colonne" style="text-align: end;">
+          <ng-container *ngIf="colonna.tipo == 'date'; else elseField">
+            {{lista[colonna.campo] | date: 'dd/MM/yyyy'}}
+          </ng-container>
+          <ng-template #elseField>
+            <ng-container *ngIf="colonna.tipo == 'number'; else normalFormat">
+              {{lista[colonna.campo] | numberPipe}}
+            </ng-container>
+            <ng-template #normalFormat>
+              {{lista[colonna.campo]}}
+            </ng-template>
+          </ng-template>
+        </td>
+        <td style="text-align: end;">
+          <button type="button" class="btn btn-primary save-button ms-auto"
+            (click)="openImportFilenameModalClassy(lista.id)">
+            <i class="icon fa-solid fa-plus"></i>
+            <span class="label">Importa Allevamenti</span>
+          </button>
+        </td>
+        <td>
+          <button *ngIf="lista.dt" type="button" class="btn btn-primary save-button ms-auto"
+            (click)="exportAllevamenti(lista.id, lista.anno)">
+            <i class="icon fa-solid fa-arrow-down"></i>
+            <span class="label">Esporta Allevamenti</span>
+          </button>
+        </td>
+      </tr>
+    </ng-template>
+  </a-smart-table>
+</div>
+
+<ng-template #importFileModalTemplateClassy>
+  <div class="modal-header">
+    <button class="btn-close d-block ms-auto" (click)="importFileModalRef?.dismiss()"></button>
+  </div>
+  <div class="modal-body">
+    <p class="fs-5 fw-semibold">Selezionare file da importare. Deve rispettare la struttura del template:
+      <button class="btn btn-outline-success d-block mx-auto my-3" ngbTooltip="Scarica Template"
+        (click)="downloadTemplateXLSX()">
+        Scarica Template (esempio)<i class="ms-2 fa fa-file-excel" aria-hidden="true"></i>
+      </button>
+    </p>
+    <p class="fs-5 fw-semibold">Eventuali dati precedentemente imporati verranno sovrascritti. </p>
+    <p>
+      <input class="form-control" type="file" id="import-file" (change)="fileSelezionato = $any($event.target).files[0]"
+        accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">
+      <button type="button" [disabled]="!fileSelezionato" (click)="importFile(listaSelezionata)"
+        class="btn btn-primary d-block w-25 mx-auto my-3">Importa</button>
+    </p>
+
+  </div>
+</ng-template>

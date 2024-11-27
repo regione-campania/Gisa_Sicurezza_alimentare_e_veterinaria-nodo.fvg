@@ -1,0 +1,85 @@
+<!--
+Copyright (C) AGPL-3.0  
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.-->
+<div id="riversa">
+  <h2 class="mb-3">Riversa attività</h2>
+  <div class="loading-box" *ngIf="loading; else ready">
+    <loading-message message="Caricamento attivita..."></loading-message>
+  </div>
+  <ng-template #ready>
+    <div class="d-flex mb-3" *ngIf="attivitaRiversabili && attivitaRiversabili.length > 0">
+      <button type="button" class="btn btn-primary" (click)="riversaCalendario()">Riversa Tutto</button>
+      <button type="button" class="btn btn-primary ms-2" [disabled]="!tabellaRiversa?.hasSelectedData"
+        (click)="riversaSelezionati()">Riversa Selezionati</button>
+    </div>
+    <a-smart-table #tabellaRiversa [src]="attivitaRiversabili" [autolayout]="false" [selection]="true"
+      errorMessage="Nessuna attività riversabile.">
+      <ng-template aTemplate="head">
+        <tr>
+          <th scope="col" class="selector-th">
+          </th>
+          <th scope="col">
+            <div class="wrapper y-centered">
+              <span>Azienda</span>
+              <a-table-filter type="text" field="linea"></a-table-filter>
+              <a-table-sorter type="text" field="linea"></a-table-sorter>
+            </div>
+          </th>
+          <th scope="col">
+            <div class="wrapper y-centered">
+              <span>Struttura</span>
+              <a-table-filter type="selection" field="uos"></a-table-filter>
+              <a-table-sorter type="text" field="uos"></a-table-sorter>
+            </div>
+          </th>
+          <th scope="col">
+            <div class="wrapper y-centered">
+              <span>Comune</span>
+              <a-table-filter type="text" field="comune"></a-table-filter>
+              <a-table-sorter type="text" field="comune"></a-table-sorter>
+            </div>
+          </th>
+          <th scope="col">
+            <div class="wrapper y-centered">
+              <span>Ispettore</span>
+              <a-table-filter type="selection" field="nominativo"></a-table-filter>
+              <a-table-sorter type="text" field="nominativo"></a-table-sorter>
+            </div>
+          </th>
+          <th scope="col">
+            <div class="wrapper y-centered">
+              <span>Data</span>
+              <a-table-filter type="date" field="giorno"></a-table-filter>
+              <a-table-sorter type="date" field="giorno"></a-table-sorter>
+            </div>
+          </th>
+          <th scope="col">
+            <div class="wrapper y-centered">
+              <span>Attività</span>
+              <a-table-filter type="selection" field="attivita"></a-table-filter>
+              <a-table-sorter type="text" field="attivita"></a-table-sorter>
+            </div>
+          </th>
+        </tr>
+      </ng-template>
+      <ng-template aTemplate="body" let-evento>
+        <tr>
+          <td>
+            <a-table-selector [data]="evento" *ngIf="evento.selezionabile"></a-table-selector>
+          </td>
+          <td>{{evento.linea}}</td>
+          <td>{{evento.uos}}</td>
+          <td>{{evento.comune}}</td>
+          <td>{{evento.nominativo}}</td>
+          <td>{{evento.giorno | date: 'dd/MM/yyyy'}}</td>
+          <td>{{evento.attivita}}</td>
+        </tr>
+      </ng-template>
+    </a-smart-table>
+  </ng-template>
+</div>

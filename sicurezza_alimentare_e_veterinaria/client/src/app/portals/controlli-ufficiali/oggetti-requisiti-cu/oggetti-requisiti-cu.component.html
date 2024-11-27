@@ -1,0 +1,189 @@
+<!--
+Copyright (C) AGPL-3.0  
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.-->
+<div id="oggetti-cu" class="view">
+    <div class="row align-items-center">
+        <div class="col">
+            <h2 class="d-flex align-items-center">
+                <span>{{requisiti && requisiti.length > 0 ? requisiti[0].sigla + " - " : ""}}Requisiti</span>
+                <button [disabled]="btnDelete ? null : true" type="button" class="btn btn-danger ms-auto"
+                    (click)="delete()">
+                    <i class="icon fa-solid fa-minus"></i>
+                    <span>Elimina</span>
+                </button>
+                <button type="button" class="btn btn-primary ms-2" (click)="openModal('add',-1)">
+                    <i class="icon fa-solid fa-plus"></i>
+                    <span>Aggiungi</span>
+                </button>
+            </h2>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <a-smart-table *ngIf="requisiti" #tabellaRequisiti [colsInfo]="ui_req.colonne" class="table-striped"
+                [src]="requisiti" [autolayout]="false" [selection]="true">
+                <!-- definire head -->
+                <ng-template aTemplate="head">
+                    <tr>
+                        <th scope="col" class="selector-th"></th>
+                        <th scope="col" *ngFor="let colonna of ui_req.colonne">
+                            <ng-container *ngIf="colonna.tipo === 'number'; else campoTestuale">
+                                <div class="d-flex align-items-center justify-content-end">
+                                    <span class="label">{{colonna.intestazione}}</span>
+                                    <a-table-sorter [type]="colonna.tipo" [field]="colonna.campo"></a-table-sorter>
+                                    <a-table-filter [type]="colonna.tipo" [field]="colonna.campo"
+                                        [options]="colonna.filterOptions"></a-table-filter>
+                                </div>
+                            </ng-container>
+                            <ng-template #campoTestuale>
+                                <div class="d-flex align-items-center">
+                                    <span class="label">{{colonna.intestazione}}</span>
+                                    <a-table-sorter [type]="colonna.tipo" [field]="colonna.campo"></a-table-sorter>
+                                    <a-table-filter [type]="colonna.tipo" [field]="colonna.campo"
+                                        [options]="colonna.filterOptions"></a-table-filter>
+                                </div>
+                            </ng-template>
+                        </th>
+                        <th scope="col"></th>
+                    </tr>
+                </ng-template>
+                <!-- definire body -->
+                <ng-template aTemplate="body" let-ar>
+                    <tr>
+                        <td class="selector-td">
+                            <a-table-selector [data]="ar"></a-table-selector>
+                        </td>
+                        <td *ngFor="let colonna of ui_req.colonne">
+                            <ng-container *ngIf="colonna.tipo == 'date' else elseField">
+                                {{ar[colonna.campo] | date:'dd/MM/yyyy'}}
+                            </ng-container>
+                            <ng-template #elseField>
+                                <ng-container *ngIf="colonna.tipo == 'number' else normalField">
+                                    <div class="d-flex align-items-center justify-content-end">
+                                        <span>{{ar[colonna.campo] | numberPipe}}</span>
+                                    </div>
+                                </ng-container>
+                                <ng-template #normalField>
+                                    {{ar[colonna.campo]}}
+                                </ng-template>
+                            </ng-template>
+                            <ng-container *ngIf="colonna.intestazione == 'Checklist'">
+                                <ng-container *ngIf="ar.enum_list && ar.enum_list.checklist as checklist">
+                                    <enum-list [id]="'1'" [start]="checklist.enumList.start"
+                                        [items]="checklist.enumList.items"></enum-list>
+                                </ng-container>
+                                <ng-container *ngIf="ar.tabella && ar.tabella.checklist as checklist">
+                                    <table class="table table-std">
+                                        <thead>
+                                            <tr *ngFor="let col of checklist.table.cols">
+                                                <th class="align-middle" *ngFor="let cell of col">{{cell}}</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="border">
+                                            <tr *ngFor="let row of checklist.table.rows">
+                                                <td *ngFor="let cell of row">{{cell}}</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </ng-container>
+                            </ng-container>
+                            <ng-container *ngIf="colonna.intestazione == 'Descrizione'">
+                                <ng-container *ngIf="ar.enum_list && ar.enum_list.descrizione as descrizione">
+                                    <enum-list [id]="'1'" [start]="descrizione.enumList.start"
+                                        [items]="descrizione.enumList.items"></enum-list>
+                                </ng-container>
+                                <ng-container *ngIf="ar.tabella && ar.tabella.descrizione as descrizione">
+                                    <table class="table table-std">
+                                        <thead>
+                                            <tr *ngFor="let col of descrizione.table.cols">
+                                                <th class="align-middle" *ngFor="let cell of col">{{cell}}</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="border">
+                                            <tr *ngFor="let row of descrizione.table.rows">
+                                                <td *ngFor="let cell of row">{{cell}}</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </ng-container>
+                            </ng-container>
+                        </td>
+                        <td class="align-middle">
+                            <button type="button" class="btn btn-secondary ms-2" (click)="openModal('upd',ar)">
+                                <i class="icon fa-solid fa-edit"></i>
+                            </button>
+                        </td>
+                    </tr>
+                </ng-template>
+            </a-smart-table>
+
+        </div>
+    </div>
+
+    <!-- modal -->
+    <div class="modal fade" id="modal-add-requisiti" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-xl modal-dialog-scrollable" role="document">
+            <div class="modal-content">
+                <!-- modal-header -->
+                <div class="modal-header">
+                    <ng-container *ngIf="tipoModale == 'add' else upd">
+                        <h2 class="modal-title">Aggiungi</h2>
+                    </ng-container>
+                    <ng-template #upd>
+                        <h2 class="modal-title">Aggiorna</h2>
+                    </ng-template>
+                    <div class="justify-content-end">
+                        <ng-container *ngIf="tipoModale == 'add' else updSubmit">
+                            <button [disabled]="formNuovoRequisito.invalid" type="button"
+                                class="btn btn-primary ms-auto" (click)="insert()">
+                                <i class="icon fa-solid fa-save"></i>
+                                <span>Salva</span>
+                            </button>
+                        </ng-container>
+                        <ng-template #updSubmit>
+                            <button [disabled]="formNuovoRequisito.invalid" type="button"
+                                class="btn btn-primary ms-auto" (click)="update()">
+                                <i class="icon fa-solid fa-save"></i>
+                                <span>Salva</span>
+                            </button>
+                        </ng-template>
+
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="close"></button>
+                    </div>
+                </div>
+
+                <!-- modal-body -->
+                <div class="modal-body">
+                    <div [formGroup]="formNuovoRequisito">
+                        <div class="d-flex align-items-center">
+                            <div class="form-group d-flex flex-column w-100">
+                                <label for="norma" class="me-2">Norma: <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control border" id="norma" formControlName="norma">
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <div class="form-group d-flex flex-column w-100">
+                                <label for="descr" class="me-2">Descrizione: <span class="text-danger">*</span></label>
+                                <textarea class="form-control border" id="descr" formControlName="descr"></textarea>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <div class="form-group d-flex flex-column w-100">
+                                <label for="cl" class="me-2">Checklist: <span class="text-danger">*</span></label>
+                                <textarea class="form-control border" id="cl" formControlName="cl"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- modal-footer -->
+                <div class="modal-footer"></div>
+            </div>
+        </div>
+    </div>

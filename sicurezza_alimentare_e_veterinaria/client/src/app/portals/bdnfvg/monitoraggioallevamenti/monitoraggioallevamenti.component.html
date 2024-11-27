@@ -1,0 +1,53 @@
+<!--
+Copyright (C) AGPL-3.0  
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.-->
+<div id="monitoraggioAllevamenti" class="container">
+  <div class="row align-items-center">
+    <div class="col">
+      <h1>Monitoraggio Allevamenti</h1>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col">
+      <ng-template [ngIf]="monitoraggioAllevamenti" [ngIfElse]="noDataBlock">
+        <div class="table-container box-3d rounded p-0">
+          <a-smart-table [colsInfo]="this.ui.colonne" class="table-striped" [src]="this.monitoraggioAllevamenti" [autolayout]="false">
+            <ng-template aTemplate="head">
+              <tr>
+                <th scope="col" *ngFor="let colonna of this.ui.colonne">
+                  <div class="d-flex">
+                    <span class="label">{{colonna.intestazione}}</span>
+                    <a-table-sorter [type]="colonna.tipo" [field]="colonna.campo"></a-table-sorter>
+                    <a-table-filter [type]="colonna.tipo" [field]="colonna.campo"></a-table-filter>
+                  </div>
+                </th>
+                <th scope="col"></th>
+              </tr>
+            </ng-template>
+            <ng-template aTemplate="body" let-preacc>
+              <tr >
+                <td *ngFor="let colonna of this.ui.colonne"  [ngStyle]="{'color':colonna.campo==='esito'  && preacc[colonna.campo]==='KO'?'red':'green'}">
+                  <ng-container>
+                  {{preacc[colonna.campo]}}
+                  </ng-container>
+                
+                </td>
+                
+              </tr>
+            </ng-template>
+          </a-smart-table>
+        </div>
+      </ng-template>
+      <ng-template #noDataBlock>
+        <div class="col-md position-relative">
+          <span>Non sono presenti dati in tabella</span>
+        </div>
+      </ng-template>
+    </div>
+  </div>
+</div>

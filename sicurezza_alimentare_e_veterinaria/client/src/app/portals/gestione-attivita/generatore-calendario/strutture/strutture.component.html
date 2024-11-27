@@ -1,0 +1,31 @@
+<!--
+Copyright (C) AGPL-3.0  
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.-->
+<div id="strutture">
+  <h2>Strutture</h2>
+  <div class="loading-box" *ngIf="loading; else ready">
+    <loading-message message="Caricamento strutture..."></loading-message>
+  </div>
+  <ng-template #ready>
+    <div class="row">
+      <p *ngIf="elab && !(elab.bloccato)">
+        Selezionare almeno una <strong>risorsa</strong> e almeno un <strong>piano</strong>.
+      </p>
+      <div class="col-lg-6">
+        <h3>Risorse</h3>
+        <a-tree-filter [tree]="aslTree" placeholder="Ricerca risorsa..."></a-tree-filter>
+        <a-tree [src]="asl" [mapping]="mappaturaAlberi" #aslTree></a-tree>
+      </div>
+      <div class="col-lg-6">
+        <h3>Piani</h3>
+        <a-tree-filter [tree]="pianiTree" placeholder="Ricerca piano..."></a-tree-filter>
+        <a-tree [src]="piani" [mapping]="mappaturaAlberi" #pianiTree></a-tree>
+      </div>
+    </div>
+  </ng-template>
+</div>

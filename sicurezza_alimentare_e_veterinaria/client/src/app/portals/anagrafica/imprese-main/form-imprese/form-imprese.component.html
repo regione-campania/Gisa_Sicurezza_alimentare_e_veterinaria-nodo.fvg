@@ -1,0 +1,102 @@
+<!--
+Copyright (C) AGPL-3.0  
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.-->
+<div class="form-box">
+  <div class="row">
+    <!-- <div class="col-lg" id="colonna-descrizione">
+    </div> -->
+    <div class="col-lg" id="colonna-form">
+      <form [formGroup]="formImpresa">
+        <label>Tipo Impresa: <span class="text-danger mb-3 ms-1 ">*</span>
+        </label>
+        <select class="form-select" id="tipo_imprese" formControlName="cod_tipo_impresa"
+          (change)="checkTipoImpresa($event)">
+          <option></option>
+          <option *ngFor="let el of tipiImprese" [value]="el.cod">
+            {{ el.descr }}
+          </option>
+        </select>
+
+        <label>Nome/Ditta/Ragione Sociale/Denominazione Sociale:
+          <!-- <span class="text-danger mb-3 ms-1 removeObb">*</span></label> -->
+          <span class="text-danger mb-3 ms-1 ">*</span></label>
+        <input type="text" class="form-control border" formControlName="nome" />
+
+        <!-- keydown controlla ad ogni azione sulla tastiera -->
+        <label>Codice Fiscale: <span class="text-danger mb-3 ms-1 addObb" style="display: none;">*</span>
+        </label>
+        <input type="text" class="form-control border" formControlName="cf" maxlength="{{maxValue}}"
+         (blur)="checkCodiceFiscale($event, formImpresa)" />
+         <!-- (keydown)="clearNomeImpresa()" -->
+
+        <label>Partita IVA: <span class="text-danger mb-3 ms-1 removeObb">*</span>
+        </label>
+        <input type="text" class="form-control border" formControlName="piva" maxlength="13"
+          (blur)="checkPIva($event, formImpresa)" />
+
+        <!-- <label>ASL: <span class="text-danger mb-3 ms-1">*</span> </label>
+                    <select class="form-select" id="id_asl" formControlName="id_asl">
+                        <option></option>
+                        <option *ngFor="let el of strutture_asl" [value]="el.id_asl">
+                            {{ el.descrizione }}
+                        </option>
+                    </select> -->
+
+        <label>PEC: <span class="text-danger mb-3 ms-1">*</span> </label>
+        <input type="text" class="form-control border" formControlName="pec" />
+
+        <label>Email: </label>
+        <input type="text" class="form-control border" formControlName="email" />
+
+        <div [style.display]="mostraSDI ? 'block' : 'none'">
+          <label>SDI: </label>
+          <input type="text" class="form-control border" id="sdi" formControlName="sdi" maxlength="7" />
+        </div>
+
+        <!-- Payement è francese X | Payment è inglese V -->
+
+        <!-- <label>Split Payment: </label>
+        <select class="form-select" id="tipo_sede" formControlName="split_payement">
+          <option value="S">S</option>
+          <option value="N">N</option>
+        </select> -->
+
+        <label>Split Payment: </label>
+        <div class="d-flex gap-4">
+          <div>
+            <input class="form-check-input" type="radio" name="split_payement" formControlName="split_payement"
+              value="S">
+            <label class="ms-2">S</label>
+          </div>
+          <div>
+            <input class="form-check-input" type="radio" name="split_payement" formControlName="split_payement"
+              value="N">
+            <label class="ms-2">N</label>
+          </div>
+        </div>
+        <!-- <label>Codice Regionale: </label>
+                    <input type="text" class="form-control border" formControlName="az_cod_regionale" />
+
+                    <label>Codice Regionale / Num. Riconoscimento: </label>
+                    <input type="text" class="form-control border" formControlName="az_cod_regionale" /> -->
+
+        <label>Data inizio validità:
+          <span class="text-danger mb-3 ms-1"> * </span>
+        </label>
+        <input type="date" id="lenghtDate" class="form-control border" formControlName="data_inizio_validita"
+          [min]="1900 - 01 - 01" (blur)="checkDate($event, formImpresa)" />
+
+        <div *ngIf="tipoOperazione === 'modifica'">
+          <label>Data fine validità: </label>
+          <input type="date" id="lenghtDate" class="form-control border" formControlName="data_fine_validita"
+            [min]="1900 - 01 - 01" (blur)="checkDate($event, formImpresa)" />
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

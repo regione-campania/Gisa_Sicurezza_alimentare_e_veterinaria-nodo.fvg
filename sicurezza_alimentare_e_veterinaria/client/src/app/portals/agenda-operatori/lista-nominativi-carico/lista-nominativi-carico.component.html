@@ -1,0 +1,61 @@
+<!--
+Copyright (C) AGPL-3.0  
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.-->
+<div>
+    <div class="row">
+        <div class="col">
+            <h2 class="d-flex align-items-center">
+                <span>Lista Nominativi Carico</span>
+                <!-- <button [disabled]="!disabilitaModifica" class="btn btn-secondary ms-auto" (click)="goToModifica()">
+                <i class="icon fa-solid fa-edit"></i>
+                <span>Modifica</span>
+            </button> -->
+
+            </h2>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col" *ngIf="nominativi; else noElements">
+            <a-smart-table [colsInfo]="ui.colonne" [src]="nominativi" [autolayout]="false">
+                <ng-template aTemplate="head">
+                    <tr>
+                        <th scope="col" *ngFor="let colonna of ui.colonne">
+                            <div class="d-flex align-items-center">
+                                <span class="label">{{ colonna.intestazione }}</span>
+                                <a-table-sorter [type]="colonna.tipo" [field]="colonna.campo"></a-table-sorter>
+                                <a-table-filter [type]="colonna.tipo" [field]="colonna.campo" [options]="colonna.filterOptions"></a-table-filter>
+                            </div>
+                        </th>
+                    </tr>
+                </ng-template>
+                <ng-template aTemplate="body" let-ar>
+                    <tr class="clickable" (click)="gotoCalendar(ar.id_risorsa)">
+                        <td *ngFor="let colonna of ui.colonne">
+                            <ng-container *ngIf="colonna.tipo === 'date'; else campoNormale">
+                                {{ ar[colonna.campo] | date : "dd/MM/yyyy" }}
+                            </ng-container>
+                            <ng-template #campoNormale>
+                                <ng-container *ngIf="colonna.tipo == 'number'; else normalField">
+                                    <div class="d-flex align-items-center justify-content-end">
+                                        <span>{{ ar[colonna.campo] | numberPipe }}</span>
+                                    </div>
+                                </ng-container>
+                                <ng-template #normalField>
+                                    {{ ar[colonna.campo] }}
+                                </ng-template>
+                            </ng-template>
+                        </td>
+                    </tr>
+                </ng-template>
+            </a-smart-table>
+        </div>
+    </div>
+    <ng-template #noElements>
+        <span>Nessun elemento presente</span>
+    </ng-template>
+</div>

@@ -1,0 +1,59 @@
+<!--
+Copyright (C) AGPL-3.0  
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.-->
+<header
+  class="app-section"
+  id="app-header"
+  [ngClass]="{ 'h-auto': !isUserLogged() }"
+>
+  <ng-container *ngIf="(isUserLogged() | async) && !isDesktopView()">
+    <top-bar></top-bar>
+  </ng-container>
+  <ng-container *ngIf="!(isUserLogged() | async)">
+    <div class="fvg-logo">
+      <img alt="logo-regione" src="assets/img/fvg-logo.png" />
+    </div>
+  </ng-container>
+</header>
+<aside
+  class="app-section"
+  id="app-aside"
+  *ngIf="shouldShowSidebar() && (isUserLogged() | async) && isDesktopView()"
+>
+  <side-bar></side-bar>
+</aside>
+<main
+  class="app-section"
+  id="app-main"
+  [ngClass]="{
+    'desktop-view': isDesktopView(),
+    'footer-present': (isUserLogged() | async) && !isDesktopView(),
+    'aside-present':
+      shouldShowSidebar() && (isUserLogged() | async) && isDesktopView()
+  }"
+>
+  <div
+    class="container-fluid h-100"
+    id="router-outlet-container"
+    [ngClass]="{ 'p-0': !shouldShowSidebar() }"
+  >
+    <router-outlet></router-outlet>
+  </div>
+</main>
+<footer class="app-section" id="app-footer">
+  <bottom-bar *ngIf="(isUserLogged() | async) && !isDesktopView()"></bottom-bar>
+  <div
+    *ngIf="!(isUserLogged() | async)"
+    class="container-fluid text-end"
+    id="app-version"
+  >
+    v{{ appVersion }}
+  </div>
+</footer>
+
+<app-notification></app-notification>

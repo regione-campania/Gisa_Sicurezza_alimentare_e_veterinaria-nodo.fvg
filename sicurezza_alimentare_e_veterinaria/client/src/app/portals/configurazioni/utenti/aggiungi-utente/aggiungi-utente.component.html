@@ -1,0 +1,76 @@
+<!--
+Copyright (C) AGPL-3.0  
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.-->
+<div>
+    <div class="row">
+        <div class="col">
+            <h2>Aggiungi Utente</h2>
+        </div>
+    </div>
+    <div>
+        <form [formGroup]="formUtente">
+            <label>Codice Fiscale: <span class="text-danger mb-3 ms-1 removeObb">*</span></label>
+            <div class="input-group">
+                <input type="text" class="form-control border" maxlength="16" formControlName="cf"
+                    (blur)="checkCF(formUtente)" />
+                <!-- <button class="btn btn-primary" [disabled]="disabilitaSoggFis" (click)="goToAggiungiSoggettiFisici()">
+                    <i class="icon fa-solid fa-plus"></i>
+                    <span>Soggetti Fisici</span>
+                </button> -->
+            </div>
+
+            <label>Nome:</label>
+            <input readonly type="text" class="form-control border" formControlName="nome" />
+
+            <label>Cognome:</label>
+            <input readonly type="text" class="form-control border" formControlName="cognome" />
+
+            <label>Data Nascita:</label>
+            <input readonly type="date" class="form-control border" formControlName="dt_nascita" />
+
+            <label>Comune Nascita:</label>
+            <input readonly type="text" class="form-control border" formControlName="comune_nascita" />
+
+            <label>ASL: <span class="text-danger mb-3 ms-1 ">*</span></label>
+            <select class="form-select" id="id_asl" formControlName="id_asl">
+                <option></option>
+                <option value="-1">REGIONE</option>
+                <option *ngFor="let el of asl" [value]="el.id_asl">
+                    {{ el.descrizione }}
+                </option>
+            </select>
+
+            <label>Qualifica: <span class="text-danger mb-3 ms-1 ">*</span></label>
+            <select class="form-select" id="id_qualifica" formControlName="id_qualifica">
+                <option></option>
+                <option *ngFor="let el of qualifiche" [value]="el.id_qualifica">
+                    {{ el.descr }}
+                </option>
+            </select>
+
+            <label>E-mail:</label>
+            <input type="text" class="form-control border" formControlName="mail" />
+
+            <label>Telefono:</label>
+            <input type="text" class="form-control border" formControlName="tel" />
+
+            <label>Inizio validità: <span class="text-danger mb-3 ms-1 ">*</span></label>
+            <input type="date" class="form-control border" formControlName="inizio" />
+
+            <label>Fine validità:</label>
+            <input type="date" class="form-control border" formControlName="fine" />
+
+        </form>
+    </div>
+    <br>
+    <button class="btn btn-primary ms-2 float-end" (click)="aggiungiUtente()" [disabled]="formUtente.invalid">
+        <i class="icon fa-solid fa-save"></i>
+        <span>Salva</span>
+    </button>
+
+</div>

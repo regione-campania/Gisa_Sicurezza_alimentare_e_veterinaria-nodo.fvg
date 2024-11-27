@@ -1,0 +1,104 @@
+<!--
+Copyright (C) AGPL-3.0  
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.-->
+<form [formGroup]="formStabilimento">
+    <div class="form-group mb-2">
+        <label>Numero Pratica: <span class="text-danger mb-3 ms-1">
+                *
+            </span> </label>
+        <input (blur)="checkPratica()" [readonly]="nPraticaMode" type="text" class="form-control border" formControlName="n_pratica">
+    </div>
+    <div class="form-group mb-2">
+        <label>Nome: <span class="text-danger mb-3 ms-1">
+                *
+            </span> </label>
+        <input type="text" class="form-control border" formControlName="nome">
+    </div>
+    <!-- <label>ASL: <span class="text-danger mb-3 ms-1">*</span> </label>
+    <select class="form-select" id="id_asl" formControlName="id_asl">
+        <option></option>
+        <option *ngFor="let el of strutture_asl" [value]="el.id_asl">
+            {{ el.descrizione }}
+        </option>
+    </select> -->
+
+    <div class="form-group mb-2">
+        <label>Codice Tipologia Struttura: <span class="text-danger mb-3 ms-1">
+                *
+            </span> </label>
+        <select class="form-select" id="tipo_struttura" formControlName="cod_tipologia_struttura"
+            (change)="prendiValoreCod($event)">
+            <option></option>
+            <option *ngFor="let el of tipiStruttura" [value]="el.codice">
+                {{ el.descrizione }}
+            </option>
+        </select>
+    </div>
+    <!-- <div *ngIf="descr_cod_regionale">
+        <label>{{descr_cod_regionale}}: <span class="text-danger mb-3 ms-1">
+                *
+            </span> </label>
+        <input type="text" class="form-control border" formControlName="sd_cod_regionale">
+    </div> -->
+    <div class="form-group mb-2">
+        <div *ngIf="descr_cod_nazionale">
+            <label>{{descr_cod_nazionale}}: <span class="text-danger mb-3 ms-1">
+                    *
+                </span> </label>
+            <input type="text" class="form-control border" formControlName="cod_nazionale">
+        </div>
+    </div>
+
+    <div class="form-group mb-2">
+        <div [style.display]="mostraSDI ? 'block' : 'none'">
+            <label>SDI: <span class="text-danger mb-3 ms-1">
+                    *
+                </span></label>
+            <input type="text" class="form-control border" formControlName="sdi" maxlength="6" />
+        </div>
+    </div>
+
+    <!-- issue #11648  
+        <div class="form-group mb-2">
+            <label>Categoria Rischio: </label>
+            <select class="form-select" id="tipo_rischio" formControlName="categoria_rischio">
+                <option></option>
+                <option *ngFor="let el of tipiRischio" [value]="el.codice">
+                    {{ el.descrizione }}
+                </option>
+            </select>
+        </div>
+     -->
+
+    <div class="form-group mb-2">
+        <label>PEC: </label>
+        <input type="text" class="form-control border" formControlName="pec">
+    </div>
+
+    <div class="form-group mb-2">
+        <label>Telefono: </label>
+        <input type="text" class="form-control border" formControlName="telefono">
+    </div>
+
+    <div class="form-group mb-2">
+        <label>Data inizio validità: <span class="text-danger mb-3 ms-1">
+                *
+            </span> </label>
+        <input type="date" id="lenghtDate" class="form-control border" formControlName="data_inizio_validita"
+            [min]="1900-01-01" (blur)="checkDate($event, formStabilimento)">
+    </div>
+
+    <div class="form-group mb-2">
+        <div *ngIf="tipoOperazione === 'modifica'">
+            <label>Data fine validità: </label>
+            <input type="date" id="lenghtDate" class="form-control border" formControlName="data_fine_validita"
+                [min]="1900-01-01" (blur)="checkDate($event,formStabilimento)">
+        </div>
+    </div>
+
+</form>

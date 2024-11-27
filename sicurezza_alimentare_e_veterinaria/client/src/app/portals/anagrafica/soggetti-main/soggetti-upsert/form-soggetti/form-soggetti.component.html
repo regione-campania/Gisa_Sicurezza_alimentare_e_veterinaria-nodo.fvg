@@ -1,0 +1,72 @@
+<!--
+Copyright (C) AGPL-3.0  
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.-->
+<form [formGroup]="formSoggetto">
+  <div class="form-group mb-2">
+    <label>Nome: <span class="text-danger mb-3 ms-1">
+        *
+      </span></label>
+    <input type="text" oninput="this.value = this.value.replace(/[0-9]/g, '');" class="form-control border" formControlName="nome">
+  </div>
+  <div class="form-group mb-2">
+    <label>Cognome: <span class="text-danger mb-3 ms-1">
+        *
+      </span></label>
+    <input type="text" oninput="this.value = this.value.replace(/[0-9]/g, '');" class="form-control border" formControlName="cognome">
+  </div>
+  <div class="form-group mb-2">
+    <label>Comune di Nascita: <span class="text-danger mb-3 ms-1">
+        *
+      </span></label>
+    <input type="text" class="form-control border" formControlName="comune_nascita" [autofiller]="datiCodiciNascita"
+      autofillerKey="denominazione_it" (valueChange)="patchValue($event, 'comune_nascita')" readonly>
+  </div>
+  <div class="form-group mb-2">
+    <label>Codice Fiscale: <span class="text-danger mb-3 ms-1">
+        *
+      </span></label>
+    <input type="text" class="form-control border" formControlName="codice_fiscale" maxlength="16"
+      (blur)="checkCodiceFiscale(formSoggetto)">
+  </div>
+  <div class="form-group mb-2">
+    <label>Sesso: <span class="text-danger mb-3 ms-1">
+        *
+      </span></label>
+    <select class="form-select" formControlName="sesso">
+      <option value='M'>M</option>
+      <option value='F'>F</option>
+    </select>
+  </div>
+  <div class="form-group mb-2">
+    <label>Telefono: </label>
+    <input type="text" oninput="this.value = this.value.replace(/[^0-9]/g, '');" class="form-control border" formControlName="telefono">
+  </div>
+  <div class="form-group mb-2">
+    <label>Email: </label>
+    <input type="text" class="form-control border" formControlName="email">
+  </div>
+  <div class="form-group mb-2">
+    <label>PEC: </label>
+    <input type="text" class="form-control border" formControlName="pec">
+  </div>
+  <div class="form-group mb-2">
+    <label>Telefono 2: </label>
+    <input type="text" oninput="this.value = this.value.replace(/[^0-9]/g, '');" class="form-control border" formControlName="telefono2">
+  </div>
+  <div class="form-group mb-2">
+    <label>Data di Nascita: <span class="text-danger mb-3 ms-1">
+        *
+      </span></label>
+    <input type="date" class="form-control w-auto border" formControlName="data_nascita" [min]="1900-01-01"
+      [max]="formatDataMax" (blur)="checkDate($event, formSoggetto)">
+  </div>
+  <div class="form-group mb-2">
+    <label>Documento di identità: </label>
+    <input type="text" class="form-control border" formControlName="documento_identita">
+  </div>
+</form>

@@ -1,0 +1,22 @@
+.modal-body {
+  display: grid;
+}
+
+tr.clickable {
+
+  &.opened {
+
+    .icon {
+      transform: rotate(90deg);
+    }
+  }
+}
+
+.child-row {
+  display: none;
+  background-color: var(--stripe-color);
+
+  td {
+    padding-left: 40px;
+  }
+}

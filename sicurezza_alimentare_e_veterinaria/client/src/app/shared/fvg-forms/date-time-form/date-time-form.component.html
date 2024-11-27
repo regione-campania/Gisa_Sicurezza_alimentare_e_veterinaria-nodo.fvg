@@ -1,0 +1,45 @@
+<!--
+Copyright (C) AGPL-3.0  
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.-->
+<div class="date-time-group" [formGroup]="form" *ngIf="this.type == 'single' else interval">
+  <div class="d-inline-flex flex-column">
+    <label for="date" class="form-label">Data</label>
+    <input type="date" id="date" class="form-control" [attr.required]="required || null" formControlName="date">
+  </div>
+  <div class="d-inline-flex flex-column ms-auto">
+    <label for="time" class="form-label">Ora</label>
+    <input type="time" id="time" class="form-control" [attr.required]="required || null" formControlName="time">
+  </div>
+</div>
+<ng-template #interval>
+  <div class="form-group" [formGroup]="form">
+    <div class="date-time-group" formGroupName="start">
+      <div class="group-label">Inizio</div>
+      <div class="d-inline-flex flex-column">
+        <label for="date_start" class="form-label">Data</label>
+        <input type="date" id="date_start" class="form-control" [attr.required]="required || null" formControlName="date">
+      </div>
+      <div class="d-inline-flex flex-column ms-auto">
+        <label for="time_start" class="form-label">Ora</label>
+        <input type="time" id="time_start" class="form-control" [attr.required]="required || null" formControlName="time">
+      </div>
+    </div>
+    <div class="date-time-group" formGroupName="end">
+      <div class="group-label">Fine</div>
+      <div class="d-inline-flex flex-column">
+        <label for="date_end" class="form-label">Data</label>
+        <input type="date" id="date_end" class="form-control" [attr.required]="required || null" formControlName="date">
+      </div>
+      <div class="d-inline-flex flex-column ms-auto">
+        <label for="time_end" class="form-label">Ora</label>
+        <input type="time" id="time_end" class="form-control" [attr.required]="required || null" formControlName="time">
+      </div>
+    </div>
+  </div>
+  <small class="text-danger" *ngIf="hasIntervalError">La data di inizio deve precedere quella di fine</small>
+</ng-template>

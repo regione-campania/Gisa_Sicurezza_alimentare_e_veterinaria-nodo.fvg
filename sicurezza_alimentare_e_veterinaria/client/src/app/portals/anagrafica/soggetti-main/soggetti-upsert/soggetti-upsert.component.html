@@ -1,0 +1,30 @@
+<!--
+Copyright (C) AGPL-3.0  
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.-->
+<h2 *ngIf="!formSoggetto.modifica">Aggiungi Soggetto Fisico</h2>
+<h2 *ngIf="formSoggetto.modifica">Modifica Soggetto Fisico</h2>
+<br>
+<app-form-soggetti #formSoggetto
+    [_id_soggetto_fisico_preso]="id_soggetto_fisico || _id_soggetto_parix"></app-form-soggetti>
+<br>
+
+<br>
+<!-- aggiungi form indirizzo -->
+<h3 class="d-flex align-items-center"> Indirizzo</h3>
+<div *ngIf="id_indirizzo_nuovo || labelBottone == 'Aggiungi' || _id_soggetto_parix">
+    <app-form-indirizzo-main #formIndirizzo [_id_indirizzo_preso]="id_indirizzo_nuovo" [_labelBottone]="labelBottone"
+        [_id_soggetto_fisico_preso]="id_soggetto_fisico || _id_soggetto_parix"
+        [showButton]="false"></app-form-indirizzo-main>
+</div>
+<button class="btn btn-primary ms-2 float-end" (click)="updSoggetto()"
+    [disabled]="formSoggetto?.formSoggetto?.invalid || !this.formIndirizzo?.formModificaIndirizzo?.valid">
+    <!-- <i class="icon fa-solid fa-plus"></i>
+    <span>{{labelBottone}}</span> -->
+    <i class="icon fa-solid fa-save"></i>
+    <span>Salva</span>
+</button>

@@ -1,0 +1,71 @@
+<!--
+Copyright (C) AGPL-3.0  
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.-->
+<div id="portals-home" [ngClass]="{ 'desktop-mode': isDesktopView() }">
+  <ng-container *ngIf="isDesktopView()">
+    <div class="portals-home-header">
+      <div class="fvg-logo">
+        <img alt="logo-regione" src="assets/img/fvg-logo.png" />
+      </div>
+    </div>
+  </ng-container>
+  <div *ngIf="isDesktopView()">
+    <button class="btn btn-light" style="position: absolute; margin-left: 10px; top: 50px" (click)="goToAvvisi()">
+      <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
+      Avvisi
+    </button>
+
+    <button class="btn btn-light" style="position: absolute; right: 20px; top: 50px" (click)="selectManuali()">
+      <i class="fa fa-book" aria-hidden="true"></i>
+      Manuali Utente
+    </button>
+
+    <button class="btn btn-light ms-2" style="position: absolute; right: 200px;  top: 50px"
+      (click)="goToUnitaDiCrisi()">
+      <i class="fa-solid fa-user-md" aria-hidden="true"></i>
+      Unità di Crisi
+    </button>
+  </div>
+  <div class="portals-home-main">
+    <h1 class="text-center display-1">Portali</h1>
+    <div id="portals-container">
+      <div class="portal" *ngFor="let portal of portals">
+        <ng-container *ngIf="portal.tipo_chiamata == 'cod'; else external">
+          <div class="card portal-card box-3d p-0" role="button" [id]="portal.cod + '-card'"
+            (click)="goToPortal(portal.parametro)">
+            <div class="card-body">
+              <img [src]="'assets/img/' + portal.img" />
+            </div>
+            <div class="card-footer">{{ portal.descr }}</div>
+          </div>
+        </ng-container>
+        <ng-template #external>
+          <div class="card portal-card box-3d p-0" role="button" [id]="portal.cod + '-card'" (click)="
+              portal.cod == 'matrix'
+                ? goToMatrix()
+                : portal.cod == 'matrix-formule'
+                ? goToMatrixFormule()
+                : goToRA()
+            ">
+            <div class="card-body">
+              <img [src]="'assets/img/' + portal.img" />
+            </div>
+            <div class="card-footer">{{ portal.descr }}</div>
+          </div>
+        </ng-template>
+      </div>
+    </div>
+  </div>
+  <ng-container *ngIf="isDesktopView()">
+    <div class="portals-home-footer">
+      <div class="container-fluid text-end" id="app-version">
+        v{{ appVersion }}
+      </div>
+    </div>
+  </ng-container>
+</div>

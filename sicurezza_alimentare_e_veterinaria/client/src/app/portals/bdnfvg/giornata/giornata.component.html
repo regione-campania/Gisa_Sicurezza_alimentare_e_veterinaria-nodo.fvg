@@ -1,0 +1,484 @@
+<!--
+Copyright (C) AGPL-3.0  
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.-->
+<div id="giornata" class="container-fluid">
+  <div class="row">
+    <div class="col">
+      <h1>
+        Raccolta {{dayInfo.dt | date:
+        'dd-MM-yyyy'}} - Matrice: {{dayInfo.descr_matrice}}
+        - Allevamento {{dayInfo.allev}}
+      </h1>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col">
+      <div class="row mb-1">
+        <!-- BOTTONI AZIONE (CODICI A BARRE, NUOVO POOL e AGGIUNGI CAPO) -->
+        <div class="col">
+          <div id="bottoni-azione-pool" class="d-flex align-items-center ms-auto">
+            <button *ngIf="capiGiornata || (codici_pool && codici_pool.length > 0)" type="button"
+              class="btn btn-secondary" (click)="getBarcodes()">Stampa Codici a Barre<i class="fa fa-barcode ms-2"></i>
+            </button>
+            <button *ngIf="isPool" type="button" class="btn btn-primary"
+              ngbTooltip="Crea nuovo pool" data-bs-toggle="modal" data-bs-target="#capi-giornata-modal"
+              (click)="getCapiModal()" [disabled]="!btnAggiungi">
+              Nuovo Pool<i class="ms-2 fa fa-plus"></i>
+            </button>
+            <button *ngIf="tipo_dettaglio == 'MANUALE' || tipo_dettaglio == 'CAPANNONE'"
+              type="button" class="btn btn-primary" (click)="openModal()" [disabled]="!btnAggiungi">
+              Aggiungi campione
+              <i class="ms-2 fa fa-plus"></i>
+            </button>
+          </div>
+        </div>
+        <!-- BOTTONI AGGIUNTA CAPI (EXCEL O MANUALE) -->
+        <div class="d-flex col justify-content-end" *ngIf="!isPool && capiGiornata">
+          <!-- *ngIf="selectedDataLength > 0 || (dataFromFile && dataFromFileLength > 0); else noSelected" -->
+          <ng-container *ngIf="selectedDataLength > 0 || (dataFromFile && dataFromFileLength > 0); else noSelected">
+            <button type="button" class="btn btn-primary float-end" (click)="checkSelected()" [disabled]="!btnAggiungi">
+              Salva<i class="ms-2 fa-solid fa-floppy-disk"></i>
+            </button>
+          </ng-container>
+          <ng-template #noSelected>
+            <!--<div class="row">
+              <div class="col-auto pe-0">
+                <input class="form-control" type="file" id="formFile" (change)="addFile($event)" accept=".xlsx">
+              </div>
+              <div class="col-auto">
+                <button type="button" class="btn btn-success" ngbTooltip="Scarica Template"
+                  (click)="downloadTemplateXLSX()">Scarica<i class="fa fa-download ms-2" aria-hidden="true"></i>
+                </button>
+              </div>
+            </div>-->
+          </ng-template>
+        </div>
+      </div>
+
+      <!-- TABELLE -->
+      <!-- Bottone per selezionare tutti i piani della tabella -->
+      <div class="row" *ngIf="!isPool; else capiPool">
+        <ng-container *ngIf="capiGiornata; else noCapi">
+          <a-smart-table #capiTable [colsInfo]="ui.colonne" class="table-striped" [src]="capiGiornata"
+            [selection]="true" [autolayout]="false" [paginator]="false" [responsive]="false">
+            <ng-template aTemplate="head">
+              <!-- <tr id="intestazione-bottoni">
+                <th scope="col" colspan="12">
+                  <button type="button" class="btn btn-light btn-sm float-end" (click)="selectAllPiani()">
+                    Seleziona tutti i piani<i class="ms-2 fa-solid fa-check-double"></i>
+                  </button>
+                </th>
+              </tr> -->
+              <tr>
+                <th scope="col" width='5%' class="selector-th"></th>
+                <th scope="col" *ngFor="let colonna of this.ui.colonne">
+                  <div class="d-flex align-items-center">
+                    <span class="label">{{colonna.intestazione}}</span>
+                    <a-table-sorter [type]="colonna.tipo" [field]="colonna.campo"></a-table-sorter>
+                    <a-table-filter [type]="colonna.tipo" [field]="colonna.campo" [options]="{'minValue': 0}"></a-table-filter>
+                  </div>
+                </th>
+                <!--  *ngIf="dayInfo.descr_specie == 'SUINI'"  -->
+                <th scope="col" class="text-center">Note</th>
+                <th *ngIf="!isNoProvetta" scope="col" class="text-center">Provetta</th>
+                <th scope="col" class="text-center">
+                  Piani
+                  <button type="button" [attr.data-bs-toggle]="tabella?.selectedData?.length != 0 ? 'button' : null"
+                    data-bs-toggle="button" class="ms-1 btn btn-primary btn-sm" (click)="selectAllPiani()"
+                    ngbTooltip="Seleziona/Deseleziona tutti i piani" [disabled]="!btnAggiungi">
+                    <i class="fa-solid fa-check-double"></i>
+                  </button>
+                </th>
+              </tr>
+            </ng-template>
+            <ng-template aTemplate="body" let-capo let-i="index">
+              <tr class="text-center align-middle">
+                <td>
+                  <a-table-selector [data]="capo" [disabled]="!capo.selezionabile || capo.printed === true"
+                    (change)="selectCapo($event, capo)">
+                  </a-table-selector>
+                </td>
+                <td *ngFor="let colonna of this.ui.colonne">
+                  <ng-container *ngIf="colonna.tipo === 'date'; else elseField">
+                    {{capo[colonna.campo] | date: 'dd/MM/yyyy'}}
+                  </ng-container>
+                  <ng-template #elseField>
+                    <div *ngIf="colonna.campo === 'eta'; else normalField"
+                      [ngbTooltip]="(capo[colonna.campo]/12).toString() + ' anni'" class="m-0 p-0">
+                      {{capo[colonna.campo]}}
+                    </div>
+                    <ng-template #normalField> {{capo[colonna.campo]}} </ng-template>
+                  </ng-template>
+                </td>
+                <td>
+                  <div class="input-group input-group-sm">
+                    <span class="input-group-text">Note</span>
+                    <textarea class="form-control" id="note_{{capo.id_capo}}_{{capo.marchio}}" 
+                      placeholder="Note..." [disabled]="!btnAggiungi"></textarea>
+                  </div>
+                </td>
+                <td>
+                  <input *ngIf="!isNoProvetta" type="number" id="provetta_{{capo.id_capo}}_{{capo['pos']}}" class="form-control"
+                    placeholder="Sequenza Provetta" [disabled]="!capo.selected" [value]="capo.n_sample"
+                    (focus)="saveOldValue($event)" (blur)="checkInputProvetta($event)" [disabled]="!btnAggiungi" min="1">
+                </td>
+                <td>
+                  <ng-container *ngFor="let p of piani">
+                    <div class="row">
+                      <div class="col">
+                        <input type="checkbox" name="{{p.id_piano}}" [attr.id_capo]="capo.id_capo"
+                          [attr.mcp]="capo.marchio + '_' + capo.id_capo + '_' + p.id_piano"
+                          id="piano_{{p.id_piano}}_{{i}}" [attr.row]="i" [disabled]="!this.capiGiornata[i].selected || !btnAggiungi"
+                          (change)="managePiani($event, p.id_piano, i)">
+                        <label class="ms-1">{{p.descr_piano}}</label>
+                      </div>
+                    </div>
+                  </ng-container>
+                </td>
+              </tr>
+            </ng-template>
+          </a-smart-table>
+        </ng-container>
+        <ng-template #noCapi>
+          <div class="row">
+            <span>Non sono presenti capi.</span>
+          </div>
+        </ng-template>
+      </div>
+
+      <!-- TABELLA POOL -->
+      <ng-template #capiPool>
+        <div class="row" *ngIf="poolGiornata; else noPool">
+          <div class="col">
+            <div class="table-container container-fluid" id="table-pool">
+              <div class="row mb-1">
+                <div class="col">
+                  <button type="button" class="btn btn-primary float-end" (click)="updPoolPiani()"
+                    [disabled]="!btnAggiungi">
+                    Salva<i class="ms-2 fa-solid fa-floppy-disk"></i>
+                  </button>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col">
+                  <a-smart-table #poolTable class="table-striped table-sm" [colsInfo]="ui_pool.colonne"
+                    [src]="poolGiornata" [selection]="false" [paginator]="false" [autolayout]="false" [responsive]="false">
+                    <ng-template aTemplate="head">
+                      <!-- <tr id="intestazione-bottoni">
+                        <th scope="col" colspan="7">
+                          <button type="button" class="btn btn-light btn-sm float-end" (click)="selectAllPiani()" [disabled] = "!btnAggiungi">
+                            Seleziona tutti i piani<i class="ms-2 fa-solid fa-check-double"></i>
+                          </button>
+                        </th>
+                      </tr> -->
+                      <tr>
+                        <th scope="col" *ngFor="let colonna of ui_pool.colonne">
+                          <div class="d-flex align-items-center">
+                            <span class="label">{{colonna.intestazione}}</span>
+                            <a-table-sorter [type]="colonna.tipo" [field]="colonna.campo"></a-table-sorter>
+                            <a-table-filter [type]="colonna.tipo" [field]="colonna.campo"></a-table-filter>
+                          </div>
+                        </th>
+                        <!--<th scope="col" class="text-center align-middle">Provetta</th>-->
+                        <th scope="col" class="text-center align-middle">Note</th>
+                        <th scope="col" class="text-center align-middle">Piani
+                          <button type="button"
+                            [attr.data-bs-toggle]="tabella?.selectedData?.length != 0 ? 'button' : null"
+                            data-bs-toggle="button" class="ms-1 btn btn-primary btn-sm" (click)="selectAllPiani()"
+                            ngbTooltip="Seleziona/Deseleziona tutti i piani" [disabled]="!btnAggiungi">
+                            <i class="fa-solid fa-check-double"></i>
+                          </button>
+                        </th>
+                        <th scope="col"></th>
+                      </tr>
+                    </ng-template>
+                    <ng-template aTemplate="body" let-pool let-i="index">
+                      <tr class="clickable">
+                        <td *ngFor="let colonna of ui_pool.colonne" class="text-center align-middle"
+                          (click)="showPool(pool)">
+                          <ng-container *ngIf="colonna.tipo === 'date'; else elseField">
+                            {{pool[colonna.campo] | date: 'dd/MM/yyyy'}}
+                          </ng-container>
+                          <ng-template #elseField>
+                            <ng-container *ngIf="colonna.tipo === 'number'; else normalField">
+                              {{pool[colonna.campo] | numberPipe}}
+                            </ng-container>
+                            <ng-template #normalField> {{pool[colonna.campo]}} </ng-template>
+                          </ng-template>
+                        </td>
+                        <!--<td class="align-middle">
+                          <input type="number" id="provetta_{{pool.pool}}" class="form-control"
+                            placeholder="Numero Provetta..." min="1" [value]="pool.n_sample">
+                        </td>-->
+                        <td>
+                          <div class="input-group input-group-sm">
+                            <span class="input-group-text">Note</span>
+                            <textarea class="form-control" id="note_{{pool.pool}}" placeholder="Note..."
+                              [disabled]="!btnAggiungi"></textarea>
+                          </div>
+                        </td>
+                        <td class="text-center align-middle">
+                          <ng-container *ngFor="let p of piani">
+                            <div class="row">
+                              <div class="col">
+                                <input type="checkbox" name="{{p.id_piano}}" [attr.pool]="pool.pool"
+                                  [attr.pool_piano]="pool.pool + '_' + p.id_piano" id="piano_{{p.id_piano}}_{{i}}"
+                                  [attr.row]="i" (change)="managePool($event, p.id_piano, i)" [disabled]="!btnAggiungi">
+                                <label class="ms-1">{{p.descr_piano}}</label>
+                              </div>
+                            </div>
+                          </ng-container>
+                        </td>
+                        <td class="align-middle">
+                          <button type="button" class="btn btn-sm btn-outline-danger"
+                            ngbTooltip="Elimina {{pool.codice_pool}}" (click)="deletePool(pool)"
+                            [disabled]="!btnAggiungi">
+                            <i class="fa fa-trash" aria-hidden="true"></i>
+                          </button>
+                        </td>
+                      </tr>
+                    </ng-template>
+                  </a-smart-table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <ng-template #noPool>
+          <div class="row">
+            <span>Non sono presenti pool.</span>
+          </div>
+        </ng-template>
+      </ng-template>
+    </div>
+  </div>
+  <!-- SVG barcodes Marchi -->
+  <div style="display: none;" *ngIf="marchi" class="row">
+    <div class="col" id="svg-container">
+      <svg *ngFor="let marchio of marchi" id={{this.idMarchio(marchio)}}></svg>
+    </div>
+  </div>
+  <!-- SVG barcodes Codici Pool -->
+  <div style="display: none;" *ngIf="codici_pool">
+    <div id="svg-container-pool">
+      <svg *ngFor="let cp of codici_pool" id="barcode_{{cp}}"></svg>
+    </div>
+  </div>
+</div>
+
+
+
+
+<!-- Modale Capi -->
+<div class="modal fade" id="capi-giornata-modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+  aria-labelledby="capi-giornata-modal-label" aria-hidden="true">
+  <div class="system-modal modal-dialog modal-fullscreen modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header" data-bs-theme="dark">
+        <h1 class="modal-title fs-5" id="capi-giornata-modal-label">Lista Capi Raccolta</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="close"
+          (click)="resetModalNewPool()"></button>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <form>
+            <div class="input-group mb-3">
+              <span class="input-group-text" id="codice-pool">Codice Pool</span>
+              <input [formControl]="codice_pool" type="number" min="1" class="form-control border" placeholder="Codice Pool"
+                aria-label="codice-pool" aria-describedby="codice-pool">
+            </div>
+          </form>
+        </div>
+        <div class="row">
+          <ng-template [ngIf]="capiModal" [ngIfElse]="noCapi">
+            <a-smart-table #tabModalCapi [colsInfo]="uiModal.colonne" class="table-sm table-striped" [src]="capiModal"
+              [selection]="true"
+              [autolayout]="false">
+              <ng-template aTemplate="head">
+                <tr>
+                  <th scope="col" class="selector-th"></th>
+                  <th scope="col" *ngFor="let colonna of uiModal.colonne">
+                    <div class="d-flex">
+                      <span class="label">{{colonna.intestazione}}</span>
+                      <a-table-sorter [type]="colonna.tipo" [field]="colonna.campo"></a-table-sorter>
+                      <a-table-filter [type]="colonna.tipo" [field]="colonna.campo"></a-table-filter>
+                    </div>
+                  </th>
+                </tr>
+              </ng-template>
+              <ng-template aTemplate="body" let-capo>
+                <tr>
+                  <td>
+                    <a-table-selector [data]="capo"
+                      [disabled]="!capo.selezionabile || capo.printed === true"></a-table-selector>
+                  </td>
+                  <td *ngFor="let colonna of uiModal.colonne" class="text-center">
+                    <ng-container *ngIf="colonna.tipo === 'date'; else elseField">
+                      {{capo[colonna.campo] | date: 'dd/MM/yyyy'}}
+                    </ng-container>
+                    <ng-template #elseField> {{capo[colonna.campo]}} </ng-template>
+                  </td>
+                </tr>
+              </ng-template>
+            </a-smart-table>
+          </ng-template>
+          <ng-template #noCapi>
+            <span>Non sono presenti dati nella tabella</span>
+          </ng-template>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" ngbTooltip="Aggiungi Pool" (click)="updPool()">
+          Aggiungi<i class="ms-2 fa fa-plus" aria-hidden="true"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+<!-- Modale Capi del Pool -->
+<div class="modal fade" id="pool-modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+  aria-labelledby="pool-modal-label" aria-hidden="true">
+  <div class="system-modal modal-dialog modal-fullscreen modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header" data-bs-theme="dark">
+        <h1 class="modal-title fs-5" id="pool-modal-label">Lista Capi Pool: {{selectedPool}}</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="close"
+          (click)="resetCapiPool()"></button>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <ng-template [ngIf]="capiInPool" [ngIfElse]="noCapiPool">
+            <a-smart-table #tabCapiPool [colsInfo]="uiCapiPool?.colonne" class="table-sm table-striped"
+              [src]="capiInPool" [autolayout]="false">
+              <ng-template aTemplate="head">
+                <tr>
+                  <th scope="col" *ngFor="let colonna of uiCapiPool?.colonne">
+                    <div class="d-flex">
+                      <span class="label">{{colonna.intestazione}}</span>
+                      <a-table-sorter [type]="colonna.tipo" [field]="colonna.campo"></a-table-sorter>
+                      <a-table-filter [type]="colonna.tipo" [field]="colonna.campo"></a-table-filter>
+                    </div>
+                  </th>
+                </tr>
+              </ng-template>
+              <ng-template aTemplate="body" let-capo>
+                <tr>
+                  <td *ngFor="let colonna of uiCapiPool?.colonne" class="text-center">
+                    <ng-container *ngIf="colonna.tipo === 'date'; else elseField">
+                      {{capo[colonna.campo] | date: 'dd/MM/yyyy'}}
+                    </ng-container>
+                    <ng-template #elseField> {{capo[colonna.campo]}} </ng-template>
+                  </td>
+                </tr>
+              </ng-template>
+            </a-smart-table>
+          </ng-template>
+          <ng-template #noCapiPool>
+            <span>Non sono presenti dati nella tabella</span>
+          </ng-template>
+        </div>
+      </div>
+      <div class="modal-footer">
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+<!-- MODALE NUOVO CAPO (SUINO) -->
+<div class="modal fade" id="nuovo-capo-modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+  aria-labelledby="nuovo-capo-label" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <form [formGroup]="formNuovoCapo">
+      <div class="modal-header" data-bs-theme="dark">
+        <h1 class="modal-title fs-5">
+          Aggiungi campione
+        </h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col">
+              <!-- Marchio -->
+              <div class="input-group mb-2"
+                [ngClass]="!formNuovoCapo.get('marchio')?.hasError('required') ? 'mb-1' : ''">
+                <span class="input-group-text" id="marchio-span" for="marchio">Marchio*</span>
+                <input type="text" class="form-control border" placeholder="Marchio..." formControlName="marchio">
+              </div>
+              <p class="text-danger mb-2 ms-1" *ngIf="formNuovoCapo.get('marchio')?.hasError('required')">
+                Marchio richiesto
+              </p>
+
+              <!-- Note -->
+              <div class="input-group mb-1">
+                <span class="input-group-text">Note</span>
+                <textarea class="form-control" formControlName="note" placeholder="Note..."></textarea>
+              </div>
+
+              <span class="fw-semibold">* = Campi Obbligatori</span>
+            </div>
+          </div>
+      </div>
+      <div class="modal-footer">
+        Capi da aggiungere: <input type="number" min="1" formControlName="num_capi" class="form-control border">
+        <button class="btn btn-primary" type="button" (click)="addCapoManuale()" [disabled]="formNuovoCapo.invalid">
+          Aggiungi<i class="ms-2 fa-solid fa-plus"></i>
+        </button>
+      </div>
+    </form>
+    </div>
+  </div>
+</div>
+
+
+
+<!-- MODALE NUOVO CAPANNONE -->
+<div class="modal fade" id="add-capannone-modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+  aria-labelledby="add-capannone-label" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header" data-bs-theme="dark">
+        <h1 class="modal-title fs-5"> Aggiungi Capannone </h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col">
+            <form [formGroup]="formCapannone">
+              <!-- Capannone -->
+              <select class="form-select border mb-2" formControlName="capannone"
+                [ngClass]="!formCapannone.get('capannone')?.hasError('required') ? 'mb-3' : ''">
+                <option value=null selected>Capannone...</option>
+                <option *ngFor="let c of capannoniAllevamento" [ngValue]="c">{{c.identificativo}}</option>
+              </select>
+
+              <!-- Note 
+              <div class="input-group mb-1">
+                <span class="input-group-text">Note</span>
+                <textarea class="form-control" formControlName="note" placeholder="Note..."></textarea>
+              </div> -->
+            </form>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" type="button" (click)="addCapannone()" [disabled]="formCapannone.invalid">
+          Aggiungi<i class="ms-2 fa-solid fa-plus"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

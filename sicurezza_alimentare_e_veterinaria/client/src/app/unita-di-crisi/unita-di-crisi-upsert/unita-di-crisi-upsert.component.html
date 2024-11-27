@@ -1,0 +1,76 @@
+<!--
+Copyright (C) AGPL-3.0  
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.-->
+<div style="margin-left: 3%; margin-right: 3%; margin-top: 1%;">
+    <div class="row">
+        <div class="col">
+            <h2 class="d-flex align-items-center">
+                <span>{{operazione}} Unità di Crisi {{tipoTitolo | uppercase}} </span>
+                <!-- <button type="button" class="btn btn-primary ms-auto" (click)="goBack()" style="float: right;">
+                    <i class="fa fa-arrow-left"></i> Indietro
+                  </button> -->
+            </h2>
+        </div>
+    </div>
+    <br>
+    <form [formGroup]="formUnitaDiCrisi">
+        <div class="form-group mb-2">
+            <label>Ruolo: <span class="text-danger mb-3 ms-1">
+                    *
+                </span> </label>
+            <!-- in questo caso è il contrario ovvero non accetta numeri all'interno dell'input 
+                 
+                oninput="this.value = this.value.replace(/[^a-zA-Z\s]/g, '');" per non accettare neanche caratteri speciali-->
+            <input type="text" oninput="this.value = this.value.replace(/[0-9]/g, '');" class="form-control border"
+                formControlName="ruolo">
+        </div>
+        <div class="form-group mb-2">
+            <label>Nome: <span class="text-danger mb-3 ms-1">
+                    *
+                </span> </label>
+            <input type="text" oninput="this.value = this.value.replace(/[0-9]/g, '');" class="form-control border"
+                formControlName="nome">
+        </div>
+
+        <div class="form-group mb-2">
+            <label>Cognome: <span class="text-danger mb-3 ms-1">
+                    *
+                </span> </label>
+            <input type="text" oninput="this.value = this.value.replace(/[0-9]/g, '');" class="form-control border"
+                formControlName="cognome">
+        </div>
+
+        <div class="form-group mb-2">
+            <label>Email: <span class="text-danger mb-3 ms-1">
+                    *
+                </span></label>
+            <input type="text" class="form-control border" formControlName="email">
+        </div>
+
+        <div class="form-group mb-2">
+            <label>Telefono: </label>
+            <!-- la funzione oninput quanto segue permette solamente l'inserimento di numeri e non lettere -->
+            <input type="text" class="form-control border" oninput="this.value = this.value.replace(/[^0-9]/g, '');"
+                id="telefono" formControlName="telefono" minlength="10" maxlength="10" (blur)="checkIsNumber($event)"
+                (keydown.enter)="$event.preventDefault()">
+        </div>
+
+        <div class="form-group mb-2">
+            <label>Cellulare: <span class="text-danger mb-3 ms-1">
+                    *
+                </span> </label>
+            <input type="text" class="form-control border" oninput="this.value = this.value.replace(/[^0-9]/g, '');"
+                id="cellulare" formControlName="cellulare" minlength="10" maxlength="10" (blur)="checkIsNumber($event)"
+                (keydown.enter)="$event.preventDefault()">
+        </div>
+    </form>
+</div>
+<button class="btn btn-primary ms-2 float-end" (click)="updUnitaDiCrisi()" [disabled]="!this.formUnitaDiCrisi.valid" style="margin-right: 3%;">
+    <i class="icon fa-solid fa-floppy-disk"></i>
+    <span>Salva</span>
+</button>

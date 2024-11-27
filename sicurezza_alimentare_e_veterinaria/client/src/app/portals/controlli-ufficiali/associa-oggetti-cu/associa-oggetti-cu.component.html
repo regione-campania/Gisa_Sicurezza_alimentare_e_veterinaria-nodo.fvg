@@ -1,0 +1,314 @@
+<!--
+Copyright (C) AGPL-3.0  
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.-->
+<div id="associa-oggetti-cu-component">
+    <div class="row align-items-center">
+        <div class="col">
+            <h5 class="d-flex align-items-center">
+                <ng-container *ngIf="cu">
+                    <span>Dettaglio Controllo n° {{cu.codice}}</span>
+                </ng-container>
+            </h5>
+        </div>
+    </div>
+    <div class="row align-items-center">
+        <div class="col">
+            <h2 class="d-flex align-items-center">
+                <span>Lista Oggetti Associati</span>
+                <button [disabled]="btnRimuovi ? null : true" type="button" class="btn btn-danger ms-auto"
+                    (click)="rimuoviCuOggetto()">
+                    <i class="icon fa-solid fa-minus"></i>
+                    <span>Elimina</span>
+                </button>
+            </h2>
+            <a-smart-table #oggettiSel *ngIf="ui_sel" [colsInfo]="ui_sel.colonne" class="table-striped"
+                [src]="oggetti_sel" [autolayout]="false" [selection]="true"> <!-- per selezionare riga -->
+                <!-- definire head -->
+                <ng-template aTemplate="head">
+                    <tr>
+                        <th width="5%" scope="col" class="selector-th"></th> <!-- per selezionare riga -->
+                        <th width="5%" scope="col">
+                            <div class="d-flex align-items-center">
+                                <span class="label">{{ui_sel.colonne[0].intestazione}}</span>
+                                <a-table-sorter [type]="ui_sel.colonne[0].tipo"
+                                    [field]="ui_sel.colonne[0].campo"></a-table-sorter>
+                                <a-table-filter [type]="ui_sel.colonne[0].tipo"
+                                    [field]="ui_sel.colonne[0].campo"></a-table-filter>
+                            </div>
+                        </th>
+                        <th width="5%" scope="col">
+                            <div class="d-flex align-items-center">
+                                <span class="label">{{ui_sel.colonne[1].intestazione}}</span>
+                                <a-table-sorter [type]="ui_sel.colonne[1].tipo"
+                                    [field]="ui_sel.colonne[1].campo"></a-table-sorter>
+                                <a-table-filter [type]="ui_sel.colonne[1].tipo"
+                                    [field]="ui_sel.colonne[1].campo"></a-table-filter>
+                            </div>
+                        </th>
+                        <th width="30%" scope="col">
+                            <div class="d-flex align-items-center">
+                                <span class="label">{{ui_sel.colonne[2].intestazione}}</span>
+                                <a-table-sorter [type]="ui_sel.colonne[2].tipo"
+                                    [field]="ui_sel.colonne[2].campo"></a-table-sorter>
+                                <a-table-filter [type]="ui_sel.colonne[2].tipo"
+                                    [field]="ui_sel.colonne[2].campo"></a-table-filter>
+                            </div>
+                        </th>
+                        <th scope="col">
+                            <div class="d-flex align-items-center justify-content-end">
+                                <span class="label">{{ui_sel.colonne[3].intestazione}}</span>
+                                <a-table-sorter [type]="ui_sel.colonne[3].tipo"
+                                    [field]="ui_sel.colonne[3].campo"></a-table-sorter>
+                                <a-table-filter [type]="ui_sel.colonne[3].tipo"
+                                    [field]="ui_sel.colonne[3].campo"></a-table-filter>
+                            </div>
+                        </th>
+                        <th scope="col">
+                            <div class="d-flex align-items-center">
+                                <span class="label">{{ui_sel.colonne[4].intestazione}}</span>
+                                <a-table-sorter [type]="ui_sel.colonne[4].tipo"
+                                    [field]="ui_sel.colonne[4].campo"></a-table-sorter>
+                                <a-table-filter [type]="ui_sel.colonne[4].tipo"
+                                    [field]="ui_sel.colonne[4].campo"></a-table-filter>
+                            </div>
+                        </th>
+                        <th scope="col" width="20%"></th>
+                        <!--
+                        <th scope="col" *ngFor="let colonna of ui_sel.colonne">
+                            <div class="d-flex align-items-center justify-content-center">
+                                <span class="label">{{colonna.intestazione}}</span>
+                                <a-table-sorter [type]="colonna.tipo" [field]="colonna.campo"></a-table-sorter>
+                                <a-table-filter [type]="colonna.tipo" [field]="colonna.campo" [options]="colonna.filterOptions"></a-table-filter>
+                            </div>
+                        </th>
+                        -->
+                    </tr>
+                </ng-template>
+                <!-- definire body -->
+                <ng-template aTemplate="body" let-ar>
+                    <tr>
+                        <td class="selector-td">
+                            <a-table-selector [data]="ar"></a-table-selector> <!-- per selezionare riga -->
+                        </td>
+                        <td *ngFor="let colonna of ui_sel.colonne">
+                            <ng-container *ngIf="colonna.tipo == 'date' else elseField">
+                                {{ar[colonna.campo] | date:'dd/MM/yyyy'}}
+                            </ng-container>
+                            <ng-template #elseField>
+                                <ng-container *ngIf="colonna.tipo == 'number' else normalField">
+                                    <div class="d-flex align-items-center justify-content-end">
+                                        <span>{{ar[colonna.campo] | numberPipe}}</span>
+                                    </div>
+                                </ng-container>
+                                <ng-template #normalField>
+                                    {{ar[colonna.campo]}}
+                                </ng-template>
+                            </ng-template>
+                        </td>
+                        <td>
+                            <div class="float-end">
+                                <ng-container *ngIf="ar['chiuso'] else btnChiudi">
+                                    <button [disabled]="btnMode || controllo_chiuso || follow_up"
+                                        class="btn btn-secondary ms-auto" (click)="apri(ar['id_cu_oggetto'])">
+                                        <i class="icon fa-solid fa-lock"></i>
+                                        <span>Apri</span>
+                                    </button>
+                                </ng-container>
+                                <ng-template #btnChiudi>
+                                    <button [disabled]="btnMode || follow_up" class="btn btn-secondary ms-auto"
+                                        (click)="chiudi(ar['id_cu_oggetto'])">
+                                        <i class="icon fa-solid fa-lock-open"></i>
+                                        <span>Chiudi</span>
+                                    </button>
+                                </ng-template>
+                                <button id="{{ar['id']}}" class="btn btn-primary ms-2"
+                                    (click)="dettaglioOggetto(ar['id'])">
+                                    <span>Dettaglio</span>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                </ng-template>
+            </a-smart-table>
+        </div>
+    </div>
+    <br>
+
+
+
+
+    <br>
+    <div class="row">
+        <div class="col">
+            <h2 class="d-flex align-items-center">
+                <span>Lista Oggetti</span>
+                <button [disabled]="btnAssocia ? null : true" type="button" class="btn btn-primary ms-auto"
+                    (click)="associaCuOggetto()">
+                    <i class="icon fa-solid fa-plus"></i>
+                    <span>Associa</span>
+                </button>
+            </h2>
+            <a-smart-table #oggettiNoSel *ngIf="ui_no_sel" [colsInfo]="ui_no_sel.colonne" class="table-striped"
+                [src]="oggetti_no_sel" [autolayout]="false" [selection]="true"> <!-- per selezionare riga -->
+                <!-- definire head -->
+                <ng-template aTemplate="head">
+                    <tr>
+                        <th width="5%" scope="col" class="selector-th"></th> <!-- per selezionare riga -->
+                        <th width="5%" scope="col">
+                            <div class="d-flex align-items-center">
+                                <span class="label">{{ui_no_sel.colonne[0].intestazione}}</span>
+                                <a-table-sorter [type]="ui_no_sel.colonne[0].tipo"
+                                    [field]="ui_no_sel.colonne[0].campo"></a-table-sorter>
+                                <a-table-filter [type]="ui_no_sel.colonne[0].tipo"
+                                    [field]="ui_no_sel.colonne[0].campo"></a-table-filter>
+                            </div>
+                        </th>
+                        <th width="5%" scope="col">
+                            <div class="d-flex align-items-center">
+                                <span class="label">{{ui_no_sel.colonne[1].intestazione}}</span>
+                                <a-table-sorter [type]="ui_no_sel.colonne[1].tipo"
+                                    [field]="ui_no_sel.colonne[1].campo"></a-table-sorter>
+                                <a-table-filter [type]="ui_no_sel.colonne[1].tipo"
+                                    [field]="ui_no_sel.colonne[1].campo"></a-table-filter>
+                            </div>
+                        </th>
+                        <th scope="col">
+                            <div class="d-flex align-items-center">
+                                <span class="label">{{ui_no_sel.colonne[2].intestazione}}</span>
+                                <a-table-sorter [type]="ui_no_sel.colonne[2].tipo"
+                                    [field]="ui_no_sel.colonne[2].campo"></a-table-sorter>
+                                <a-table-filter [type]="ui_no_sel.colonne[2].tipo"
+                                    [field]="ui_no_sel.colonne[2].campo"></a-table-filter>
+                            </div>
+                        </th>
+                        <!--
+                        <th scope="col" *ngFor="let colonna of ui_no_sel.colonne">
+                            <div class="d-flex align-items-center justify-content-center">
+                                <span class="label">{{colonna.intestazione}}</span>
+                                <a-table-sorter [type]="colonna.tipo" [field]="colonna.campo"></a-table-sorter>
+                                <a-table-filter [type]="colonna.tipo" [field]="colonna.campo" [options]="colonna.filterOptions"></a-table-filter>
+                            </div>
+                        </th>
+                        -->
+                    </tr>
+                </ng-template>
+                <!-- definire body -->
+                <ng-template aTemplate="body" let-ar>
+                    <tr>
+                        <td class="selector-td">
+                            <a-table-selector [data]="ar"></a-table-selector> <!-- per selezionare riga -->
+                        </td>
+                        <td *ngFor="let colonna of ui_no_sel.colonne">
+                            <ng-container *ngIf="colonna.tipo == 'date' else elseField">
+                                {{ar[colonna.campo] | date:'dd/MM/yyyy'}}
+                            </ng-container>
+                            <ng-template #elseField>
+                                <ng-container *ngIf="colonna.tipo == 'number' else normalField">
+                                    <div class="d-flex align-items-center justify-content-end">
+                                        <span>{{ar[colonna.campo] | numberPipe}}</span>
+                                    </div>
+                                </ng-container>
+                                <ng-template #normalField>
+                                    {{ar[colonna.campo]}}
+                                </ng-template>
+                            </ng-template>
+                        </td>
+                    </tr>
+                </ng-template>
+            </a-smart-table>
+        </div>
+    </div>
+</div>
+
+
+<!-- modal -->
+<div class="modal fade" id="modal-chiudi" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-scrollable" role="document">
+        <div class="modal-content">
+            <!-- modal-header -->
+            <div class="modal-header">
+                <h2 class="modal-title">Nuovo Stato</h2>
+                <div class="justify-content-end">
+                    <!-- <button [disabled]="formNuovoStatoOggetto.invalid" type="button" class="btn btn-primary ms-auto"
+                        (click)="aggiornaStato()">
+                        <i class="icon fa-solid fa-save"></i>
+                        <span>Salva</span>
+                    </button> -->
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="close"></button>
+                </div>
+            </div>
+
+            <!-- modal-body -->
+            <div class="modal-body">
+                <div [formGroup]="formNuovoStatoOggetto">
+                    <div class="d-flex align-items-center">
+                        <!-- <div class="form-group d-flex flex-column w-100">
+                            <label for="id_stato_cl" class="me-2">Nuovo Stato:</label>
+                            <select class="form-select" id="id_stato_cl" formControlName="id_stato_cl">
+                                <option></option>
+                                <option *ngFor="let el of cl_nuovi_stati" [value]="el.id_stato_cl">{{el.descr}}
+                                </option>
+                            </select>
+                        </div> -->
+                        <!-- <div class="form-group d-flex flex-column w-100">
+                            <ng-container *ngFor="let el of cl_nuovi_stati">
+                                <label for="id_stato_cl" class="me-2 stacca-label">
+                                    <input type="radio" [value]="el.id_stato_oggetto" id="id_stato_oggetto"
+                                        formControlName="id_stato_oggetto">
+                                    {{el.descr}}
+                                </label>
+                            </ng-container>
+                        </div> -->
+                        <div class="form-group d-flex flex-column w-100">
+                            <!-- <ng-container *ngFor="let el of cl_nuovi_stati">
+                                <span>
+                                    <input [readonly]="el.selezionabile ? null : true" type="radio"
+                                        [value]="el.id_stato_oggetto" [id]="el.id_stato_oggetto" name="id_stato_oggetto"
+                                        formControlName="id_stato_oggetto">
+                                    <ng-container *ngIf="el.selezionabile else disabilitato">
+                                        {{el.descr}}
+                                    </ng-container>
+                                    <ng-template #disabilitato>
+                                        <s> {{el.descr}}</s>
+                                    </ng-template>
+                                </span>
+                            </ng-container> -->
+                            <table class="table table-striped">
+                                <thead>
+                                    <th scope="col"></th>
+                                    <th scope="col"></th>
+                                </thead>
+                                <tbody>
+                                    <ng-container *ngFor="let el of cl_nuovi_stati">
+                                        <tr>
+                                            <td>{{el.descr}}</td>
+                                            <td>
+                                                <div class="float-end">
+                                                    <button [disabled]="!el.selezionabile" type="button"
+                                                        class="btn btn-primary ms-auto"
+                                                        (click)="selezionaStato(el.id_stato_oggetto)"
+                                                        ngbTooltip="{{el.tooltip}}">
+                                                        <span>Seleziona</span>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </ng-container>
+                                </tbody>
+                            </table>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- modal-footer -->
+            <div class="modal-footer"></div>
+        </div>
+    </div>
+</div>

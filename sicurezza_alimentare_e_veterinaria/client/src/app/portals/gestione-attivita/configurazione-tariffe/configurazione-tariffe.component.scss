@@ -1,0 +1,56 @@
+.view-slider {
+  position: relative;
+  overflow-x: hidden;
+  overflow-y: auto;
+
+  .slide {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    overflow: auto;
+    transition: transform 0.6s cubic-bezier(0.83, 0, 0.17, 1);
+
+    &.active {
+      transform: translateX(0);
+    }
+  }
+
+  #tariffe-slide:not(.active) {
+    transform: translateX(-100%);
+  }
+
+  #regole-slide:not(.active) {
+    transform: translateX(100%);
+  }
+}
+
+.badge.operando {
+  padding: 6px 8px;
+  width: 100px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  background-color: var(--us-orange);
+  border: 1px solid var(--fvg-black);
+  color: var(--fvg-black);
+}
+
+.drop-zone {
+  width: 300px;
+  height: 300px;
+  border: 1px solid var(--fvg-black);
+  overflow: auto;
+  transition: box-shadow 150ms ease-in-out;
+
+  &.dragging-over {
+    box-shadow: 0px 0px 4px 4px var(--us-orange);
+  }
+}
+
+.pending-regola {
+  background-color: var(--us-info);
+
+  & > * {
+    box-shadow: none;
+  }
+}

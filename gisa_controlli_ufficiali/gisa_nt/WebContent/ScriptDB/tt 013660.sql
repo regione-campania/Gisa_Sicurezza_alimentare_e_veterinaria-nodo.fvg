@@ -1,1 +1,0 @@
-﻿insert into lookup_tipo_scheda_operatore values (50,'Attività apicoltura - Stampa Scheda',false,0,true,'Scheda attività apicoltura',false,'SchedaAttivitaApicoltura');

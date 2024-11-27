@@ -1,0 +1,284 @@
+<!--
+Copyright (C) AGPL-3.0  
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.-->
+<div>
+    <div class="row" *ngIf="impresa">
+        <div class="col">
+            <h2 class="d-flex align-items-center">
+                <span>Impresa [GISA]</span>
+                <!-- <button [disabled]="disabilitaStabEImpresa" class="btn btn-secondary ms-2" (click)="goToModifica()">
+                    <i class="icon fa-solid fa-edit"></i>
+                    <span>Modifica</span>
+                </button> -->
+
+            </h2>
+        </div>
+    </div>
+    <div class="row" *ngIf="impresa">
+        <div class="col">
+            <div class="card">
+                <div class="card-body d-flex flex-wrap gap-2">
+                    <div class="item flex-fill col-2" *ngFor="let colonna of ui_impresa.colonne">
+                        <label>{{colonna.intestazione}}</label><br>
+                        <ng-container *ngIf="colonna.tipo === 'date'; else norm">
+                            <span><b>{{impresa[colonna.campo] | date : "dd/MM/yyyy"}}</b></span>
+                        </ng-container>
+                        <ng-template #norm>
+                            <span><b>{{impresa[colonna.campo]}}</b></span>
+                        </ng-template>
+                        &nbsp;
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row" *ngIf="stabilimento">
+        <div class="col">
+            <h2 class="d-flex align-items-center">
+                <span>Stabilimento [GISA]</span>
+            </h2>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col" *ngIf="stabilimento">
+            <div class="card">
+                <div class="card-body d-flex flex-wrap gap-2">
+                    <div class="item flex-fill col-2" *ngFor="let colonna of ui_stabilimento.colonne">
+                        <label>{{colonna.intestazione}}</label><br>
+                        <ng-container *ngIf="colonna.tipo === 'date'; else norm">
+                            <span><b>{{stabilimento[colonna.campo] | date : "dd/MM/yyyy"}}</b></span>
+                        </ng-container>
+                        <ng-template #norm>
+                            <span><b>{{stabilimento[colonna.campo]}}</b></span>
+                        </ng-template>
+                        &nbsp;
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br>
+    <div *ngIf="dati_impresa && sezione =='impresa'">
+        <h4>Impresa [PARIX]</h4>
+        <div class="row" *ngFor="let sede of sedi">
+            <div class="col btn-group">
+                <div class="card w-100 rounded-end-0">
+                    <div class="card-body d-flex flex-wrap gap-2">
+                        <div class="item flex-fill col-2">
+                            <label>Ragione Sociale</label><br>
+                            <span><b>{{this.dati_impresa.ESTREMI_IMPRESA[0].DENOMINAZIONE[0]}}</b></span>
+                            &nbsp;
+                        </div>
+                        <div class="item flex-fill col-2">
+                            <label>Tipo Impresa</label><br>
+                            <span><b>{{this.dati_impresa.ESTREMI_IMPRESA[0].FORMA_GIURIDICA[0].DESCRIZIONE[0]}}</b></span>
+                            &nbsp;
+                        </div>
+                        <div class="item flex-fill col-2">
+                            <label>Codice Fiscale</label><br>
+                            <span><b>{{this.dati_impresa.ESTREMI_IMPRESA[0].CODICE_FISCALE[0]}}</b></span>
+                            &nbsp;
+                        </div>
+                        <div class="item flex-fill col-2">
+                            <label>Partita IVA</label><br>
+                            <span><b>{{this.dati_impresa.ESTREMI_IMPRESA[0].PARTITA_IVA[0]}}</b></span>
+                            &nbsp;
+                        </div>
+                        <div class="item flex-fill col-2">
+                            <label>PEC</label><br>
+                            <span>
+                                <b>
+                                    {{this.dati_impresa.INFORMAZIONI_SEDE[0].INDIRIZZO[0].INDIRIZZO_PEC ?
+                                    this.dati_impresa.INFORMAZIONI_SEDE[0].INDIRIZZO[0].INDIRIZZO_PEC[0] : ''}}
+                                </b>
+                            </span>
+                            &nbsp;
+                        </div>
+                        <!-- <div class="item flex-fill col-2">
+                            <label>Inizio Validità</label><br>
+                            <span>
+                                <b>
+                                    {{dati_impresa.DURATA_SOCIETA[0].DT_COSTITUZIONE[0] | date:'dd/MM/yyyy'}}
+                                </b>
+                            </span>
+                            &nbsp;
+                        </div>
+                        <div class="item flex-fill col-2">
+                            <label>Fine Validità</label><br>
+                            <span>
+                                <b>
+                                    {{this.dati_impresa.DURATA_SOCIETA[0].DT_TERMINE[0] | date:'dd/MM/yyyy'}}
+                                </b>
+                            </span>
+                            &nbsp;
+                        </div> -->
+
+                    </div>
+                </div>
+                <button class="btn btn-primary" (click)="upsertImpresa()">
+                    <i class="icon fa-solid fa-plus"></i>
+                </button>
+            </div>
+        </div>
+        <br>
+    </div>
+    <div *ngIf="dati_stabilimento && indirizzi_stabilimento && sezione == 'stabilimento'">
+        <h4>Stabilimenti - Possibili Indirizzi</h4>
+        <div class="row mb-4" *ngFor="let indirizzo of indirizzi_stabilimento">
+            <div class="col btn-group">
+                <div class="card w-100 rounded-end-0">
+                    <div class="card-body d-flex flex-wrap gap-2">
+                        <div class="item flex-fill col-2">
+                            <label>Indirizzo</label><br>
+                            <span>
+                                <b>
+                                    {{
+                                    (indirizzo.TOPONIMO ? indirizzo.TOPONIMO[0] : ' ') + ' ' +
+                                    (indirizzo.VIA ? indirizzo.VIA[0] : ' ') + ' ' +
+                                    (indirizzo.N_CIVICO ? indirizzo.N_CIVICO[0] : ' ') + ', ' +
+                                    (indirizzo.COMUNE ? indirizzo.COMUNE[0] : ' ') + ' ' +
+                                    (indirizzo.CAP ? indirizzo.CAP[0] : ' ') + ' ' +
+                                    (indirizzo.PROVINCIA ? indirizzo.PROVINCIA[0] : ' ')
+                                    }}
+                                </b>
+                            </span>
+                            &nbsp;
+                        </div>
+                    </div>
+                </div>
+                <button class="btn btn-primary" (click)="upsertStabilimento(indirizzo)">
+                    <i class="icon fa-solid fa-plus"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+    <div *ngIf="sedi && sezione == 'sede'">
+        <h4>Sedi/Domicili</h4>
+        <div class="row mb-4" *ngFor="let sede of sedi">
+            <div class="col btn-group">
+                <div class="card w-100 rounded-end-0">
+                    <div class="card-body d-flex flex-wrap gap-2">
+                        <div class="item flex-fill col-2" *ngFor="let indirizzo of sede.INDIRIZZO">
+                            <label>Indirizzo</label><br>
+                            <span>
+                                <b>
+                                    {{
+                                    (indirizzo.TOPONIMO ? indirizzo.TOPONIMO[0] : ' ') + ' ' +
+                                    (indirizzo.VIA ? indirizzo.VIA[0] : ' ') + ' ' +
+                                    (indirizzo.N_CIVICO ? indirizzo.N_CIVICO[0] : ' ') + ', ' +
+                                    (indirizzo.COMUNE ? indirizzo.COMUNE[0] : ' ') + ' ' +
+                                    (indirizzo.CAP ? indirizzo.CAP[0] : ' ') + ' ' +
+                                    (indirizzo.PROVINCIA ? indirizzo.PROVINCIA[0] : ' ')
+                                    }}
+                                </b>
+                            </span>
+                            &nbsp;
+                        </div>
+                    </div>
+                </div>
+                <button class="btn btn-primary" (click)="upsertSede(sede)">
+                    <i class="icon fa-solid fa-plus"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+    <br>
+    <div *ngIf="persone && sezione == 'figura'">
+        <h4>Figure</h4>
+        <div class="row mb-4" *ngFor="let persona of persone">
+            <div class="col btn-group">
+                <div class="card w-100 rounded-end-0">
+                    <div class="card-body d-flex flex-wrap gap-2" *ngIf="persona.PERSONA_GIURIDICA">
+                        <div class="item flex-fill col-2">
+                            <label>Tipo Figura</label><br>
+                            <span><b>{{persona.CARICHE[0].CARICA[0].DESCRIZIONE[0]}}</b></span>
+                            &nbsp;
+                        </div>
+                        <div class="item flex-fill col-2">
+                            <label>Denominazione</label><br>
+                            <span><b>{{persona.PERSONA_GIURIDICA[0].DENOMINAZIONE[0]}}</b></span>
+                            &nbsp;
+                        </div>
+                        <div class="item flex-fill col-2">
+                            <label>Codice Fiscale/PIVA</label><br>
+                            <span><b>{{persona.PERSONA_GIURIDICA[0].CODICE_FISCALE[0]}}</b></span>
+                            &nbsp;
+                        </div>
+                        <div class="item flex-fill col-2"
+                            *ngFor="let indirizzo of persona.PERSONA_GIURIDICA[0].INDIRIZZO">
+                            <label>Indirizzo</label><br>
+                            <span>
+                                <b>
+                                    {{
+                                    (indirizzo.TOPONIMO ? indirizzo.TOPONIMO[0] : ' ') + ' ' +
+                                    (indirizzo.VIA ? indirizzo.VIA[0] : ' ') + ' ' +
+                                    (indirizzo.N_CIVICO ? indirizzo.N_CIVICO[0] : ' ') + ', ' +
+                                    (indirizzo.COMUNE ? indirizzo.COMUNE[0] : ' ') + ' ' +
+                                    (indirizzo.CAP ? indirizzo.CAP[0] : ' ') + ' ' +
+                                    (indirizzo.PROVINCIA ? indirizzo.PROVINCIA[0] : ' ')
+                                    }}
+                                </b>
+                            </span>
+                            &nbsp;
+                        </div>
+                    </div>
+                    <div class="card-body d-flex flex-wrap gap-2" *ngIf="persona.PERSONA_FISICA">
+                        <div class="item flex-fill col-2">
+                            <label>Carica</label><br>
+                            <span><b>{{persona.CARICHE[0].CARICA[0].DESCRIZIONE[0]}}</b></span>
+                            &nbsp;
+                        </div>
+                        <div class="item flex-fill col-2">
+                            <label>Nome</label><br>
+                            <span><b>{{persona.PERSONA_FISICA[0].NOME[0]}}</b></span>
+                            &nbsp;
+                        </div>
+                        <div class="item flex-fill col-2">
+                            <label>Cognome</label><br>
+                            <span><b>{{persona.PERSONA_FISICA[0].COGNOME[0]}}</b></span>
+                            &nbsp;
+                        </div>
+                        <div class="item flex-fill col-2">
+                            <label>Codice Fiscale</label><br>
+                            <span><b>{{persona.PERSONA_FISICA[0].CODICE_FISCALE[0]}}</b></span>
+                            &nbsp;
+                        </div>
+                        <div class="item flex-fill col-2" *ngFor="let indirizzo of persona.PERSONA_FISICA[0].INDIRIZZO">
+                            <label>Indirizzo</label><br>
+                            <span>
+                                <b>
+                                    {{
+                                    (indirizzo.TOPONIMO ? indirizzo.TOPONIMO[0] : ' ') + ' ' +
+                                    (indirizzo.VIA ? indirizzo.VIA[0] : ' ') + ' ' +
+                                    (indirizzo.N_CIVICO ? indirizzo.N_CIVICO[0] : ' ') + ', ' +
+                                    (indirizzo.COMUNE ? indirizzo.COMUNE[0] : ' ') + ' ' +
+                                    (indirizzo.CAP ? indirizzo.CAP[0] : ' ') + ' ' +
+                                    (indirizzo.PROVINCIA ? indirizzo.PROVINCIA[0] : ' ')
+                                    }}
+                                </b>
+                            </span>
+                            &nbsp;
+                        </div>
+                    </div>
+                </div>
+                <button class="btn btn-primary" (click)="upsertPersona(persona)">
+                    <i class="icon fa-solid fa-plus"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+    <div>
+        <h4>Risposta PARIX</h4>
+        <div class="row">
+            <div class="col">
+                <a-tree-filter [tree]="json_parix_tree" placeholder="Ricerca ..."></a-tree-filter>
+            </div>
+            <a-tree #json_parix_tree [src]="_json_parix_tree" [mapping]="mappaturaAlberi"></a-tree>
+        </div>
+    </div>
+</div>

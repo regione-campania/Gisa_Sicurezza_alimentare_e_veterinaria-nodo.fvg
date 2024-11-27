@@ -1,0 +1,134 @@
+<!--
+Copyright (C) AGPL-3.0  
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.-->
+<div id="lista">
+
+  <h3 class="d-flex align-items-center">
+    <span>Import Dati {{this._descr}}  </span>
+    <button   [disabled]="this.disabilitaImp"   type="button" class="btn btn-primary save-button ms-auto"
+        (click)="openImport(this._idTipoLista,this._idAsl)">
+        <i class="icon fa-solid fa-plus"></i>
+        <span class="label">Importa </span>
+    </button> 
+    <button   [disabled]="this.disabilitaElm"  type="button" class="btn btn-danger ms-2"
+       (click)="deleteRecordLista(this._idTipoLista)">
+      <i class="fa fa-trash me-1" aria-hidden="true"></i>
+      <span >Elimina</span>
+    </button>
+  </h3>
+
+  <div class="table-container box rounded p-0" *ngIf="listaDati; else noDataBlock">
+
+
+    <a-smart-table [exportable]="true"  [printable]="false" *ngIf="ui" [colsInfo]="ui.colonne" [src]="listaDati" [autolayout]="false">
+      <ng-template aTemplate="head">
+        <tr>
+          <th scope="col" *ngFor="let colonna of ui.colonne">
+            <div class="d-flex align-items-center">
+              <span class="label">{{colonna.intestazione}}</span>
+              <a-table-sorter [type]="colonna.tipo" [field]="colonna.campo"></a-table-sorter>
+              <a-table-filter [type]="colonna.tipo" [field]="colonna.campo"></a-table-filter>
+            </div>
+          </th>
+          <th scope="col">Seleziona</th>
+        
+        </tr>
+      </ng-template>
+ 
+      <ng-template aTemplate="body" *ngIf="listaDati" let-lista>
+        <tr [id]="lista.id">
+        
+          <td *ngFor="let colonna of this.ui.colonne" [ngClass]="{'text-end': colonna.tipo == 'number'}">
+            <ng-container *ngIf="colonna.tipo == 'date'; else elseField">
+              {{lista[colonna.campo] | date: 'dd/MM/yyyy HH:mm:ss'}}
+            </ng-container>
+            <ng-template #elseField>
+              <ng-container *ngIf="colonna.tipo === 'number'; else normalField">
+                {{lista[colonna.campo] | numberPipe}}
+              </ng-container>
+              <ng-template #normalField>
+                {{lista[colonna.campo]}}
+              </ng-template>
+            </ng-template>
+       </td>
+       <TD>
+        <input type="checkbox" (change)="onChange($event,lista.id)">
+       
+       </TD>
+        
+        </tr>
+      </ng-template>
+       
+    </a-smart-table>
+  
+  
+  </div>
+  
+<ng-template #noDataBlock>
+  <div class="col-md position-relative">
+    <span> Non sono presenti dati nella tabella </span>
+  </div>
+</ng-template>
+</div>
+
+ 
+
+<ng-template #importFileModalTemplateClassy>
+  <div class="modal-header">
+    <button class="btn-close d-block ms-auto" (click)="importFileModalRef?.dismiss()"></button>
+  </div>
+  <div class="modal-body">
+    <p class="fs-5 fw-semibold">Selezionare file da importare. Deve rispettare la struttura del template:
+      <button class="btn btn-outline-success d-block mx-auto my-3" ngbTooltip="Scarica Template"
+        (click)="downloadTemplate()">
+        Scarica Template (esempio)<i class="ms-2 fa fa-file-excel" aria-hidden="true"></i>
+      </button>
+    </p>
+    <p class="fs-5 fw-semibold">Eventuali dati precedentemente imporati verranno sovrascritti. </p>
+    <p>
+      <input class="form-control" type="file" id="import-file" (change)="fileSelezionato = $any($event.target).files[0]"
+        accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">
+      <button type="button" [disabled]="!fileSelezionato" (click)="importFile(listaSelezionata)"
+        class="btn btn-primary d-block w-25 mx-auto my-3">Importa</button>
+    </p>
+
+  </div>
+</ng-template>
+
+
+<ng-template #importRigaModalTemplateClassy>
+  <div class="modal-header">
+    <button  type="button" class="btn-close d-block ms-auto" (click)="importRigaModalRef?.dismiss()"></button>
+    
+
+  </div>
+  <div class="modal-body">
+    <h3 class="modal-title text-center mb-2">Inserisci</h3>
+    <label>Valore</label>
+    <input type="text" class="form-control" id="valore">
+    <br> 
+    <label>Traduzione</label>
+    <input type="text" class="form-control" id="traduzione">
+    <br> 
+
+    <div *ngIf="rifTipoProdotto=='true' || rifTipoProdotto=='SI' " >       
+      <label>Tipo Prodotto</label><input type="text" class="form-control" id="rifprodotto" disabled>
+      <br> 
+      <label> Seleziona Tipo Prodotto</label>
+      <a-tree-filter [tree]="treeProdotti" placeholder="Ricerca Prodotto..."></a-tree-filter>
+      <div class="scrollbox h-100 overflow-auto custom-scrollbar">
+        <a-tree #treeProdotti [root]="prodottiTreeRoot" (onClick)="selectProdotto($event)"></a-tree>
+      </div>
+    </div>
+ 
+  </div>
+
+  <div class="modal-footer border-0 wrapper justify-content-around">
+    <button type="button" class="btn btn-primary action-button" (click)="save(listaSelezionata,_idStab)"  >Aggiungi</button>
+  </div>
+</ng-template>

@@ -1,0 +1,190 @@
+<!--
+Copyright (C) AGPL-3.0  
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.-->
+<div *ngIf="pratica">
+    <div class="row">
+        <div class="col">
+            <h2 class="d-flex align-items-center">
+                <span>Pratica</span>
+                <button *ngIf="pratica.cod_tipo_pratica === 'NIA' && pratica.id_stabilimento == null"
+                    [disabled]="disabilitaModifica || !pratica.pratica_modificabile || pratica.descr_stato_pratica !== 'Aperto'"
+                    class="btn btn-primary ms-auto" (click)="goTo('aggiungi')">
+                    <i class="icon fa-solid fa-plus"></i>
+                    <span>Aggiungi Stabilimento</span>
+                </button>
+                <button *ngIf="pratica.cod_tipo_pratica === 'VIA' || pratica.id_stabilimento != null" [disabled]="false"
+                    class="btn btn-secondary ms-auto" (click)="goTo('dettaglio')">
+                    <!-- <i class="icon fa-solid fa-lock"></i> -->
+                    <span>Vai allo Stabilimento</span>
+                </button>
+                <button *ngIf="pratica.descr_stato_pratica === 'Chiuso' || pratica.descr_stato_pratica === 'Creato'"
+                    [disabled]="disabilitaModifica || !pratica.pratica_modificabile" class="btn btn-secondary ms-2"
+                    (click)="updStatoPratica()">
+                    <i class="icon fa-solid fa-lock"></i>
+                    <span>Apri</span>
+                </button>
+                <button *ngIf="pratica.descr_stato_pratica === 'Aperto'"
+                    [disabled]="disabilitaModifica || !pratica.pratica_modificabile || pratica.id_stabilimento == null"
+                    class="btn btn-secondary ms-2" (click)="updStatoPratica()">
+                    <i class="icon fa-solid fa-lock-open"></i>
+                    <span>Chiudi</span>
+                </button>
+                <button [disabled]="disabilitaModifica || !pratica.pratica_modificabile || pratica.descr_stato_pratica !== 'Creato'"
+                    class="btn btn-secondary ms-2" (click)="goToModifica()">
+                    <i class="icon fa-solid fa-edit"></i>
+                    <span>Modifica</span>
+                </button>
+            </h2>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col" *ngIf="pratica">
+            <div class="card">
+                <div class="card-body d-flex flex-wrap gap-2">
+                    <div class="item flex-fill col-2" *ngFor="let colonna of ui_pratica.colonne">
+                        <label>{{colonna.intestazione}}</label><br>
+                        <ng-container *ngIf="colonna.tipo === 'date'; else norm">
+                            <span><b>{{pratica[colonna.campo] | date : "dd/MM/yyyy"}}</b></span>
+                        </ng-container>
+                        <ng-template #norm>
+                            <span><b>{{pratica[colonna.campo]}}</b></span>
+                        </ng-template>
+                        &nbsp;
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br>
+    <div>
+        <div class="row">
+            <div class="col">
+                <h4 class="d-flex align-items-center">
+                    <span>Allegati</span>
+                    <button [disabled]="disabilitaModifica || !pratica.pratica_modificabile || pratica.descr_stato_pratica !== 'Aperto'" class="btn btn-secondary ms-auto"
+                        (click)="openAllegati()">
+                        <i class="icon fa-solid fa-paperclip"></i>
+                        <span>Aggiungi</span>
+                    </button>
+                </h4>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col" *ngIf="ui_allegati">
+                <a-smart-table [colsInfo]="ui_allegati.colonne" [src]="allegati" [autolayout]="false">
+                    <ng-template aTemplate="head">
+                        <tr>
+                            <th scope="col" *ngFor="let colonna of ui_allegati.colonne">
+                                <div class="d-flex align-items-center">
+                                    <span class="label">{{ colonna.intestazione }}</span>
+                                    <a-table-sorter [type]="colonna.tipo" [field]="colonna.campo"></a-table-sorter>
+                                    <a-table-filter [type]="colonna.tipo" [field]="colonna.campo" [options]="colonna.filterOptions"></a-table-filter>
+                                </div>
+                            </th>
+                            <th scope="col"></th>
+                        </tr>
+                    </ng-template>
+                    <ng-template aTemplate="body" let-ar>
+                        <tr>
+                            <td *ngFor="let colonna of ui_allegati.colonne">
+                                <ng-container *ngIf="colonna.tipo === 'date'; else campoNormale">
+                                    {{ ar[colonna.campo] | date : "dd/MM/yyyy HH:mm" }}
+                                </ng-container>
+                                <ng-template #campoNormale>
+                                    {{ ar[colonna.campo] }}
+                                </ng-template>
+                            </td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <button class="btn btn-primary ms-auto" (click)="downloadAllegati(ar['id'])"><i
+                                            class="icon fa-solid fa-download"></i>
+                                    </button>
+                                    <button [disabled]="pratica.descr_stato_pratica !== 'Aperto'"
+                                        class="btn btn-danger ms-2" (click)="delAllegati(ar['id'])"><i
+                                            class="icon fa-solid fa-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    </ng-template>
+                </a-smart-table>
+            </div>
+        </div>
+    </div>
+    <br>
+    <div>
+        <div class="row">
+            <div class="col">
+                <h4 class="d-flex align-items-center">
+                    <span>Storico</span>
+                </h4>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col" *ngIf="ui_storico">
+                <a-smart-table [colsInfo]="ui_storico.colonne" [src]="storico" [autolayout]="false">
+                    <ng-template aTemplate="head">
+                        <tr>
+                            <th scope="col" *ngFor="let colonna of ui_storico.colonne">
+                                <div class="d-flex align-items-center">
+                                    <span class="label">{{ colonna.intestazione }}</span>
+                                    <a-table-sorter [type]="colonna.tipo" [field]="colonna.campo"></a-table-sorter>
+                                    <a-table-filter [type]="colonna.tipo" [field]="colonna.campo" [options]="colonna.filterOptions"></a-table-filter>
+                                </div>
+                            </th>
+                        </tr>
+                    </ng-template>
+                    <ng-template aTemplate="body" let-ar>
+                        <tr>
+                            <td *ngFor="let colonna of ui_storico.colonne">
+                                <ng-container *ngIf="colonna.tipo === 'date'; else campoNormale">
+                                    {{ ar[colonna.campo] | date : "dd/MM/yyyy HH:mm" }}
+                                </ng-container>
+                                <ng-template #campoNormale>
+                                    {{ ar[colonna.campo] }}
+                                </ng-template>
+                            </td>
+                        </tr>
+                    </ng-template>
+                </a-smart-table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modal-allegati-evidenza" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-scrollable modal-xl" role="document">
+        <div class="modal-content">
+            <!-- modal-header -->
+            <div class="modal-header">
+                <h2 class="modal-title">Allegati</h2>
+                <div class="justify-content-end">
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="close"></button>
+                </div>
+            </div>
+
+            <!-- modal-body -->
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col">
+                        <input class="form-control" type="file" accept="application/pdf" multiple
+                            (change)="allegaVerbaleDaConfigurare($event)" #inputFile>
+                    </div>
+                    <div class="col">
+                        <button type="button" class="btn btn-primary ms-auto" (click)="uploadAllegati()">
+                            <i class="icon fa-solid fa-upload" aria-hidden="true"></i>
+                            <span>Carica PDF</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <!-- modal-footer -->
+            <div class="modal-footer"></div>
+        </div>
+    </div>
+</div>

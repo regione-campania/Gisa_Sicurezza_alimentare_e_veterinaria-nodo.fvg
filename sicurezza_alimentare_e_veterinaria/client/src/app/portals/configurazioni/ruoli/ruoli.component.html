@@ -1,0 +1,105 @@
+<!--
+Copyright (C) AGPL-3.0  
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.-->
+<div>
+    <div class="row">
+        <div class="col">
+            <h2 class="d-flex align-items-center">
+                <span>Ruoli</span>
+                <button class="btn btn-primary ms-auto" (click)="openModalRuoli('add',null)">
+                    <i class="icon fa-solid fa-plus"></i>
+                    <span>Aggiungi</span>
+                </button>
+            </h2>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col" *ngIf="ruoli; else noElements">
+            <a-smart-table [colsInfo]="ui.colonne" [src]="ruoli" [autolayout]="false">
+                <ng-template aTemplate="head">
+                    <tr>
+                        <th scope="col" *ngFor="let colonna of ui.colonne">
+                            <div class="d-flex align-items-center">
+                                <span class="label">{{ colonna.intestazione }}</span>
+                                <a-table-sorter [type]="colonna.tipo" [field]="colonna.campo"></a-table-sorter>
+                                <a-table-filter [type]="colonna.tipo" [field]="colonna.campo"
+                                    [options]="colonna.filterOptions"></a-table-filter>
+                            </div>
+                        </th>
+                        <th scope="col"></th>
+                    </tr>
+                </ng-template>
+                <ng-template aTemplate="body" let-ar>
+                    <tr>
+                        <td *ngFor="let colonna of ui.colonne">
+                            <ng-container *ngIf="colonna.tipo === 'date'; else campoNormale">
+                                {{ ar[colonna.campo] | date : "dd/MM/yyyy" }}
+                            </ng-container>
+                            <ng-template #campoNormale>
+                                {{ ar[colonna.campo] }}
+                            </ng-template>
+                        </td>
+                        <td>
+                            <div class="d-flex">
+                                <button class="btn btn-primary ms-auto" (click)="goToDettaglio(ar['id_ruolo'])">
+                                    <span>Permessi</span>
+                                </button>
+                                <button class="btn btn-secondary ms-2" (click)="openModalRuoli('upd', ar)">
+                                    <i class="icon fa-solid fa-edit"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                </ng-template>
+            </a-smart-table>
+        </div>
+    </div>
+</div>
+<ng-template #noElements>
+    <span>Nessun elemento presente</span>
+</ng-template>
+
+
+<div class="modal fade" id="modal-ruoli" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-scrollable modal-xl" role="document">
+        <div class="modal-content">
+            <!-- modal-header -->
+            <div class="modal-header">
+                <h2 class="modal-title">{{tipoModale}} Ruolo</h2>
+                <div class="justify-content-end">
+                    <button [disabled]="formRuolo.invalid" type="button" class="btn btn-secondary ms-auto" (click)="upsertRuoli()">
+                        <i class="icon fa-solid fa-save"></i>
+                        <span>Salva</span>
+                    </button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="close"></button>
+                </div>
+            </div>
+
+            <!-- modal-body -->
+            <div class="modal-body">
+                <div [formGroup]="formRuolo">
+                    <div class="d-flex align-items-center">
+                        <div class="form-group d-flex flex-column w-100">
+                            <label for="sigla" class="me-2">Sigla: <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control border" id="sigla" formControlName="sigla">
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center">
+                        <div class="form-group d-flex flex-column w-100">
+                            <label for="descr" class="me-2">Descrizione: <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control border" id="descr" formControlName="descr">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- modal-footer -->
+            <div class="modal-footer"></div>
+        </div>
+    </div>
+</div>

@@ -1,2 +1,0 @@
-﻿alter table apicoltura_apiari_variazioni_censimenti add column id_bda integer;
-alter table apicoltura_apiari_variazioni_censimenti add column note text;

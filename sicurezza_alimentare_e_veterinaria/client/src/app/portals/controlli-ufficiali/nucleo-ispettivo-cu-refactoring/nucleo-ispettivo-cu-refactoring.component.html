@@ -1,0 +1,728 @@
+<!--
+Copyright (C) AGPL-3.0  
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.-->
+<div class="row align-items-center">
+  <div class="col">
+    <h5 class="d-flex align-items-center">
+      <ng-container *ngIf="cu">
+        <ng-container *ngIf="cu">
+          <span>Dettaglio Controllo n° {{ cu.codice }}</span>
+        </ng-container>
+      </ng-container>
+    </h5>
+  </div>
+</div>
+<div class="row align-items-center">
+  <div class="col">
+    <h4 class="d-flex align-items-center">
+      <span>Nucleo Ispettivo</span>
+      <button [disabled]="btnMode || controllo_chiuso ? true : null" type="button" class="btn btn-primary ms-auto"
+        (click)="openModal('Nucleo', 'add', -1)">
+        <i class="icon fa-solid fa-plus"></i>
+        <span>Aggiungi</span>
+      </button>
+    </h4>
+  </div>
+</div>
+<div class="sezione row">
+  <div class="col">
+    <a-smart-table #tabellaNucleo *ngIf="ui_nucleo" [colsInfo]="ui_nucleo.colonne" class="table-striped" [src]="nucleo"
+      [autolayout]="false" [paginator]="false">
+      <!-- definire head -->
+      <ng-template aTemplate="head">
+        <tr>
+          <th scope="col" *ngFor="let colonna of ui_nucleo.colonne">
+            <ng-container *ngIf="colonna.tipo === 'number'; else campoTestuale">
+              <div class="d-flex align-items-center justify-content-end">
+                <span class="label">{{ colonna.intestazione }}</span>
+                <a-table-sorter [type]="colonna.tipo" [field]="colonna.campo"></a-table-sorter>
+                <!-- <a-table-filter [type]="colonna.tipo" [field]="colonna.campo" [options]="colonna.filterOptions"></a-table-filter> -->
+              </div>
+            </ng-container>
+            <ng-template #campoTestuale>
+              <div class="d-flex align-items-center">
+                <span class="label">{{ colonna.intestazione }}</span>
+                <a-table-sorter [type]="colonna.tipo" [field]="colonna.campo"></a-table-sorter>
+                <!-- <a-table-filter [type]="colonna.tipo" [field]="colonna.campo" [options]="colonna.filterOptions"></a-table-filter> -->
+              </div>
+            </ng-template>
+          </th>
+          <th scope="col"></th>
+        </tr>
+      </ng-template>
+      <!-- definire body -->
+      <ng-template aTemplate="body" let-ar>
+        <tr>
+          <td *ngFor="let colonna of ui_nucleo.colonne">
+            <ng-container *ngIf="colonna.tipo == 'time'; else elseField">
+              {{ ar[colonna.campo] | date : "dd/MM/yyyy HH:mm:ss" }}
+            </ng-container>
+            <ng-template #elseField>
+              <ng-container *ngIf="colonna.tipo == 'number'; else normalField">
+                <div class="d-flex align-items-center justify-content-end">
+                  <span>{{ ar[colonna.campo] | numberPipe }}</span>
+                </div>
+              </ng-container>
+              <ng-template #normalField>
+                {{ ar[colonna.campo] }}
+              </ng-template>
+            </ng-template>
+          </td>
+          <td>
+            <div class="d-flex align-items-center">
+              <button [disabled]="btnMode || controllo_chiuso ? true : null" class="btn btn-secondary float-end ms-auto"
+                (click)="openModal('Nucleo', 'upd', ar)">
+                <i class="icon fa-solid fa-edit"></i>
+              </button>
+              <button [disabled]="btnMode || controllo_chiuso ? true : null" class="btn btn-danger float-end ms-2"
+                (click)="rimuoviNucleo(ar)">
+                <i class="fa fa-trash" aria-hidden="true"></i>
+              </button>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+    </a-smart-table>
+    <br />
+  </div>
+</div>
+<div class="row align-items-center">
+  <div class="col">
+    <h4 class="d-flex align-items-center">
+      <span>Personale Presente</span>
+      <button [disabled]="btnMode || controllo_chiuso ? true : null" type="button" class="btn btn-primary ms-auto"
+        (click)="openModal('Personale', 'add', -1)">
+        <i class="icon fa-solid fa-plus"></i>
+        <span>Aggiungi</span>
+      </button>
+    </h4>
+  </div>
+</div>
+<div class="sezione row">
+  <div class="col">
+    <a-smart-table #tabellaPersonale *ngIf="ui_personale" [colsInfo]="ui_personale.colonne" class="table-striped"
+      [src]="personale" [autolayout]="false" [paginator]="false">
+      <!-- definire head -->
+      <ng-template aTemplate="head">
+        <tr>
+          <th scope="col"></th>
+          <th width="20%" scope="col" *ngFor="let colonna of ui_personale.colonne">
+            <ng-container *ngIf="colonna.tipo === 'number'; else campoTestuale">
+              <div class="d-flex align-items-center justify-content-end">
+                <span class="label">{{ colonna.intestazione }}</span>
+                <a-table-sorter [type]="colonna.tipo" [field]="colonna.campo"></a-table-sorter>
+                <!-- <a-table-filter [type]="colonna.tipo" [field]="colonna.campo" [options]="colonna.filterOptions"></a-table-filter> -->
+              </div>
+            </ng-container>
+            <ng-template #campoTestuale>
+              <div class="d-flex align-items-center">
+                <span class="label">{{ colonna.intestazione }}</span>
+                <a-table-sorter [type]="colonna.tipo" [field]="colonna.campo"></a-table-sorter>
+                <!-- <a-table-filter [type]="colonna.tipo" [field]="colonna.campo" [options]="colonna.filterOptions"></a-table-filter> -->
+              </div>
+            </ng-template>
+          </th>
+          <th scope="col"></th>
+        </tr>
+      </ng-template>
+      <!-- definire body -->
+      <ng-template aTemplate="body" let-ar>
+        <tr>
+          <td>
+            <input [disabled]="btnMode || controllo_chiuso" type="radio" name="custode_verbale"
+              [checked]="ar['custode_verbale']" (change)="updCustode(ar['id_cu_nucleo'])" />
+          </td>
+          <td *ngFor="let colonna of ui_personale.colonne">
+            <ng-container *ngIf="colonna.tipo == 'time'; else elseField">
+              {{ ar[colonna.campo] | date : "dd/MM/yyyy HH:mm:ss" }}
+            </ng-container>
+            <ng-template #elseField>
+              <ng-container *ngIf="colonna.tipo == 'number'; else normalField">
+                <div class="d-flex align-items-center justify-content-end">
+                  <span>{{ ar[colonna.campo] | numberPipe }}</span>
+                </div>
+              </ng-container>
+              <ng-template #normalField>
+                {{ ar[colonna.campo] }}
+              </ng-template>
+            </ng-template>
+          </td>
+          <td>
+            <div class="d-flex align-items-center">
+              <button class="btn btn-primary float-end ms-auto" (click)="openDichiarazioni(ar['id_cu_nucleo'])">
+                Dichiarazioni
+              </button>
+              <button [disabled]="btnMode || controllo_chiuso ? true : null" class="btn btn-secondary float-end ms-2"
+                (click)="openModal('Personale', 'upd', ar)">
+                <i class="icon fa-solid fa-edit"></i>
+              </button>
+              <button [disabled]="btnMode || controllo_chiuso ? true : null" class="btn btn-danger float-end ms-2"
+                (click)="rimuoviPersonale(ar)">
+                <i class="fa fa-trash" aria-hidden="true"></i>
+              </button>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+    </a-smart-table>
+    <br />
+  </div>
+</div>
+<div class="row align-items-center">
+  <div class="col">
+    <h4 class="d-flex align-items-center">
+      <span>Altri Controllori Esterni</span>
+      <button [disabled]="btnMode || controllo_chiuso ? true : null" type="button" class="btn btn-primary ms-auto"
+        (click)="openModal('Esterni', 'add', -1)">
+        <i class="icon fa-solid fa-plus"></i>
+        <span>Aggiungi</span>
+      </button>
+    </h4>
+  </div>
+</div>
+<div class="sezione row">
+  <div class="col">
+    <a-smart-table #tabellaEsterni *ngIf="ui_esterni" [colsInfo]="ui_esterni.colonne" class="table-striped"
+      [src]="esterni" [autolayout]="false" [paginator]="false">
+      <!-- definire head -->
+      <ng-template aTemplate="head">
+        <tr>
+          <th width="20%" scope="col" *ngFor="let colonna of ui_esterni.colonne">
+            <ng-container *ngIf="colonna.tipo === 'number'; else campoTestuale">
+              <div class="d-flex align-items-center justify-content-end">
+                <span class="label">{{ colonna.intestazione }}</span>
+                <a-table-sorter [type]="colonna.tipo" [field]="colonna.campo"></a-table-sorter>
+                <!-- <a-table-filter [type]="colonna.tipo" [field]="colonna.campo" [options]="colonna.filterOptions"></a-table-filter> -->
+              </div>
+            </ng-container>
+            <ng-template #campoTestuale>
+              <div class="d-flex align-items-center">
+                <span class="label">{{ colonna.intestazione }}</span>
+                <a-table-sorter [type]="colonna.tipo" [field]="colonna.campo"></a-table-sorter>
+                <!-- <a-table-filter [type]="colonna.tipo" [field]="colonna.campo" [options]="colonna.filterOptions"></a-table-filter> -->
+              </div>
+            </ng-template>
+          </th>
+          <th scope="col"></th>
+        </tr>
+      </ng-template>
+      <!-- definire body -->
+      <ng-template aTemplate="body" let-ar>
+        <tr>
+          <td *ngFor="let colonna of ui_esterni.colonne">
+            <ng-container *ngIf="colonna.tipo == 'time'; else elseField">
+              {{ ar[colonna.campo] | date : "dd/MM/yyyy HH:mm:ss" }}
+            </ng-container>
+            <ng-template #elseField>
+              <ng-container *ngIf="colonna.tipo == 'number'; else normalField">
+                <div class="d-flex align-items-center justify-content-end">
+                  <span>{{ ar[colonna.campo] | numberPipe }}</span>
+                </div>
+              </ng-container>
+              <ng-template #normalField>
+                {{ ar[colonna.campo] }}
+              </ng-template>
+            </ng-template>
+          </td>
+          <td>
+            <div class="d-flex align-items-center">
+              <button [disabled]="btnMode || controllo_chiuso ? true : null" class="btn btn-secondary float-end ms-auto"
+                (click)="openModal('Esterni', 'upd', ar)">
+                <i class="icon fa-solid fa-edit"></i>
+              </button>
+              <button [disabled]="btnMode || controllo_chiuso ? true : null" class="btn btn-danger float-end ms-2"
+                (click)="rimuoviEsterni(ar)">
+                <i class="fa fa-trash" aria-hidden="true"></i>
+              </button>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+    </a-smart-table>
+    <br />
+  </div>
+</div>
+
+<!-- modal -->
+<div class="modal fade" id="modal-nucleo" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-xl modal-dialog-scrollable" role="document">
+    <div class="modal-content">
+      <!-- modal-header -->
+      <div class="modal-header">
+        <ng-container *ngIf="tipoModale == 'add'; else upd">
+          <h2 class="modal-title">Nucleo Ispettivo - Aggiungi</h2>
+        </ng-container>
+        <ng-template #upd>
+          <h2 class="modal-title">Nucleo Ispettivo - Modifica</h2>
+        </ng-template>
+        <div class="justify-content-end">
+          <ng-container *ngIf="tipoModale == 'add'; else updSubmitNucleo">
+            <button [disabled]="formNucleo.invalid" type="button" class="btn btn-secondary ms-auto"
+              (click)="aggiungiNucleo()">
+              <i class="icon fa-solid fa-save"></i>
+              <span>Salva</span>
+            </button>
+          </ng-container>
+          <ng-template #updSubmitNucleo>
+            <button [disabled]="formNucleo.invalid" type="button" class="btn btn-secondary ms-auto"
+              (click)="aggiornaNucleo()">
+              <i class="icon fa-solid fa-save"></i>
+              <span>Salva</span>
+            </button>
+          </ng-template>
+
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="close"></button>
+        </div>
+      </div>
+
+      <!-- modal-body -->
+      <div class="modal-body">
+        <ng-container *ngIf="tipoModale == 'add'; else updRisorsaNucleo">
+          <label>Seleziona:<span class="text-danger"> *</span></label>
+          <a-tree-filter [tree]="risorseTree" placeholder="Ricerca Risorsa..."></a-tree-filter>
+          <a-tree #risorseTree (onClick)="onTreeNodeClick($event)"></a-tree>
+        </ng-container>
+        <div [formGroup]="formNucleo">
+          <ng-template #updRisorsaNucleo>
+            <div class="form-group d-flex flex-column w-100">
+              <label for="id_nominativo" class="me-2">Nominativo:<span class="text-danger"> *</span></label>
+              <input readonly class="form-control border" type="text" formControlName="id_nominativo" />
+            </div>
+            <div class="form-group d-flex flex-column w-100">
+              <label for="id_struttura" class="me-2">Struttura:<span class="text-danger"> *</span></label>
+              <input readonly class="form-control border" type="text" formControlName="id_struttura" />
+            </div>
+          </ng-template>
+          <div class="form-group d-flex flex-column w-100">
+            <!--sostituito "Classe" con "Risultanza"-->
+            <label for="id_tipo_isp" class="me-2">Ruolo:<span class="text-danger"> *</span></label>
+            <ng-container *ngIf="tipoModale == 'add'; else updRuoloNucleo">
+              <select class="form-select" id="ruoli_nucleo" formControlName="id_tipo_isp">
+                <option></option>
+                <option *ngFor="let el of ruoli_nucleo" [ngValue]="el.id">
+                  {{ el.descr }}
+                </option>
+              </select>
+            </ng-container>
+            <ng-template #updRuoloNucleo>
+              <input readonly class="form-control border" type="text" formControlName="id_tipo_isp" />
+            </ng-template>
+          </div>
+
+          <div class="d-flex align-items-center">
+            <div class="form-group d-flex flex-column w-35">
+              <label>Data Inizio:<span class="text-danger"> *</span></label>
+              <input type="date" [min]="data_min" [max]="data_max" class="form-control border"
+                (blur)="checkDate($event, formNucleo)" formControlName="inizio" />
+            </div>
+            <div class="form-group d-flex flex-column ms-2">
+              <label>Ora Inizio:<span class="text-danger"> *</span></label>
+              <input type="time" class="form-control border" (blur)="checkDate($event, formNucleo)"
+                formControlName="ora_ini" />
+            </div>
+
+            <div class="form-group d-flex flex-column ms-4 w-35">
+              <label>Data Fine:<span class="text-danger"> *</span></label>
+              <input type="date" [min]="data_min" [max]="data_max" class="form-control border"
+                (blur)="checkDate($event, formNucleo)" formControlName="fine" />
+            </div>
+            <div class="form-group d-flex flex-column m-2">
+              <label>Ora Fine:<span class="text-danger"> *</span></label>
+              <input type="time" class="form-control border" (blur)="checkDate($event, formNucleo)"
+                formControlName="ora_fin" />
+            </div>
+          </div>
+          <div *ngIf="errore_data" class="d-flex align-items-center">
+            <span class="err_msg">Inserire date posteriori al
+              {{ data_min | date : "dd/MM/yyyy" }} e nel formato corretto.</span>
+          </div>
+
+          <br /><label class="me-2">Seleziona Piano:<span class="text-danger"> *</span></label>
+          <div>
+            <table class="table table-striped">
+              <thead>
+                <th scope="col"></th>
+                <th scope="col"></th>
+                <th scope="col"></th>
+                <th scope="col"></th>
+              </thead>
+              <tbody>
+                <ng-container *ngFor="let el of piani">
+                  <tr>
+                    <td>{{ el.alias }}</td>
+                    <td>{{ el.descrizione_piano }}</td>
+                    <td>{{ el.sigla_asl }}</td>
+                    <td>
+                      <div class="float-end">
+                        <button id="riga_{{ el.id_cu_piano }}" type="button" class="btn btn-secondary ms-auto"
+                          (click)="selezionaPiano(el.id_cu_piano)">
+                          <!-- <span>Seleziona</span> -->
+                          <i class="fa-regular fa-square"></i>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                </ng-container>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- modal-footer -->
+      <div class="modal-footer"></div>
+    </div>
+  </div>
+</div>
+
+<!-- modal -->
+<div class="modal fade" id="modal-personale" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-xl modal-dialog-scrollable" role="document">
+    <div class="modal-content">
+      <!-- modal-header -->
+      <div class="modal-header">
+        <ng-container *ngIf="tipoModale == 'add'; else updPers">
+          <h2 class="modal-title">Personale Presente - Aggiungi</h2>
+        </ng-container>
+        <ng-template #updPers>
+          <h2 class="modal-title">Personale Presente - Modifica</h2>
+        </ng-template>
+        <div class="justify-content-end">
+          <ng-container *ngIf="tipoModale == 'add'; else updSubmitPersonale">
+            <button [disabled]="formPersonale.invalid" type="button" class="btn btn-secondary ms-auto"
+              (click)="aggiungiPersonale()">
+              <i class="icon fa-solid fa-save"></i>
+              <span>Salva</span>
+            </button>
+          </ng-container>
+          <ng-template #updSubmitPersonale>
+            <button [disabled]="formPersonale.invalid" type="button" class="btn btn-secondary ms-auto"
+              (click)="aggiornaPersonale()">
+              <i class="icon fa-solid fa-save"></i>
+              <span>Salva</span>
+            </button>
+          </ng-template>
+
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="close"></button>
+        </div>
+      </div>
+
+      <!-- modal-body -->
+      <div class="modal-body">
+        <div [formGroup]="formPersonale">
+          <div class="form-group d-flex flex-column w-100">
+            <label for="nome" class="me-2">Nome:<span class="text-danger"> *</span></label>
+            <input [readonly]="tipoModale == 'upd'" class="form-control border" type="text" formControlName="nome" />
+          </div>
+          <div class="form-group d-flex flex-column w-100">
+            <label for="cognome" class="me-2">Cognome:<span class="text-danger"> *</span></label>
+            <input [readonly]="tipoModale == 'upd'" class="form-control border" type="text" formControlName="cognome" />
+          </div>
+          <div class="form-group d-flex flex-column w-100">
+            <label for="dt_nascita">Data di nascita:<span class="text-danger"> *</span></label>
+            <input [readonly]="tipoModale == 'upd'" type="date" max="{{ maggiorenne }}" class="form-control border"
+              (blur)="checkDate($event, formPersonale)" formControlName="dt_nascita" />
+          </div>
+          <div class="form-group d-flex flex-column w-100">
+            <label for="comune_nascita">Comune di nascita:<span class="text-danger"> *</span></label>
+            <input [readonly]="tipoModale == 'upd'" type="text" class="form-control border"
+              formControlName="comune_nascita" [autofiller]="datiCodiciNascita" autofillerKey="denominazione_it"
+              (valueChange)="
+                patchValue($event, 'comune_nascita', formPersonale)
+              " />
+          </div>
+          <div class="form-group d-flex flex-column w-100">
+            <label for="cf" class="me-2">Codice Fiscale:</label>
+            <input [readonly]="tipoModale == 'upd'" class="form-control border" type="text" formControlName="cf" />
+          </div>
+          <div class="form-group d-flex flex-column w-100">
+            <label for="ruolo" class="me-2">Ruolo:<span class="text-danger"> *</span></label>
+            <select class="form-select" id="ruoli_personale" formControlName="ruolo">
+              <option></option>
+              <option *ngFor="let el of ruoli_personale" [value]="el.id">
+                {{ el.descr }}
+              </option>
+            </select>
+          </div>
+
+          <div class="d-flex align-items-center">
+            <div class="form-group d-flex flex-column w-35">
+              <label>Data Inizio:<span class="text-danger"> *</span></label>
+              <input type="date" [min]="data_min" [max]="data_max" class="form-control border"
+                (blur)="checkDate($event, formPersonale)" formControlName="inizio" />
+            </div>
+            <div class="form-group d-flex flex-column ms-2">
+              <label>Ora Inizio:<span class="text-danger"> *</span></label>
+              <input type="time" class="form-control border" (blur)="checkDate($event, formPersonale)"
+                formControlName="ora_ini" />
+            </div>
+
+            <div class="form-group d-flex flex-column ms-4 w-35">
+              <label>Data Fine:<span class="text-danger"> *</span></label>
+              <input type="date" [min]="data_min" [max]="data_max" class="form-control border"
+                (blur)="checkDate($event, formPersonale)" formControlName="fine" />
+            </div>
+            <div class="form-group d-flex flex-column m-2">
+              <label>Ora Fine:<span class="text-danger"> *</span></label>
+              <input type="time" class="form-control border" (blur)="checkDate($event, formPersonale)"
+                formControlName="ora_fin" />
+            </div>
+          </div>
+          <div *ngIf="errore_data" class="d-flex align-items-center">
+            <span class="err_msg">Inserire date posteriori al
+              {{ data_min | date : "dd/MM/yyyy" }} e nel formato corretto.</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- modal-footer -->
+      <div class="modal-footer">
+        <button [disabled]="
+            ((!formPersonale.value.nome || !formPersonale.value.cognome) &&
+              !formPersonale.value.cf) ||
+            tipoModale == 'upd'
+          " class="ms-2 btn btn-primary" (click)="verificaSoggettiFisici()">
+          Ricerca Soggetto Fisico
+        </button>
+        <button [disabled]="
+            ((!formPersonale.value.nome || !formPersonale.value.cognome) &&
+              !formPersonale.value.cf) ||
+            tipoModale == 'upd'
+          " class="btn btn-primary float-end" (click)="verificaAnagraficaAssistiti()">
+          Verifica Anagrafica Assistito
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- modal -->
+<div class="modal fade" id="modal-esterni" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-xl modal-dialog-scrollable" role="document">
+    <div class="modal-content">
+      <!-- modal-header -->
+      <div class="modal-header">
+        <ng-container *ngIf="tipoModale == 'add'; else updEst">
+          <h2 class="modal-title">Controllori Esterni - Aggiungi</h2>
+        </ng-container>
+        <ng-template #updEst>
+          <h2 class="modal-title">Controllori Esterni - Modifica</h2>
+        </ng-template>
+        <div class="justify-content-end">
+          <ng-container *ngIf="tipoModale == 'add'; else updSubmitEsterni">
+            <button [disabled]="formEsterni.invalid" type="button" class="btn btn-secondary ms-auto"
+              (click)="aggiungiEsterni()">
+              <i class="icon fa-solid fa-save"></i>
+              <span>Salva</span>
+            </button>
+          </ng-container>
+          <ng-template #updSubmitEsterni>
+            <button [disabled]="formEsterni.invalid" type="button" class="btn btn-secondary ms-auto"
+              (click)="aggiornaEsterni()">
+              <i class="icon fa-solid fa-save"></i>
+              <span>Salva</span>
+            </button>
+          </ng-template>
+
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="close"></button>
+        </div>
+      </div>
+
+      <!-- modal-body -->
+      <div class="modal-body">
+        <div [formGroup]="formEsterni">
+          <div class="form-group d-flex flex-column w-100">
+            <label for="nome" class="me-2">Nome:<span class="text-danger"> *</span></label>
+            <input [readonly]="tipoModale == 'upd'" class="form-control border" type="text" formControlName="nome" />
+          </div>
+          <div class="form-group d-flex flex-column w-100">
+            <label for="cognome" class="me-2">Cognome:<span class="text-danger"> *</span></label>
+            <input [readonly]="tipoModale == 'upd'" class="form-control border" type="text" formControlName="cognome" />
+          </div>
+          <div class="form-group d-flex flex-column w-100">
+            <label for="dt_nascita">Data di nascita: </label>
+            <input [readonly]="tipoModale == 'upd'" type="date" max="{{ maggiorenne }}" class="form-control border"
+              (blur)="checkDate($event, formEsterni)" formControlName="dt_nascita" />
+          </div>
+          <div class="form-group d-flex flex-column w-100">
+            <label for="comune_nascita">Comune di nascita: </label>
+            <input [readonly]="tipoModale == 'upd'" type="text" class="form-control border"
+              formControlName="comune_nascita" [autofiller]="datiCodiciNascita" autofillerKey="denominazione_it"
+              (valueChange)="patchValue($event, 'comune_nascita', formEsterni)" />
+          </div>
+          <div class="form-group d-flex flex-column w-100">
+            <label for="cf" class="me-2">Codice Fiscale:</label>
+            <input [readonly]="tipoModale == 'upd'" class="form-control border" type="text" formControlName="cf" />
+          </div>
+          <div class="form-group d-flex flex-column w-100">
+            <label for="ruolo" class="me-2">Ruolo:<span class="text-danger"> *</span></label>
+            <input class="form-control border" type="text" formControlName="ruolo" />
+          </div>
+
+          <div class="d-flex align-items-center">
+            <div class="form-group d-flex flex-column w-35">
+              <label>Data Inizio:<span class="text-danger"> *</span></label>
+              <input type="date" [min]="data_min" [max]="data_max" class="form-control border"
+                (blur)="checkDate($event, formEsterni)" formControlName="inizio" />
+            </div>
+            <div class="form-group d-flex flex-column ms-2">
+              <label>Ora Inizio:<span class="text-danger"> *</span></label>
+              <input type="time" class="form-control border" (blur)="checkDate($event, formEsterni)"
+                formControlName="ora_ini" />
+            </div>
+
+            <div class="form-group d-flex flex-column ms-4 w-35">
+              <label>Data Fine:<span class="text-danger"> *</span></label>
+              <input type="date" [min]="data_min" [max]="data_max" class="form-control border"
+                (blur)="checkDate($event, formEsterni)" formControlName="fine" />
+            </div>
+            <div class="form-group d-flex flex-column m-2">
+              <label>Ora Fine:<span class="text-danger"> *</span></label>
+              <input type="time" class="form-control border" (blur)="checkDate($event, formEsterni)"
+                formControlName="ora_fin" />
+            </div>
+          </div>
+          <div *ngIf="errore_data" class="d-flex align-items-center">
+            <span class="err_msg">Inserire date posteriori al
+              {{ data_min | date : "dd/MM/yyyy" }} e nel formato corretto.</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- modal-footer -->
+      <div class="modal-footer"></div>
+    </div>
+  </div>
+</div>
+
+<!-- modale dichiarazioni -->
+<div class="modal fade" id="modal-dichiarazioni" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-dialog-scrollable" role="document">
+    <div class="modal-content">
+      <!-- modal-header -->
+      <div class="modal-header">
+        <ng-container *ngIf="tipoModale == 'view'; else updDichiarazione">
+          <h2 class="modal-title">Dichiarazione</h2>
+        </ng-container>
+        <ng-template #updDichiarazione>
+          <h2 class="modal-title">Nuova Dichiarazione</h2>
+        </ng-template>
+        <div class="justify-content-end">
+          <button [disabled]="
+              btnMode || controllo_chiuso || formNuovaDichiarazione.invalid
+            " type="button" class="btn btn-secondary ms-auto" (click)="addDichiarazioni()">
+            <i class="icon fa-solid fa-save"></i>
+            <span>Salva</span>
+          </button>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="close"></button>
+        </div>
+      </div>
+
+      <!-- modal-body -->
+      <div class="modal-body">
+        <div [formGroup]="formNuovaDichiarazione">
+          <div class="d-flex align-items-center">
+            <div class="form-group d-flex flex-column w-100">
+              <label for="dichiarazione" class="me-2">Descrizione:</label>
+              <textarea [readonly]="btnMode || controllo_chiuso ? true : null" class="form-control border"
+                id="dichiarazione" formControlName="dichiarazione"></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- modal-footer -->
+      <div class="modal-footer"></div>
+    </div>
+  </div>
+</div>
+
+<!-- modal -->
+<div class="modal fade" id="modal-anagrafica-assistiti" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-xxl modal-dialog-scrollable" role="document">
+    <div class="modal-content">
+      <!-- modal-header -->
+      <div class="modal-header">
+        <h2 class="modal-title">
+          Anagrafica
+          {{
+          tipoVerificaAnagrafica === "soggetti"
+          ? "Soggetti Fisici"
+          : "Assistiti"
+          }}
+        </h2>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="close"></button>
+      </div>
+
+      <!-- modal-body -->
+      <div class="modal-body">
+        <ng-container *ngIf="tipoVerificaAnagrafica === 'soggetti'">
+          <div *ngIf="ui_soggetti; else messaggioAnag">
+            <table class="table table-assistiti">
+              <thead>
+                <tr>
+                  <th scope="col" *ngFor="let colonna of ui_soggetti.colonne">
+                    {{ colonna.intestazione }}
+                  </th>
+                  <th scope="col"></th>
+                </tr>
+              </thead>
+              <tbody class="border">
+                <tr *ngFor="let ar of soggetti">
+                  <td *ngFor="let colonna of ui_soggetti.colonne">
+                    {{ ar[colonna.campo] }}
+                  </td>
+                  <td>
+                    <button class="btn btn-primary float-end ms-auto" container="body" (click)="compilaSoggetto(ar)">
+                      <i class="icon fa-solid fa-plus"></i>
+                      Aggiungi
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </ng-container>
+        <ng-container *ngIf="tipoVerificaAnagrafica === 'assistiti'">
+          <div *ngIf="ui_anag; else messaggioAnag">
+            <table class="table table-assistiti">
+              <thead>
+                <tr>
+                  <th scope="col" *ngFor="let colonna of ui_anag.colonne">
+                    {{ colonna.intestazione }}
+                  </th>
+                  <th scope="col"></th>
+                </tr>
+              </thead>
+              <tbody class="border">
+                <tr *ngFor="let ar of anag_tot">
+                  <td *ngFor="let colonna of ui_anag.colonne">
+                    {{ ar.Anagrafica[colonna.campo] }}
+                  </td>
+                  <td>
+                    <button class="btn btn-primary float-end ms-auto" container="body"
+                      (click)="compilaAssistito(ar.Anagrafica)">
+                      <i class="icon fa-solid fa-plus"></i>
+                      Aggiungi
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </ng-container>
+        <ng-template #messaggioAnag>
+          Nessun anagrafica corrispondente.
+        </ng-template>
+      </div>
+
+      <!-- modal-footer -->
+      <div class="modal-footer"></div>
+    </div>
+  </div>
+</div>

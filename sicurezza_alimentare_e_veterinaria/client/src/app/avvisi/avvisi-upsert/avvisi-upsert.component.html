@@ -1,0 +1,83 @@
+<!--
+Copyright (C) AGPL-3.0  
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.-->
+<div style="margin-left: 3%; margin-right: 3%; margin-top: 1%">
+  <div class="row">
+    <div class="col">
+      <h2 class="d-flex align-items-center">
+        <span>{{ operazione }} Avviso </span>
+      </h2>
+    </div>
+    <div class="col">
+      <!--  -->
+      <button class="btn btn-primary ms-4 float-end" [disabled]="
+          !this.formAvvisi.valid ||
+          risorsaAvvisiComponent.getSelectedLeafNodes().length == 0
+        " (click)="salva()" style="margin-right: 1%">
+        <i class="icon fa-solid fa-floppy-disk"></i>
+        <span>Salva</span>
+      </button>
+      <!-- <button
+        type="button"
+        class="btn btn-primary ms-auto"
+        (click)="goBack()"
+        style="float: right"
+      >
+        <i class="fa fa-arrow-left"></i> Indietro
+      </button> -->
+    </div>
+  </div>
+  <br />
+  <form [formGroup]="formAvvisi">
+    <div class="form-group mb-2">
+      <label>Sigla: <span class="text-danger mb-3 ms-1"> * </span> </label>
+      <!-- in questo caso è il contrario ovvero non accetta numeri all'interno dell'input
+
+                oninput="this.value = this.value.replace(/[^a-zA-Z\s]/g, '');" per non accettare neanche caratteri speciali-->
+      <input type="text" class="form-control border" formControlName="sigla" />
+    </div>
+    <div class="form-group mb-2">
+      <label>Descrizione: <span class="text-danger mb-3 ms-1"> * </span>
+      </label>
+      <input type="text" class="form-control border" formControlName="descrizione" />
+    </div>
+
+    <div class="form-group mb-2">
+      <label>Livello: <span class="text-danger mb-3 ms-1"> * </span> </label>
+      <select class="form-select" id="livello" formControlName="livello">
+        <option></option>
+        <option *ngFor="let el of livello" [value]="el.id">
+          {{ el.descr }}
+        </option>
+      </select>
+    </div>
+
+    <div class="form-group mb-2">
+      <label>Tipo: <span class="text-danger mb-3 ms-1"> * </span></label>
+      <select class="form-select" id="tipo" formControlName="tipo">
+        <option></option>
+        <option *ngFor="let el of tipo" [value]="el.id">{{ el.descr }}</option>
+      </select>
+    </div>
+
+    <div class="form-group mb-2">
+      <date-input-range formControlName="periodo" [includeTime]="true" [startMin]="startMin" [startMax]="startMax"
+        [endMin]="endMin" [endMax]="endMax" required></date-input-range>
+    </div>
+
+    <div class="form-group mb-2" id="risorsa">
+      <div class="row" id="piani-main-content">
+        <a-tree-filter [tree]="risorsaAvvisiTree" placeholder="Ricerca Risorsa..."></a-tree-filter>
+        <div class="scrollbox h-100 overflow-auto custom-scrollbar" id="piano-tree-scrollbox">
+          <a-tree (onClick)="getValoreRisorsa()" (onLoad)="getValoreRisorsaOnLoad($event)" #risorsaAvvisiComponent
+            [root]="struttureTree"></a-tree>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>

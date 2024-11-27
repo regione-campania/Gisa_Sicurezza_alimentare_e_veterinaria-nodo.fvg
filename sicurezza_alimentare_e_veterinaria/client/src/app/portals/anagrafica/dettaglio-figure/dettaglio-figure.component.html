@@ -1,0 +1,40 @@
+<!--
+Copyright (C) AGPL-3.0  
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.-->
+<h3> Figura:  </h3> <h4> {{nomeSogg}}   {{cognomeSogg}}   {{cfSogg}} </h4> <br> <h3>Indirizzo: </h3> <h4> {{indirizzoSogg}} </h4>
+<div id="Figure" *ngIf="retDati">
+    <h2 class="d-flex align-items-center">
+        <span> Figure </span>
+    </h2>
+    <a-smart-table [colsInfo]="ui.colonne" [src]="retDati" [autolayout]="false">
+        <ng-template aTemplate="head">
+            <tr>
+                <th scope="col" *ngFor="let colonna of ui.colonne">
+                    <div class="d-flex align-items-center justify-content-center">
+                        <span class="label">{{colonna.intestazione}}</span>
+                        <a-table-sorter [type]="colonna.tipo" [field]="colonna.campo"></a-table-sorter>
+                        <a-table-filter [type]="colonna.tipo" [field]="colonna.campo" [options]="colonna.filterOptions"></a-table-filter>
+                    </div>
+                </th>
+            </tr>
+        </ng-template>
+        <ng-template aTemplate="body" let-ar>
+            <tr>
+                <td *ngFor="let colonna of ui.colonne">
+                    <ng-container *ngIf="colonna.tipo === 'time'; else campoNormale">
+                        {{ar[colonna.campo] | date: 'dd/MM/yyyy hh-mm-ss'}}
+                    </ng-container>
+                    <ng-template #campoNormale>
+                        {{ar[colonna.campo]}}
+                    </ng-template>
+                </td>
+            </tr>
+        </ng-template>
+    </a-smart-table>
+    <br>
+</div>

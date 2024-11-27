@@ -1,0 +1,211 @@
+<!--
+Copyright (C) AGPL-3.0  
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.-->
+<div class="row align-items-center">
+    <div class="col">
+        <h5 class="d-flex align-items-center">
+            <ng-container *ngIf="cu">
+                <span>Dettaglio Controllo n° {{cu.codice}} - Norma Violata</span>
+            </ng-container>
+        </h5>
+    </div>
+</div>
+<div class="row align-items-center">
+    <div class="col">
+        <h2 class="d-flex align-items-center">
+            <span>{{evidenze?.[0].norma}}</span>
+            <button [disabled]="btnMode || controllo_chiuso || follow_up" type="button" class="btn btn-primary ms-auto"
+                (click)="openModal('add',-1)">
+                <i class="icon fa-solid fa-plus"></i>
+                <span>Aggiungi Provvedimento</span>
+            </button>
+        </h2>
+    </div>
+</div>
+<table width="100%" *ngIf="ui_evidenze && ui_provv">
+    <tr>
+        <td class="align-top w-50 p-1">
+            <div>
+                <a-smart-table #tabella1 [colsInfo]="ui_evidenze.colonne" class="table-striped" [src]="evidenze"
+                    [paginator]="false" [autolayout]="false">
+                    <!-- definire head -->
+                    <ng-template aTemplate="head">
+    <tr>
+        <th scope="col" *ngFor="let colonna of ui_evidenze.colonne">
+            <ng-container *ngIf="colonna.tipo === 'number'; else campoTestuale">
+                <div class="d-flex align-items-center justify-content-end">
+                    <span class="label">{{colonna.intestazione}}</span>
+                    <a-table-sorter [type]="colonna.tipo" [field]="colonna.campo"></a-table-sorter>
+                    <a-table-filter [type]="colonna.tipo" [field]="colonna.campo" [options]="colonna.filterOptions"></a-table-filter>
+                </div>
+            </ng-container>
+            <ng-template #campoTestuale>
+                <div class="d-flex align-items-center">
+                    <span class="label">{{colonna.intestazione}}</span>
+                    <a-table-sorter [type]="colonna.tipo" [field]="colonna.campo"></a-table-sorter>
+                    <a-table-filter [type]="colonna.tipo" [field]="colonna.campo" [options]="colonna.filterOptions"></a-table-filter>
+                </div>
+            </ng-template>
+        </th>
+    </tr>
+    </ng-template>
+    <!-- definire body -->
+    <ng-template aTemplate="body" let-ar>
+        <tr>
+            <td *ngFor="let colonna of ui_evidenze.colonne">
+                <ng-container *ngIf="colonna.tipo == 'date' else elseField">
+                    {{ar[colonna.campo] | date:'dd/MM/yyyy'}}
+                </ng-container>
+                <ng-template #elseField>
+                    <ng-container *ngIf="colonna.tipo == 'number' else normalField">
+                        <div class="d-flex align-items-center justify-content-end">
+                            <span>{{ar[colonna.campo] | numberPipe}}</span>
+                        </div>
+                    </ng-container>
+                    <ng-template #normalField>
+                        {{ar[colonna.campo]}}
+                    </ng-template>
+                </ng-template>
+
+            </td>
+        </tr>
+    </ng-template>
+    </a-smart-table>
+    </div>
+    </td>
+    <td class="align-top w-50 p-1">
+        <div>
+            <a-smart-table #tabella2 [colsInfo]="ui_provv.colonne" class="table-striped" [src]="provv"
+                [autolayout]="false" [paginator]="false">
+                <!-- definire head -->
+                <ng-template aTemplate="head">
+                    <tr>
+                        <th scope="col" *ngFor="let colonna of ui_provv.colonne">
+                            <ng-container *ngIf="colonna.tipo === 'number'; else campoTestuale">
+                                <div class="d-flex align-items-center justify-content-end">
+                                    <span class="label">{{colonna.intestazione}}</span>
+                                    <a-table-sorter [type]="colonna.tipo" [field]="colonna.campo"></a-table-sorter>
+                                    <a-table-filter [type]="colonna.tipo" [field]="colonna.campo" [options]="colonna.filterOptions"></a-table-filter>
+                                </div>
+                            </ng-container>
+                            <ng-template #campoTestuale>
+                                <div class="d-flex align-items-center">
+                                    <span class="label">{{colonna.intestazione}}</span>
+                                    <a-table-sorter [type]="colonna.tipo" [field]="colonna.campo"></a-table-sorter>
+                                    <a-table-filter [type]="colonna.tipo" [field]="colonna.campo" [options]="colonna.filterOptions"></a-table-filter>
+                                </div>
+                            </ng-template>
+                        </th>
+                        <th scope="col"></th>
+                    </tr>
+                </ng-template>
+                <!-- definire body -->
+                <ng-template aTemplate="body" let-ar>
+                    <tr>
+                        <td *ngFor="let colonna of ui_provv.colonne">
+                            <ng-container *ngIf="colonna.tipo == 'date' else elseField">
+                                {{ar[colonna.campo] | date:'dd/MM/yyyy'}}
+                            </ng-container>
+                            <ng-template #elseField>
+                                <ng-container *ngIf="colonna.tipo == 'number' else normalField">
+                                    <div class="d-flex align-items-center justify-content-end">
+                                        <span>{{ar[colonna.campo] | numberPipe}}</span>
+                                    </div>
+                                </ng-container>
+                                <ng-template #normalField>
+                                    {{ar[colonna.campo]}}
+                                </ng-template>
+                            </ng-template>
+
+                        </td>
+                        <td>
+                            <button [disabled]="btnMode || controllo_chiuso || follow_up" type="button"
+                                class="btn btn-danger ms-2" (click)="delete(ar)">
+                                <i class="icon fa-solid fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                </ng-template>
+            </a-smart-table>
+        </div>
+    </td>
+    </tr>
+</table>
+
+<!-- modal -->
+<div class="modal fade" id="modal-add-provv" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable" role="document">
+        <div class="modal-content">
+            <!-- modal-header -->
+            <div class="modal-header">
+                <ng-container *ngIf="tipoModale == 'add' else upd">
+                    <h2 class="modal-title">Aggiungi</h2>
+                </ng-container>
+                <ng-template #upd>
+                    <h2 class="modal-title">Aggiorna</h2>
+                </ng-template>
+                <div class="justify-content-end">
+                    <ng-container *ngIf="tipoModale == 'add' else updSubmit">
+                        <button [disabled]="formNuovoProvvedimento.invalid" type="button"
+                            class="btn btn-secondary ms-auto" (click)="insert()">
+                            <i class="icon fa-solid fa-save"></i>
+                            <span>Salva</span>
+                        </button>
+                    </ng-container>
+                    <ng-template #updSubmit>
+                        <button [disabled]="formNuovoProvvedimento.invalid" type="button"
+                            class="btn btn-secondary ms-auto" (click)="update()">
+                            <i class="icon fa-solid fa-save"></i>
+                            <span>Salva</span>
+                        </button>
+                    </ng-template>
+
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="close"></button>
+                </div>
+            </div>
+
+            <!-- modal-body -->
+            <div class="modal-body">
+                <div [formGroup]="formNuovoProvvedimento">
+                    <!-- <div class="d-flex align-items-center">
+                        <div class="form-group d-flex flex-column w-100">
+                            <label for="azione" class="me-2">Azione:</label>
+                            <input type="text" class="form-control border" id="azione" formControlName="azione">
+                        </div>
+                    </div> -->
+                    <!-- sostituito "Misure" con "Provvedimento" -->
+                    <div class="d-flex align-items-center">
+                        <div class="form-group d-flex flex-column w-100">
+                            <label for="id_tipo_provv" class="me-2">Provvedimento:</label>
+                            <select class="form-select" id="id_tipo_provv" formControlName="id_tipo_provv"
+                                (change)="checkTipoProvv($event)">
+                                <option></option>
+                                <option *ngFor="let el of tipi_provv" [value]="el.id_tipo_provv">{{el.descr}}
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center">
+                        <div class="form-group d-flex flex-column w-100">
+                            <label for="dt" class="me-2">Data:</label>
+                            <input type="date" [min]="data_min" class="form-control border"
+                                (blur)="checkDate($event, formNuovoProvvedimento)" id="dt" formControlName="dt">
+                        </div>
+                    </div>
+                    <div *ngIf="errore_data" class="d-flex align-items-center">
+                        <span class="err_msg">Inserire date posteriori all'apertura del controllo {{data_min |
+                            date:'dd/MM/yyyy' }} alle ore {{ora_min}} e nel formato corretto.</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- modal-footer -->
+            <div class="modal-footer"></div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,44 @@
+<!--
+Copyright (C) AGPL-3.0  
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.-->
+<div class="form-box">
+    <div class="row">
+        <div class="col-lg">
+            <form [formGroup]="formPratiche">
+                <label>Tipo Pratica: <span class="text-danger mb-3 ms-1 ">*</span></label>
+                <div *ngIf="!flagModifica">
+                    <select *ngIf="tipi_pratiche" class="form-select" id="id_tipo_pratica"
+                        formControlName="id_tipo_pratica" (change)="checkTipoPratica($event)">
+                        <option></option>
+                        <option *ngFor="let el of tipi_pratiche" [value]="el.id_tipo_pratiche">
+                            {{ el.descr }}
+                        </option>
+                    </select>
+                </div>
+                <div *ngIf="flagModifica">
+                    <input type="text" id="n_pratica" class="form-control border" formControlName="descr_tipo_pratica"
+                        readonly />
+                </div>
+
+                <label>Numero Pratica: <span class="text-danger mb-3 ms-1 removeObb">*</span></label>
+                <input type="text" id="n_pratica" class="form-control border" formControlName="n_pratica"
+                    (blur)="trimCampo(formPratiche.controls.n_pratica)" />
+
+                <label>Data Pratica: <span class="text-danger mb-3 ms-1">*</span></label>
+                <input [readonly]="flagModifica" type="date" id="data_pratica" class="form-control border"
+                    formControlName="data_pratica" />
+
+                <label>Data Autorizzazione:</label>
+                <input [readonly]="flagModifica" type="date" id="data_autorizzazione" class="form-control border"
+                    formControlName="data_autorizzazione" />
+
+            </form>
+        </div>
+    </div>
+
+</div>

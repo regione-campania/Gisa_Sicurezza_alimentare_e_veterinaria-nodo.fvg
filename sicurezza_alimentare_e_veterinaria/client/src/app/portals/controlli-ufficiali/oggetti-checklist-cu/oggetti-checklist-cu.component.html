@@ -1,0 +1,200 @@
+<!--
+Copyright (C) AGPL-3.0  
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.-->
+<div id="oggetti-cl-container">
+    <div class="row align-items-center">
+        <div class="col">
+            <h5 class="d-flex align-items-center">
+                <ng-container *ngIf="cu">
+                    <span>Dettaglio Controllo n° {{cu.codice}}</span>
+                </ng-container>
+            </h5>
+        </div>
+    </div>
+    <div class="row align-items-center">
+        <div class="col">
+            <h2 class="d-flex align-items-center">
+                <span>Checklist Oggetto{{oggetti_cl?.length > 0 ? " - " + oggetti_cl?.[0].descr_oggetto : ""}}</span>
+                <button [disabled]="btnClose ? null : true" type="button" class="btn btn-secondary ms-auto"
+                    (click)="chiudi()">
+                    <i class="icon fa-solid fa-lock-open"></i>
+                    <span>Chiudi</span>
+                </button>
+            </h2>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col" *ngIf="ui">
+            <a-smart-table #tabellaCL [colsInfo]="ui.colonne" class="table-striped" [src]="oggetti_cl"
+                [autolayout]="false" [selection]="true">
+                <!-- definire head -->
+                <ng-template aTemplate="head">
+                    <tr>
+                        <th scope="col" class="selector-th"></th>
+                        <th scope="col" *ngFor="let colonna of ui.colonne">
+                            <ng-container *ngIf="colonna.tipo === 'number'; else campoTestuale">
+                                <div class="d-flex align-items-center justify-content-end">
+                                    <span class="label">{{colonna.intestazione}}</span>
+                                    <a-table-sorter [type]="colonna.tipo" [field]="colonna.campo"></a-table-sorter>
+                                    <a-table-filter [type]="colonna.tipo" [field]="colonna.campo"
+                                        [options]="colonna.filterOptions"></a-table-filter>
+                                </div>
+                            </ng-container>
+                            <ng-template #campoTestuale>
+                                <div class="d-flex align-items-center">
+                                    <span class="label">{{colonna.intestazione}}</span>
+                                    <a-table-sorter [type]="colonna.tipo" [field]="colonna.campo"></a-table-sorter>
+                                    <a-table-filter [type]="colonna.tipo" [field]="colonna.campo"
+                                        [options]="colonna.filterOptions"></a-table-filter>
+                                </div>
+                            </ng-template>
+                        </th>
+                        <th scope="col" width="20%"></th>
+                    </tr>
+                </ng-template>
+                <!-- definire body -->
+                <ng-template aTemplate="body" let-ar>
+                    <tr>
+                        <td class="selector-td">
+                            <a-table-selector [data]="ar"></a-table-selector>
+                        </td>
+                        <td *ngFor="let colonna of ui.colonne">
+                            <ng-container *ngIf="colonna.tipo == 'date' else elseField">
+                                {{ar[colonna.campo] | date:'dd/MM/yyyy'}}
+                            </ng-container>
+                            <ng-template #elseField>
+                                <ng-container *ngIf="colonna.tipo == 'number' else normalField">
+                                    <div class="d-flex align-items-center justify-content-end">
+                                        <span>{{ar[colonna.campo] | numberPipe}}</span>
+                                    </div>
+                                </ng-container>
+                                <ng-template #normalField>
+                                    {{ar[colonna.campo]}}
+                                </ng-template>
+                            </ng-template>
+                            <ng-container *ngIf="colonna.intestazione == 'Requisito'">
+                                <ng-container *ngIf="ar.enum_list && ar.enum_list.descrizione as descrizione">
+                                    <enum-list [id]="'1'" [start]="descrizione.enumList.start"
+                                        [items]="descrizione.enumList.items"></enum-list>
+                                </ng-container>
+                                <ng-container *ngIf="ar.tabella && ar.tabella.descrizione as descrizione">
+                                    <table class="table table-std">
+                                        <thead>
+                                            <tr *ngFor="let col of descrizione.table.cols">
+                                                <th class="align-middle" *ngFor="let cell of col">{{cell}}</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="border">
+                                            <tr *ngFor="let row of descrizione.table.rows">
+                                                <td *ngFor="let cell of row">{{cell}}</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </ng-container>
+                            </ng-container>
+                        </td>
+                        <td width="20%">
+                            <div class="d-flex float-end">
+                                <button [disabled]="btnMode || controllo_chiuso || oggetto_chiuso || follow_up"
+                                    [style.display]="ar['chiuso'] ? 'block' : 'none'" class="btn btn-secondary ms-auto"
+                                    (click)="apri(ar['id_cu_oggetto_cl'])">
+                                    <i class="icon fa-solid fa-lock"></i>
+                                    <span>Apri</span>
+                                </button>
+                                <button id="ar['id_cu_oggetto_cl']" type="button" class="btn btn-primary ms-2"
+                                    (click)="gotoEvidenze($event, ar['id_cu_oggetto_cl'])">
+                                    <span>Evidenze</span>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                </ng-template>
+            </a-smart-table>
+        </div>
+    </div>
+</div>
+
+
+
+<!-- modal -->
+<div class="modal fade" id="modal-chiudi-massivo" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-scrollable" role="document">
+        <div class="modal-content">
+            <!-- modal-header -->
+            <div class="modal-header">
+                <h2 class="modal-title">Nuovo Stato</h2>
+                <div class="justify-content-end">
+                    <!-- <button [disabled]="formNuovoStatoMassivo.invalid" type="button" class="btn btn-primary ms-auto"
+                        (click)="aggiornaStato()">
+                        <i class="icon fa-solid fa-save"></i>
+                        <span>Salva</span>
+                    </button> -->
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="close"></button>
+                </div>
+            </div>
+
+            <!-- modal-body -->
+            <div class="modal-body">
+                <div [formGroup]="formNuovoStatoMassivo">
+                    <div class="d-flex align-items-center">
+                        <!-- <div class="form-group d-flex flex-column w-100">
+                            <label for="id_stato_cl" class="me-2">Nuovo Stato:</label>
+                            <select class="form-select" id="id_stato_cl" formControlName="id_stato_cl">
+                                <option></option>
+                                <option *ngFor="let el of cl_nuovi_stati" [value]="el.id_stato_cl">{{el.descr}}
+                                </option>
+                            </select>
+                        </div> -->
+                        <!-- <div class="form-group d-flex flex-column w-100">
+                            <ng-container *ngFor="let el of cl_nuovi_stati">
+                                <span>
+                                    <input [readonly]="el.selezionabile ? null : true" type="radio"
+                                        [value]="el.id_stato_cl" [id]="el.id_stato_cl" name="id_stato_cl"
+                                        formControlName="id_stato_cl">
+                                    <ng-container *ngIf="el.selezionabile else disabilitato">
+                                        {{el.descr}}
+                                    </ng-container>
+                                    <ng-template #disabilitato>
+                                        <s> {{el.descr}}</s>
+                                    </ng-template>
+                                </span>
+                            </ng-container>
+                        </div> -->
+
+                        <table class="table table-striped">
+                            <thead>
+                                <th scope="col"></th>
+                                <th scope="col"></th>
+                            </thead>
+                            <tbody>
+                                <ng-container *ngFor="let el of cl_nuovi_stati">
+                                    <tr>
+                                        <td>{{el.descr}}</td>
+                                        <td>
+                                            <div class="float-end">
+                                                <button [disabled]="!el.selezionabile" type="button"
+                                                    class="btn btn-primary ms-auto"
+                                                    (click)="selezionaStato(el.id_stato_cl)">
+                                                    <span>Seleziona</span>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </ng-container>
+                            </tbody>
+                        </table>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- modal-footer -->
+            <div class="modal-footer"></div>
+        </div>
+    </div>
+</div>

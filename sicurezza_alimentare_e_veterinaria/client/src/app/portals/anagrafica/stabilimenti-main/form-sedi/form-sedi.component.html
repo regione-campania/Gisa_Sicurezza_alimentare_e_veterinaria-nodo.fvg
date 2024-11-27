@@ -1,0 +1,80 @@
+<!--
+Copyright (C) AGPL-3.0  
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.-->
+<form [formGroup]="formSede">
+    <div class="form-group mb-2">
+        <label>Tipo Sede: <span class="text-danger mb-3 ms-1">
+                *
+            </span> </label>
+        <ng-container *ngIf="!disabilitaTipoSede">
+            <select class="form-select" id="tipo_sede" formControlName="sede">
+                <option></option>
+                <option *ngFor="let el of tipiSedi" [value]="el.id">{{el.descr}}
+                </option>
+            </select>
+        </ng-container>
+        <ng-container *ngIf="disabilitaTipoSede">
+            <input readonly type="text" class="form-control border" formControlName="descr_sede">
+        </ng-container>
+    </div>
+    <!-- <label>Codice Fiscale: <span class="text-danger mb-3 ms-1">
+            *
+        </span> </label>
+    <input type="text" class="form-control border" formControlName="cf">
+
+    <label>Partita IVA: <span class="text-danger mb-3 ms-1">
+            *
+        </span> </label>
+    <input type="text" class="form-control border" formControlName="piva"> -->
+    <div class="form-group mb-2">
+        <label>PEC: <span class="text-danger mb-3 ms-1">
+                *
+            </span> </label>
+        <input type="text" class="form-control border" formControlName="pec">
+    </div>
+    <div class="form-group mb-2">
+        <label>Email: </label>
+        <input type="text" class="form-control border" formControlName="email">
+    </div>
+    <!-- <label>SDI: <span class="text-danger mb-3 ms-1">
+            *
+        </span> </label>
+    <input type="text" class="form-control border" formControlName="sdi">
+
+    <label>Split Payement: <span class="text-danger mb-3 ms-1">
+            *
+        </span> </label>
+    <select class="form-select" id="tipo_sede" formControlName="split_payement">
+        <option value='S'>S</option>
+        <option value='N'>N</option>
+    </select> -->
+
+    <!-- <label>Codice Tipo Impresa: <span class="text-danger mb-3 ms-1">
+            *
+        </span> </label>
+    <select class="form-select" id="tipo_imprese" formControlName="cod_tipo_impresa">
+        <option></option>
+        <option *ngFor="let el of tipiImprese" [value]="el.cod">{{el.descr}}
+        </option>
+    </select> -->
+
+    <div class="form-group mb-2">
+        <label>Data inizio validità: <span class="text-danger mb-3 ms-1">
+                *
+            </span> </label>
+        <input type="date" id="lenghtDate" class="form-control border" formControlName="data_inizio_validita"
+            [min]="dataMin" (blur)="checkDate($event,formSede)">
+    </div>
+    <div class="form-group mb-2">
+        <div *ngIf="tipoOperazione === 'modifica'">
+            <label>Data fine validità: </label>
+            <input type="date" id="lenghtDate" class="form-control border" formControlName="data_fine_validita"
+                [min]="dataMin" (blur)="checkDate($event,formSede)">
+        </div>
+    </div>
+</form>

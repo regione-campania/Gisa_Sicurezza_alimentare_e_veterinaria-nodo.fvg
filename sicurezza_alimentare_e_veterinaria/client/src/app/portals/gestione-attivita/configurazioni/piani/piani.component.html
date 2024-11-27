@@ -1,0 +1,612 @@
+<!--
+Copyright (C) AGPL-3.0  
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.-->
+<div id="piani">
+  <div class="row">
+    <div class="col-lg-5" id="left-section">
+      <div class="structure-name-section d-flex mb-3">
+        <h3 class="structure-name">{{ info?.descr }}</h3>
+      </div>
+      <loading-message *ngIf="pianiLoading; else pianiReady"></loading-message>
+      <ng-template #pianiReady>
+        <a-tree-filter
+          [tree]="t1"
+          placeholder="Ricerca Piano..."
+        ></a-tree-filter>
+        <div
+          #scrollbox
+          class="box scrollbox custom-scrollbar mt-2 overflow-y-auto p-0 rounded shadow-sm"
+          [ngStyle]="{
+            'max-height':
+              'calc(100vh - ' + utils.getAbsoluteOffsetTop(scrollbox) + 'px)'
+          }"
+        >
+          <a-tree
+            #t1
+            [root]="pianiTree?.root"
+            (onClick)="initStruttureSecondarie($event)"
+          ></a-tree>
+        </div>
+      </ng-template>
+    </div>
+    <div class="col-lg" id="right-section">
+      <div
+        class="structure-name-section d-flex mb-3"
+        *ngIf="strutturaSecondariaAttiva"
+      >
+        <h3 class="structure-name w-50">
+          {{ strutturaSecondariaAttiva.descr }}
+        </h3>
+        <div
+          class="buttons-wrapper w-100 d-flex justify-content-end"
+          *ngIf="strutturaSecondariaAttiva.modality == 'modifica'"
+        >
+          <button
+            type="button"
+            class="btn btn-primary save-button"
+            (click)="salva()"
+            *ngIf="
+              strutturaSecondariaAttiva.trackerModifiche &&
+              !strutturaSecondariaAttiva.trackerModifiche.isSame
+            "
+          >
+            <i class="icon fa-solid fa-floppy-disk"></i>
+            <span class="label">Salva</span>
+          </button>
+          <button
+            type="button"
+            class="btn btn-primary copy-button ms-2"
+            (click)="modaleDuplicaTipoLinee = openModal(duplicaTipoLinee)"
+            *ngIf="
+              selectedPiano && strutturaSecondariaAttiva.descr == 'Tipo Linee'
+            "
+          >
+            <i class="icon fa-regular fa-copy"></i>
+            <span class="label">Duplica</span>
+          </button>
+        </div>
+      </div>
+      <div *ngIf="!selectedPiano; else elseBlock">
+        Selezionare un elemento dalla lista.
+      </div>
+      <ng-template #elseBlock>
+        <div
+          #slider
+          class="slider overflow-hidden"
+          *ngIf="info"
+          [ngStyle]="{
+            'min-height': 'calc(100vh - ' + slider.offsetTop + 'px)'
+          }"
+        >
+          <div
+            class="slide"
+            *ngIf="infoTipoLinee"
+            [ngClass]="{ active: infoTipoLinee.active }"
+          >
+            <loading-message
+              *ngIf="tipoLineeLoading; else tipoLineeReady"
+            ></loading-message>
+            <ng-template #tipoLineeReady>
+              <a-tree-filter
+                [tree]="t2"
+                placeholder="Ricerca tipo linea..."
+              ></a-tree-filter>
+              <div
+                #scrollbox2
+                class="box scrollbox custom-scrollbar mt-2 overflow-y-auto p-0 rounded shadow-sm"
+                [ngStyle]="{
+                  'max-height':
+                    'calc(100vh - ' +
+                    utils.getAbsoluteOffsetTop(scrollbox2) +
+                    'px)'
+                }"
+              >
+                <a-tree
+                  #t2
+                  [root]="tipoLineeTree?.root"
+                  (onLoad)="onTipoLineeTreeLoad($event)"
+                  (onClick)="onTipoLineeTreeClick()"
+                ></a-tree>
+              </div>
+            </ng-template>
+          </div>
+          <div
+            class="slide"
+            *ngIf="infoFrequenze"
+            [ngClass]="{ active: infoFrequenze.active }"
+          >
+            <loading-message
+              *ngIf="frequenzeLoading; else frequenzeReady"
+            ></loading-message>
+            <ng-template #frequenzeReady>
+              <h4 class="text-center">Livello di Rischio</h4>
+              <div class="box rounded p-0 shadow-sm">
+                <table
+                  summary="table summary"
+                  class="table"
+                  id="frequenze-table"
+                >
+                  <thead>
+                    <th scope="col"></th>
+                    <th scope="col" class="text-center">Basso</th>
+                    <th scope="col" class="text-center">Medio</th>
+                    <th scope="col" class="text-center">Alto</th>
+                  </thead>
+                  <tbody>
+                    <tr id="riga-denominatori">
+                      <td>Ogni Quanti Anni</td>
+                      <td>
+                        <!-- [max]="bnum.value! > 1 ? 1 : null" -->
+                        <number-input
+                          #bden
+                          [min]="1"
+                          [readonly]="infoFrequenze.modality == 'lettura'"
+                          [(ngModel)]="formFrequenze.basso.den"
+                        ></number-input>
+                      </td>
+                      <td>
+                        <!-- [max]="mnum.value! > 1 ? 1 : null" -->
+                        <number-input
+                          #mden
+                          [min]="1"
+                          [readonly]="infoFrequenze.modality == 'lettura'"
+                          [(ngModel)]="formFrequenze.medio.den"
+                        ></number-input>
+                      </td>
+                      <td>
+                        <!-- [max]="anum.value! > 1 ? 1 : null" -->
+                        <number-input
+                          #aden
+                          [min]="1"
+                          [readonly]="infoFrequenze.modality == 'lettura'"
+                          [(ngModel)]="formFrequenze.alto.den"
+                        ></number-input>
+                      </td>
+                    </tr>
+                    <tr id="riga-numeratori">
+                      <td>Numero di Volte</td>
+                      <td>
+                        <!-- [max]="bden.value! > 1 ? 1 : null" -->
+                        <number-input
+                          #bnum
+                          [min]="1"
+                          [readonly]="infoFrequenze.modality == 'lettura'"
+                          [(ngModel)]="formFrequenze.basso.num"
+                        ></number-input>
+                      </td>
+                      <td>
+                        <!-- [max]="mden.value! > 1 ? 1 : null" -->
+                        <number-input
+                          #mnum
+                          [min]="1"
+                          [readonly]="infoFrequenze.modality == 'lettura'"
+                          [(ngModel)]="formFrequenze.medio.num"
+                        ></number-input>
+                      </td>
+                      <td>
+                        <!-- [max]="aden.value! > 1 ? 1 : null" -->
+                        <number-input
+                          #anum
+                          [min]="1"
+                          [readonly]="infoFrequenze.modality == 'lettura'"
+                          [(ngModel)]="formFrequenze.alto.num"
+                        ></number-input>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </ng-template>
+          </div>
+          <div
+            class="slide"
+            *ngIf="infoTariffa"
+            [ngClass]="{ active: infoTariffa.active }"
+          >
+            <loading-message
+              *ngIf="tariffaLoading; else tariffaReady"
+            ></loading-message>
+            <ng-template #tariffaReady>
+              <div class="row g-1">
+                <div class="col-8">
+                  <a-tree-filter
+                    [tree]="t3"
+                    placeholder="Ricerca tariffa..."
+                  ></a-tree-filter>
+                </div>
+                <div class="col-4">
+                  <ng-container *ngIf="selectedTariffa">
+                    <div
+                      class="btn-group float-end"
+                      id="selected-tariffa-button-group"
+                    >
+                      <button
+                        class="btn btn-primary"
+                        (click)="showTariffaSelezionata(scrollbox3)"
+                        ngbTooltip="Mostra tariffa selezionata"
+                        placement="top"
+                      >
+                        <i class="icon fa-solid fa-eye"></i>
+                      </button>
+                      <button
+                        class="btn bg-white border-primary text-primary"
+                        id="selected-tariffa-button"
+                        [ngbTooltip]="selectedTariffa.innerText"
+                        placement="top"
+                        [ngStyle]="{ cursor: 'default' }"
+                      >
+                        <span class="label">
+                          {{ selectedTariffa.innerText }}
+                        </span>
+                      </button>
+                      <button
+                        class="btn btn-danger"
+                        ngbTooltip="Deseleziona"
+                        placement="top"
+                        *ngIf="infoTariffa.modality == 'modifica'"
+                        (click)="deselezionaTariffa()"
+                      >
+                        <i class="icon fa-solid fa-xmark"></i>
+                      </button>
+                    </div>
+                  </ng-container>
+                </div>
+              </div>
+              <div
+                #scrollbox3
+                class="box scrollbox custom-scrollbar mt-2 overflow-y-auto p-0 rounded shadow-sm"
+                [ngStyle]="{
+                  'max-height':
+                    'calc(100vh - ' +
+                    utils.getAbsoluteOffsetTop(scrollbox3) +
+                    'px)'
+                }"
+              >
+                <a-tree
+                  #t3
+                  [root]="tariffaTree?.root"
+                  (onLoad)="onTariffaTreeLoad($event)"
+                  (onClick)="onTariffaTreeClick($event)"
+                ></a-tree>
+              </div>
+            </ng-template>
+          </div>
+          <div
+            class="slide"
+            *ngIf="infoPeriodo"
+            [ngClass]="{ active: infoPeriodo.active }"
+          >
+            <loading-message
+              *ngIf="periodoLoading; else periodoReady"
+            ></loading-message>
+            <ng-template #periodoReady>
+              <div class="d-flex w-auto">
+                <div class="form-group date-group">
+                  <div class="date-group-header">Inizio</div>
+                  <div
+                    class="wrapper align-items-center date-group-control mt-2"
+                  >
+                    <label for="giorno-inizio">Giorno</label>
+                    <select
+                      id="giorno-inizio"
+                      class="form-select w-auto"
+                      [(ngModel)]="formPeriodo.giornoInizio"
+                      [disabled]="infoPeriodo.modality == 'lettura'"
+                    >
+                      <option
+                        *ngFor="
+                          let g of getArrayGiorni(+selectMeseInizio.value)
+                        "
+                        [value]="g"
+                      >
+                        {{ g }}
+                      </option>
+                    </select>
+                  </div>
+                  <div
+                    class="wrapper align-items-center date-group-control mt-2"
+                  >
+                    <label for="mese-inizio">Mese</label>
+                    <select
+                      #selectMeseInizio
+                      id="mese-inizio"
+                      class="form-select w-auto text-capitalize"
+                      [(ngModel)]="formPeriodo.meseInizio"
+                      [disabled]="infoPeriodo.modality == 'lettura'"
+                    >
+                      <option
+                        *ngFor="let m of mesi; index as i"
+                        [value]="i + 1"
+                      >
+                        {{ m }}
+                      </option>
+                    </select>
+                  </div>
+                  <!-- <input #p1="ngModel" type="date" id="data_inizio" class="form-control w-auto"
+                    [readonly]="infoPeriodo.modality == 'lettura'" [(ngModel)]="formPeriodo.data_inizio"
+                    [min]="periodoMinDate" [max]="periodoMaxDate" (blur)="checkDataPeriodo($event, p1)"> -->
+                </div>
+                <div class="form-group date-group ms-2">
+                  <div class="date-group-header">Fine</div>
+                  <div
+                    class="wrapper align-items-center date-group-control mt-2"
+                  >
+                    <label for="giorno-fine">Giorno</label>
+                    <select
+                      id="giorno-fine"
+                      class="form-select w-auto"
+                      [(ngModel)]="formPeriodo.giornoFine"
+                      [disabled]="infoPeriodo.modality == 'lettura'"
+                    >
+                      <option
+                        *ngFor="let g of getArrayGiorni(+selectMeseFine.value)"
+                        [value]="g"
+                      >
+                        {{ g }}
+                      </option>
+                    </select>
+                  </div>
+                  <div
+                    class="wrapper align-items-center date-group-control mt-2"
+                  >
+                    <label for="mese-fine">Mese</label>
+                    <select
+                      #selectMeseFine
+                      id="mese-fine"
+                      class="form-select w-auto text-capitalize"
+                      [(ngModel)]="formPeriodo.meseFine"
+                      [disabled]="infoPeriodo.modality == 'lettura'"
+                    >
+                      <option
+                        *ngFor="let m of mesi; index as i"
+                        [value]="i + 1"
+                      >
+                        {{ m }}
+                      </option>
+                    </select>
+                  </div>
+                  <!-- <input #p2="ngModel" type="date" id="data_fine" class="form-control w-auto"
+                    [readonly]="infoPeriodo.modality == 'lettura'" [(ngModel)]="formPeriodo.data_fine"
+                    [min]="periodoMinDate" [max]="periodoMaxDate" (blur)="checkDataPeriodo($event, p2)"> -->
+                </div>
+              </div>
+            </ng-template>
+          </div>
+          <div
+            class="slide"
+            *ngIf="infoOggetti"
+            [ngClass]="{ active: infoOggetti.active }"
+          >
+            <loading-message
+              *ngIf="oggettiLoading; else oggettiReady"
+            ></loading-message>
+            <ng-template #oggettiReady>
+              <a-smart-table
+                #tabellaOggetti
+                [dataMapping]="dataMapping"
+                *ngIf="ui"
+                [colsInfo]="ui.colonne"
+                [src]="retDati"
+                [autolayout]="false"
+                [selection]="true"
+              >
+                <ng-template aTemplate="head">
+                  <tr>
+                    <th scope="col" class="selector-th"></th>
+                    <th scope="col" *ngFor="let colonna of ui.colonne">
+                      <div class="d-flex align-items-center">
+                        <span class="label">{{ colonna.intestazione }}</span>
+                        <a-table-sorter
+                          [type]="colonna.tipo"
+                          [field]="colonna.campo"
+                        ></a-table-sorter>
+                        <a-table-filter
+                          [type]="colonna.tipo"
+                          [field]="colonna.campo"
+                        ></a-table-filter>
+                      </div>
+                    </th>
+                  </tr>
+                </ng-template>
+                <ng-template aTemplate="body" let-ar>
+                  <tr>
+                    <td class="selector-td">
+                      <a-table-selector
+                        [data]="ar"
+                        [disabled]="infoOggetti.modality == 'lettura'"
+                      ></a-table-selector>
+                    </td>
+                    <td
+                      *ngFor="let colonna of ui.colonne"
+                      [ngClass]="{
+                        'text-end': colonna.intestazione == 'Codice'
+                      }"
+                    >
+                      <ng-container
+                        *ngIf="colonna.tipo === 'date'; else campoNormale"
+                      >
+                        {{ ar[colonna.campo] | date : "dd/MM/yyyy HH:mm:ss" }}
+                      </ng-container>
+                      <ng-template #campoNormale>
+                        {{ ar[colonna.campo] }}
+                      </ng-template>
+                    </td>
+                  </tr>
+                </ng-template>
+              </a-smart-table>
+              <br />
+            </ng-template>
+          </div>
+          <div
+            class="slide"
+            *ngIf="infoProfilassi"
+            [ngClass]="{ active: infoProfilassi.active }"
+          >
+            <loading-message
+              *ngIf="profilassiLoading; else profilassiReady"
+            ></loading-message>
+            <ng-template #profilassiReady>
+              <a-smart-table
+                #tabellaProfilassi
+                [dataMapping]="dataMapping"
+                *ngIf="uiProfilassi"
+                [colsInfo]="uiProfilassi.colonne"
+                [src]="retDatiProfilassi"
+                [autolayout]="false"
+                [selection]="true"
+              >
+                <ng-template aTemplate="head">
+                  <tr>
+                    <th scope="col" class="selector-th"></th>
+                    <th
+                      scope="col"
+                      *ngFor="let colonna of uiProfilassi.colonne"
+                    >
+                      <div class="d-flex align-items-center">
+                        <span class="label">{{ colonna.intestazione }}</span>
+                        <a-table-sorter
+                          [type]="colonna.tipo"
+                          [field]="colonna.campo"
+                        ></a-table-sorter>
+                        <a-table-filter
+                          [type]="colonna.tipo"
+                          [field]="colonna.campo"
+                        ></a-table-filter>
+                      </div>
+                    </th>
+                  </tr>
+                </ng-template>
+                <ng-template aTemplate="body" let-ar>
+                  <tr>
+                    <td class="selector-td">
+                      <a-table-selector
+                        [data]="ar"
+                        [disabled]="infoProfilassi.modality == 'lettura'"
+                      ></a-table-selector>
+                      <!-- per selezionare riga -->
+                    </td>
+                    <td *ngFor="let colonna of uiProfilassi.colonne">
+                      <ng-container
+                        *ngIf="colonna.tipo === 'date'; else campoNormale"
+                      >
+                        {{ ar[colonna.campo] | date : "dd/MM/yyyy HH:mm:ss" }}
+                      </ng-container>
+                      <ng-template #campoNormale>
+                        {{ ar[colonna.campo] }}
+                      </ng-template>
+                    </td>
+                  </tr>
+                </ng-template>
+              </a-smart-table>
+              <br />
+            </ng-template>
+          </div>
+          <div
+            class="slide"
+            *ngIf="infoTipologiaControllo"
+            [ngClass]="{ active: infoTipologiaControllo.active }"
+          >
+            <loading-message
+              *ngIf="tipologiaControlloLoading; else tipologiaControlloReady"
+            ></loading-message>
+            <ng-template #tipologiaControlloReady>
+              <a-smart-table
+                #tabellaTipologiaControllo
+                [dataMapping]="dataMapping"
+                *ngIf="uiTipologiaControllo"
+                [colsInfo]="uiTipologiaControllo.colonne"
+                [src]="retDatiTipologiaControllo"
+                [autolayout]="false"
+              >
+                <ng-template aTemplate="head">
+                  <tr>
+                    <th scope="col" class="selector-th"></th>
+                    <th
+                      scope="col"
+                      *ngFor="let colonna of uiTipologiaControllo.colonne"
+                    >
+                      <div class="d-flex align-items-center">
+                        <span class="label">{{ colonna.intestazione }}</span>
+                        <a-table-sorter
+                          [type]="colonna.tipo"
+                          [field]="colonna.campo"
+                        ></a-table-sorter>
+                        <a-table-filter
+                          [type]="colonna.tipo"
+                          [field]="colonna.campo"
+                        ></a-table-filter>
+                      </div>
+                    </th>
+                  </tr>
+                </ng-template>
+                <ng-template aTemplate="body" let-ar>
+                  <tr>
+                    <td class="selector-td">
+                      <input
+                        type="checkbox"
+                        (change)="checkCheckBox(ar)"
+                        class="form-check-input"
+                        [checked]="ar.selected"
+                        [disabled]="
+                          infoTipologiaControllo.modality == 'lettura'
+                        "
+                      />
+                    </td>
+                    <td
+                      *ngFor="let colonna of uiTipologiaControllo.colonne"
+                      [ngClass]="{
+                        'text-end': colonna.intestazione == 'Codice'
+                      }"
+                    >
+                      <ng-container
+                        *ngIf="colonna.tipo === 'date'; else campoNormale"
+                      >
+                        {{ ar[colonna.campo] | date : "dd/MM/yyyy HH:mm:ss" }}
+                      </ng-container>
+                      <ng-template #campoNormale>
+                        {{ ar[colonna.campo] }}
+                      </ng-template>
+                    </td>
+                  </tr>
+                </ng-template>
+              </a-smart-table>
+              <br />
+            </ng-template>
+          </div>
+        </div>
+      </ng-template>
+    </div>
+  </div>
+</div>
+
+<ng-template #duplicaTipoLinee>
+  <div class="modal-header d-flex">
+    <div>Duplica Tipo Linee</div>
+    <button
+      type="button"
+      class="btn btn-close ms-auto"
+      (click)="modaleDuplicaTipoLinee?.close()"
+    ></button>
+  </div>
+  <div class="modal-body custom-scrollbar overflow-auto" style="height: 600px">
+    <p>Selezionare i piani su cui duplicare i tipo linea.</p>
+    <a-tree-filter [tree]="t2" placeholder="Ricerca Piano..."></a-tree-filter>
+    <a-tree #t2 [root]="pianiSelezionabiliTree?.root"></a-tree>
+  </div>
+  <div class="modal-footer">
+    <button
+      type="button"
+      class="btn btn-primary d-block ms-auto"
+      (click)="duplica(t2)"
+      [disabled]="t2.getSelectedLeafNodes().length == 0"
+    >
+      <i class="icon fa-regular fa-copy"></i>
+      <span class="label">Duplica</span>
+    </button>
+  </div>
+</ng-template>

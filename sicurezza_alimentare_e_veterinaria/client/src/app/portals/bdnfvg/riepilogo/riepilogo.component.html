@@ -1,0 +1,54 @@
+<!--
+Copyright (C) AGPL-3.0  
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.-->
+<div id="riepilogo">
+  <h1>Riepilogo Allevamenti</h1>
+  <ng-template [ngIf]="allev_riep" [ngIfElse]="noDataBlock">
+    <div class="box-3d rounded p-0">
+      <a-smart-table [colsInfo]="ui.colonne" class="table-striped" [src]="allev_riep" [autolayout]="false">
+        <ng-template aTemplate="head">
+          <tr>
+            <th scope="col" *ngFor="let colonna of ui.colonne">
+              <div class="d-flex align-items-center">
+                <span class="label">{{colonna.intestazione}}</span>
+                <a-table-sorter [type]="colonna.tipo" [field]="colonna.campo"></a-table-sorter>
+                <ng-container *ngIf="colonna.tipo == 'number' else normalFilter">
+                  <a-table-filter [type]="colonna.tipo" [field]="colonna.campo" [options]="{'minValue': 0}"></a-table-filter>
+                </ng-container>
+                <ng-template #normalFilter>
+                  <a-table-filter [type]="colonna.tipo" [field]="colonna.campo"></a-table-filter>
+                </ng-template>
+              </div>
+            </th>
+          </tr>
+        </ng-template>
+        <ng-template aTemplate="body" let-ar>
+          <tr class="clickable" routerLink="allevamenti"
+            [queryParams]="{specie_allev: ar.specie_allev, fromRiepilogo: true}">
+            <td *ngFor="let colonna of this.ui.colonne" [ngClass]="{'text-end': colonna.tipo === 'number'}">
+              <ng-container *ngIf="colonna.tipo == 'date'; else elseField">
+                {{ar[colonna.campo] | date: 'dd/MM/yyyy'}}
+              </ng-container>
+              <ng-template #elseField>
+                <ng-container *ngIf="colonna.tipo === 'number'; else normalField">
+                  {{ar[colonna.campo] | numberPipe}}
+                </ng-container>
+                <ng-template #normalField> {{ar[colonna.campo]}} </ng-template>
+              </ng-template>
+            </td>
+          </tr>
+        </ng-template>
+      </a-smart-table>
+    </div>
+  </ng-template>
+  <ng-template #noDataBlock>
+    <div class="col-md position-relative">
+      <span>Non sono presenti dati in tabella</span>
+    </div>
+  </ng-template>
+</div>

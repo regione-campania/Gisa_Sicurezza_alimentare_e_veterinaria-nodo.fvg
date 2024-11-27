@@ -1,0 +1,36 @@
+<!--
+Copyright (C) AGPL-3.0  
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.-->
+<h2 class="d-flex align-items-center">{{labelBottone}} Stabilimento
+    <button *ngIf="mostra_parix && !parix_stabilimento" [disabled]="abilita_parix" class="btn btn-secondary ms-auto"
+        (click)="goToPARIX()">
+        Allineamento PARIX
+    </button>
+
+</h2>
+<br>
+<ng-container *ngIf="mostraRicerca">
+    <app-imprese-main (valueEmitted)="impresaSelezionata($event)" #ricercaImpresa></app-imprese-main><br>
+</ng-container>
+<app-form-stabilimenti #formStabilimenti></app-form-stabilimenti>
+<br>
+
+<br>
+<h3 class="d-flex align-items-center"> Indirizzo</h3>
+<div *ngIf="id_indirizzo_nuovo || labelBottone == 'Aggiungi' || parix_stabilimento">
+    <app-form-indirizzo-main #formIndirizzo [_id_indirizzo_preso]="id_indirizzo_nuovo"
+        [_id_stabilimento_preso]="id_stabilimento" [_labelBottone]="labelBottone" [_flag]="flagStab"
+        [_id_impresa_preso]="id_impresa" [showButton]="false"></app-form-indirizzo-main>
+</div>
+<button class="btn btn-primary ms-2 float-end" (click)="updStabilimento()"
+    [disabled]="!this._formStabilimenti?.formStabilimento?.valid || !this._formIndirizzo?.formModificaIndirizzo?.valid">
+    <!-- <i class="icon fa-solid fa-plus"></i>
+    <span>{{labelBottone}}</span> -->
+    <i class="icon fa-solid fa-save"></i>
+    <span>Salva</span>
+</button>

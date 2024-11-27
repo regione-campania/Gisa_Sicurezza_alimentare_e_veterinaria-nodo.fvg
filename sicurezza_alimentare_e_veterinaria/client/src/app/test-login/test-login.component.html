@@ -1,0 +1,39 @@
+<!--
+Copyright (C) AGPL-3.0  
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.-->
+<div id="test-login">
+  <div class="box-3d rounded p-0 overflow-hidden" id="login-box">
+    <div class="box-header">
+      <div class="box-title fs-4">LOGIN</div>
+    </div>
+    <div class="box-body">
+      <form [formGroup]="form" id="login-form" (ngSubmit)="login()">
+        <div *ngIf="!hideCredentials">
+          <div class="form-group">
+            <label class="form-label">Username</label>
+            <input class="form-control" formControlName="username" id="username" type="text" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Password</label>
+            <input class="form-control" formControlName="password" id="password" type="password" />
+          </div>
+          <div class="separator">
+            <div class="stroke"></div>
+            <div class="label">oppure</div>
+            <div class="stroke"></div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" *ngIf="!hideCredentials">CfCrypt</label>
+          <input class="form-control" formControlName="crypt" id="crypt" type="text" />
+        </div>
+        <button class="btn btn-primary mt-3" type="submit" id="submit-button">Login</button>
+      </form>
+    </div>
+  </div>
+</div>

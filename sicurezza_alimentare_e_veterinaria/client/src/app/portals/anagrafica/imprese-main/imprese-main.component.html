@@ -1,0 +1,136 @@
+<!--
+Copyright (C) AGPL-3.0  
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.-->
+<div id="imprese-main">
+  <div *ngIf="!aggiungiStabilimento">
+    <h2 class="d-flex align-items-center">Imprese</h2>
+    <div class="form-box box rounded shadow-sm p-0">
+      <div class="form-container">
+        <div class="form-column border-end rounded-start" style="background-color: var(--us-gray-1);">
+          <div class="d-flex flex-column gap-2">
+            <a-form [src]="formConfig" flexDirection="column" (onSubmit)="ricercaImprese($event)"></a-form>
+            <button class="btn btn-primary" (click)="goToAggiungi()" *ngIf="isUserResponsabile">
+              <i class="icon fa-solid fa-plus"></i>
+              <span>Aggiungi</span>
+            </button>
+          </div>
+        </div>
+        <div class="result-column">
+          <ng-container *ngIf="imprese; else message">
+            <a-smart-table [colsInfo]="ui_imprese.colonne" [src]="imprese" [autolayout]="false">
+              <ng-template aTemplate="head">
+                <tr>
+                  <th scope="col" *ngFor="let colonna of ui_imprese.colonne">
+                    <ng-container *ngIf="colonna.tipo === 'number'; else campoTestuale">
+                      <div class="d-flex align-items-center justify-content-end">
+                        <span class="label">{{colonna.intestazione}}</span>
+                        <a-table-sorter [type]="colonna.tipo" [field]="colonna.campo"></a-table-sorter>
+                        <a-table-filter [type]="colonna.tipo" [field]="colonna.campo" [options]="colonna.filterOptions"></a-table-filter>
+                      </div>
+                    </ng-container>
+                    <ng-template #campoTestuale>
+                      <div class="d-flex align-items-center">
+                        <span class="label">{{colonna.intestazione}}</span>
+                        <a-table-sorter [type]="colonna.tipo" [field]="colonna.campo"></a-table-sorter>
+                        <a-table-filter [type]="colonna.tipo" [field]="colonna.campo" [options]="colonna.filterOptions"></a-table-filter>
+                      </div>
+                    </ng-template>
+                  </th>
+                  <th scope="col"></th>
+                </tr>
+              </ng-template>
+              <ng-template aTemplate="body" let-ar>
+                <tr>
+                  <td *ngFor="let colonna of ui_imprese.colonne">
+                    <ng-container *ngIf="colonna.tipo === 'date'; else elseField">
+                      {{ ar[colonna.campo] | date : "dd/MM/yyyy" }}
+                    </ng-container>
+                    <ng-template #elseField>
+                      <ng-container *ngIf="colonna.tipo == 'number' else normalField">
+                        <div class="d-flex align-items-center justify-content-end">
+                          <span>{{ar[colonna.campo] | numberPipe}}</span>
+                        </div>
+                      </ng-container>
+                      <ng-template #normalField>
+                        {{ar[colonna.campo]}}
+                      </ng-template>
+                    </ng-template>
+                  </td>
+                  <td>
+                    <button class="btn btn-secondary" (click)="goToDettaglio(ar['id_impresa'])">
+                      <span>Dettaglio</span>
+                    </button>
+                  </td>
+                </tr>
+              </ng-template>
+            </a-smart-table>
+          </ng-container>
+          <ng-template #message>
+            <div class="h-100 d-flex align-items-center justify-content-center">
+              <p *ngIf="!loadingImprese">I risultati della ricerca saranno visualizzati qui.</p>
+              <loading-message *ngIf="loadingImprese" message="Caricamento imprese"></loading-message>
+            </div>
+          </ng-template>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="aggiungiStabilimento">
+    <h4 class="d-flex align-items-center">Ricerca Impresa</h4>
+    <div class="form-box box rounded shadow-sm p-0">
+      <div class="row g-0">
+        <div class="col-2 p-2 border-end rounded-start" style="background-color: var(--us-gray-1);">
+          <a-form [src]="formConfig" flexDirection="column" (onSubmit)="ricercaImprese($event)"></a-form>
+        </div>
+        <div class="col-10 p-2">
+          <ng-container *ngIf="imprese; else message">
+            <a-smart-table [colsInfo]="ui_imprese.colonne" [src]="imprese" [autolayout]="false">
+              <ng-template aTemplate="head">
+                <tr>
+                  <th scope="col" *ngFor="let colonna of ui_imprese.colonne">
+                    <div class="d-flex align-items-center">
+                      <span class="label">{{ colonna.intestazione }}</span>
+                      <a-table-sorter [type]="colonna.tipo" [field]="colonna.campo"></a-table-sorter>
+                      <a-table-filter [type]="colonna.tipo" [field]="colonna.campo" [options]="colonna.filterOptions"></a-table-filter>
+                    </div>
+                  </th>
+                  <th scope="col"></th>
+                </tr>
+              </ng-template>
+              <ng-template aTemplate="body" let-ar>
+                <tr>
+                  <td *ngFor="let colonna of ui_imprese.colonne">
+                    <ng-container *ngIf="colonna.tipo === 'date'; else campoNormale">
+                      {{ ar[colonna.campo] | date : "dd/MM/yyyy" }}
+                    </ng-container>
+                    <ng-template #campoNormale>
+                      {{ ar[colonna.campo] }}
+                    </ng-template>
+                  </td>
+                  <td>
+                    <button id="riga_{{ar['id_impresa']}}" class="btn btn-secondary"
+                      (click)="selezionaImpresa(ar['id_impresa'])">
+                      <span>Seleziona</span>
+                    </button>
+                  </td>
+                </tr>
+              </ng-template>
+            </a-smart-table>
+          </ng-container>
+          <ng-template #message>
+            <div class="h-100 d-flex align-items-center justify-content-center">
+              <p *ngIf="!loadingImprese">I risultati della ricerca saranno visualizzati qui.</p>
+              <loading-message *ngIf="loadingImprese" message="Caricamento imprese"></loading-message>
+            </div>
+          </ng-template>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

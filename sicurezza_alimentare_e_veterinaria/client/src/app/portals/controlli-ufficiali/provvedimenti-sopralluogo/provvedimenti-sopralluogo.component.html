@@ -1,0 +1,253 @@
+<!--
+Copyright (C) AGPL-3.0  
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.-->
+<div class="row align-items-center">
+    <div class="col">
+        <h5 class="d-flex align-items-center">
+            <ng-container *ngIf="cu">
+                <span>Dettaglio Controllo n° {{cu.codice}}</span>
+            </ng-container>
+        </h5>
+    </div>
+</div>
+<div class="row align-items-center">
+    <div class="col">
+        <h2 class="d-flex align-items-center">
+            <span>Provvedimenti per Sopralluogo</span>
+            <button [disabled]="btnMode || controllo_chiuso" type="button" class="btn btn-primary ms-auto" (click)="openModal('add', null)">
+                <i class="icon fa-solid fa-plus"></i>
+                <span>Aggiungi</span>
+            </button>
+        </h2>
+    </div>
+</div>
+<div>
+    <a-smart-table *ngIf="ui_provv" [colsInfo]="ui_provv.colonne" class="table-striped" [src]="provv"
+        [autolayout]="false" [paginator]="false">
+        <!-- definire head -->
+        <ng-template aTemplate="head">
+            <tr>
+                <th scope="col" *ngFor="let colonna of ui_provv.colonne">
+                    <ng-container *ngIf="colonna.tipo === 'number'; else campoTestuale">
+                        <div class="d-flex align-items-center justify-content-end">
+                            <span class="label">{{colonna.intestazione}}</span>
+                            <a-table-sorter [type]="colonna.tipo" [field]="colonna.campo"></a-table-sorter>
+                            <a-table-filter [type]="colonna.tipo" [field]="colonna.campo" [options]="colonna.filterOptions"></a-table-filter>
+                        </div>
+                    </ng-container>
+                    <ng-template #campoTestuale>
+                        <div class="d-flex align-items-center">
+                            <span class="label">{{colonna.intestazione}}</span>
+                            <a-table-sorter [type]="colonna.tipo" [field]="colonna.campo"></a-table-sorter>
+                            <a-table-filter [type]="colonna.tipo" [field]="colonna.campo" [options]="colonna.filterOptions"></a-table-filter>
+                        </div>
+                    </ng-template>
+                </th>
+                <th scope="col"></th>
+            </tr>
+        </ng-template>
+        <!-- definire body -->
+        <ng-template aTemplate="body" let-ar>
+            <tr>
+                <td *ngFor="let colonna of ui_provv.colonne">
+                    <ng-container *ngIf="colonna.tipo == 'date' else elseField">
+                        {{ar[colonna.campo] | date:'dd/MM/yyyy'}}
+                    </ng-container>
+                    <ng-template #elseField>
+                        <ng-container *ngIf="colonna.tipo == 'number' else normalField">
+                            <div class="d-flex align-items-center justify-content-end">
+                                <span>{{ar[colonna.campo] | numberPipe}}</span>
+                            </div>
+                        </ng-container>
+                        <ng-template #normalField>
+                            {{ar[colonna.campo]}}
+                        </ng-template>
+                    </ng-template>
+
+                </td>
+                <td>
+                    <div class="d-flex align-items-center">
+                        <button [disabled]="btnMode || controllo_chiuso" type="button" class="btn btn-secondary ms-auto" (click)="openVet(ar)">
+                            <i class="icon fa-solid fa-edit"></i>
+                        </button>
+                        <button [disabled]="btnMode || controllo_chiuso" type="button" class="btn btn-danger ms-2" (click)="delete(ar)">
+                            <i class="icon fa-solid fa-trash"></i>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        </ng-template>
+    </a-smart-table>
+</div>
+
+
+<!-- modal -->
+<div class="modal fade" id="modal-add" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable" role="document">
+        <div class="modal-content">
+            <!-- modal-header -->
+            <div class="modal-header">
+                <ng-container *ngIf="tipoModale === 'add' else headerUpd">
+                    <h2 class="modal-title">Aggiungi</h2>
+                    <div class="justify-content-end">
+                        <button [disabled]="formNuovaEvidenza.invalid" type="button" class="btn btn-secondary ms-auto"
+                            (click)="insert()">
+                            <i class="icon fa-solid fa-save"></i>
+                            <span>Salva</span>
+                        </button>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="close"></button>
+                    </div>
+                </ng-container>
+                <ng-template #headerUpd>
+                    <!-- <h2 class="modal-title">Modifica</h2>
+                    <div class="justify-content-end">
+                        <button [disabled]="formNuovaEvidenza.invalid" type="button" class="btn btn-secondary ms-auto"
+                            (click)="update()">
+                            <i class="icon fa-solid fa-save"></i>
+                            <span>Salva</span>
+                        </button>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="close"></button>
+                    </div> -->
+                </ng-template>
+            </div>
+
+            <!-- modal-body -->
+            <div class="modal-body">
+                <div [formGroup]="formNuovaEvidenza">
+                    <div class="d-flex align-items-center">
+                        <div class="form-group d-flex flex-column w-100">
+                            <label for="id_cu_linee" class="me-2">Linee:</label>
+                            <!-- <ng-container *ngFor="let el of linee_cu">
+                                <label for="id_cu_linee" class="me-2">
+                                    <input type="checkbox" [value]="el.id_cu_linea" formControlName="id_cu_linee"
+                                        (change)="toggleLinee($event)">
+                                    {{el.desc_tipo_linea}}
+                                </label>
+                            </ng-container> -->
+                            <ng-container *ngFor="let el of linee_cu">
+                                <div class="float-end">
+                                    <button id="riga_{{el.id_cu_linea}}" type="button"
+                                        class="btn btn-secondary ms-auto " (click)="selezionaLinea(el.id_cu_linea)">
+                                        <i class="fa-regular fa-square"></i>
+                                    </button>
+                                    {{el.desc_tipo_linea}}
+                                </div>
+                            </ng-container>
+                        </div>
+                    </div>
+                    <br>
+                    <div class="d-flex align-items-center">
+                        <div class="form-group d-flex flex-column w-100">
+                            <label for="id_cu_piani" class="me-2">Piani:</label>
+                            <ng-container *ngFor="let el of piani_cu">
+                                <div class="float-end mt-2">
+                                    <button id="piano_riga_{{el.id_piano}}" type="button"
+                                        class="btn btn-secondary ms-auto " (click)="selezionaPiano(el.id_piano)">
+                                        <i class="fa-regular fa-square"></i>
+                                    </button>
+                                    {{el.descrizione_completa_piano}}
+                                </div>
+                            </ng-container>
+                        </div>
+                    </div>
+                    <br>
+                    <div class="d-flex align-items-center">
+                        <div class="form-group d-flex flex-column w-100">
+                            <!--sostituito "Classe" con "Risultanza"-->
+                            <label for="id_cu_classe_evidenza" class="me-2">Risultanza:</label>
+                            <select class="form-select" id="id_cu_classe_evidenza"
+                                formControlName="id_cu_classe_evidenza" (change)="checkClasse($event)">
+                                <option></option>
+                                <option *ngFor="let el of classi_evidenze" [value]="el.id">{{el.descr}}
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center">
+                        <div class="form-group d-flex flex-column w-100">
+                            <!--sostituito "Grado" con "Valutazione della non conformità"-->
+                            <label for="id_cu_grado_evidenza" class="me-2">Valutazione:</label>
+                            <select class="form-select" id="id_cu_grado_evidenza"
+                                formControlName="id_cu_grado_evidenza">
+                                <option></option>
+                                <option *ngFor="let el of gradi_evidenze" [value]="el.id">{{el.descr}}
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center">
+                        <div class="form-group d-flex flex-column w-100">
+                            <label for="evidenza" class="me-2">Evidenza:</label>
+                            <input type="text" class="form-control border" id="evidenza" formControlName="evidenza">
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center">
+                        <div class="form-group d-flex flex-column w-100">
+                            <label for="id_tipo_provv" class="me-2">Provvedimento:</label>
+                            <select class="form-select" id="id_tipo_provv" formControlName="id_tipo_provv"
+                                (change)="checkTipoProvv($event)">
+                                <option></option>
+                                <option *ngFor="let el of tipi_provv" [value]="el.id_tipo_provv">{{el.descr}}
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center">
+                        <div class="form-group d-flex flex-column w-100">
+                            <label for="dt" class="me-2">Data:</label>
+                            <input type="date" [min]="data_min" class="form-control border"
+                                (blur)="checkDate($event, formNuovaEvidenza)" id="dt" formControlName="dt">
+                        </div>
+                    </div>
+                    <!-- <div *ngIf="errore_data" class="d-flex align-items-center">
+                        <span class="err_msg">Inserire date posteriori all'apertura del controllo {{data_min |
+                            date:'dd/MM/yyyy' }} alle ore {{ora_min}} e nel formato corretto.</span>
+                    </div> -->
+                </div>
+            </div>
+
+            <!-- modal-footer -->
+            <div class="modal-footer"></div>
+        </div>
+    </div>
+</div>
+
+<!-- modal -->
+<div class="modal fade" id="modal-vet" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable" role="document">
+        <div class="modal-content">
+            <!-- modal-header -->
+            <div class="modal-header">
+                <ng-container *ngIf="tipoModale === 'add' else headerUpd">
+                    <h2 class="modal-title">Modifica Responsabile Follow-up</h2>
+                    <div class="justify-content-end">
+                        <button [disabled]="formVet.invalid" type="button" class="btn btn-secondary ms-auto"
+                            (click)="updVet()">
+                            <i class="icon fa-solid fa-save"></i>
+                            <span>Salva</span>
+                        </button>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="close"></button>
+                    </div>
+                </ng-container>
+            </div>
+
+            <!-- modal-body -->
+            <div class="modal-body">
+                <div class="">
+                    <label>Seleziona:<span class="text-danger"> *</span></label>
+                    <a-tree-filter [tree]="risorseTree" placeholder="Ricerca Risorsa..."></a-tree-filter>
+                    <a-tree #risorseTree [src]="_risorse_tree" [mapping]="mappaturaAlberi"
+                        (onClick)="onTreeNodeClick($event)"></a-tree>
+                </div>
+            </div>
+
+            <!-- modal-footer -->
+            <div class="modal-footer"></div>
+        </div>
+    </div>
+</div>

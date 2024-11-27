@@ -1,0 +1,34 @@
+:host {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+#settaggi {
+
+  .wrapper {
+    align-items: center;
+
+    .form-label {
+      margin-bottom: 0;
+      margin-right: .5rem;
+    }
+  }
+
+  #periodo-label,
+  .slider .form-label {
+    flex: 0 0 150px;
+  }
+
+  .slider-wrapper {
+
+    .form-range {
+      max-width: 300px;
+    }
+
+    #non_visitati_dal {
+      max-width: 180px;
+      margin-right: .5rem;
+    }
+  }
+}

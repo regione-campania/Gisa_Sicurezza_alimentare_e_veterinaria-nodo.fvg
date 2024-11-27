@@ -1,0 +1,112 @@
+<!--
+Copyright (C) AGPL-3.0  
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.-->
+<div id="piani">
+  <!-- Tabella Piani -->
+  <div class="row align-items-center">
+    <div class="col">
+      <h1>Piani</h1>
+    </div>
+    <div class="col">
+      <button type="button" class="btn btn-primary float-end" ngbTooltip="Crea Nuovo Piano" data-bs-toggle="modal"
+        data-bs-target="#new-piano" (click)="closeInfo()">
+        Nuovo<i class="ms-2 fa fa-plus-circle"></i>
+      </button>
+    </div>
+  </div>
+  <ng-template [ngIf]="piani" [ngIfElse]="noPiani">
+    <div class="box-3d rounded p-0">
+      <a-smart-table [colsInfo]="ui.colonne" class="table-striped" [src]="piani" [autolayout]="false">
+        <ng-template aTemplate="head">
+          <tr>
+            <th scope="col" *ngFor="let colonna of ui.colonne">
+              <div class="d-flex">
+                <span class="label">{{colonna.intestazione}}</span>
+                <a-table-sorter [type]="colonna.tipo" [field]="colonna.campo"></a-table-sorter>
+                <a-table-filter [type]="colonna.tipo" [field]="colonna.campo"></a-table-filter>
+              </div>
+            </th>
+            <th scope="col"></th>
+          </tr>
+        </ng-template>
+        <ng-template aTemplate="body" let-piano>
+          <tr class="tr-piani">
+            <td *ngFor="let colonna of ui.colonne" [ngClass]="colonna.tipo === 'number' ? 'text-end' : ''">
+              <ng-container *ngIf="colonna.tipo === 'date'; else elseField">
+                {{piano[colonna.campo] | date: 'dd/MM/yyyy'}}
+              </ng-container>
+              <ng-template #elseField>
+                <ng-container *ngIf="colonna.tipo === 'number'; else normalField">
+                  {{piano[colonna.campo] | numberPipe}}
+                </ng-container>
+                <ng-template #normalField>
+                  {{piano[colonna.campo]}}
+                </ng-template>
+              </ng-template>
+            </td>
+            <td>
+              <button data-bs-toggle="modal" data-bs-target="#info-piano" (click)="selezionaPiano(piano, $event, formPianoInfo);" class="btn btn-primary">
+                Modifica
+              </button>
+            </td>
+          </tr>
+        </ng-template>
+      </a-smart-table>
+    </div>
+  </ng-template>
+  <ng-template #noPiani>
+    <span>Non sono presenti dati nella tabella</span>
+  </ng-template>
+</div>
+
+<!-- Modale Info Piano -->
+<div class="modal fade" id="info-piano" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
+  <div class="modal-dialog modal-lg system-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div class="modal-title fs-4">Info Piano</div>
+        <button type="button" class="btn btn-close" (click)="closeInfo();" data-bs-dismiss="modal">
+        </button>
+      </div>
+      <div class="d-flex col justify-content-end">
+        <button type="button" class="btn btn-danger float-end m-3"  (click)="updPianoMatrice(true)">
+          Elimina piano<i class="ms-2 fa fa-trash"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form-piano #formPianoInfo></form-piano>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" (click)="updPianoMatrice()">
+          Modifica<i class="ms-2 fa fa-pencil"></i>
+        </button> 
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Modale Nuovo Piano -->
+<div class="modal fade" id="new-piano" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
+  <div class="modal-dialog modal-lg system-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div class="modal-title fs-4">Nuovo Piano</div>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form-piano #formPianoNew></form-piano>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" (click)="createNewPiano()">
+          Salva<i class="ms-2 fa fa-check"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,45 @@
+<!--
+Copyright (C) AGPL-3.0  
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.-->
+<div class="box box-3d" id="login-box">
+    <div class="box-header">
+        <div class="box-title">LOGIN</div>
+    </div>
+    <div class="box-body">
+        <form class="fvg-form" id="login-form" [formGroup]="form" (ngSubmit)="onSubmit()">
+            <div *ngIf="test">
+                <div class="fvg-control">
+                    <label class="form-label">Username</label>
+                    <input class="form-control border" formControlName="username" name="username" id="username" type="text"
+                        />
+                </div>
+                <div class="fvg-control">
+                    <label class="form-label">Password</label>
+                    <input class="form-control border" formControlName="password" name="password" id="password" type="password"
+                        />
+                </div>
+                <div class="fvg-control" *ngIf="!hideCrypt">
+                    <label class="form-label">Crypt</label>
+                    <input class="form-control border" formControlName="crypt" name="crypt" id="crypt" type="text"
+                        />
+                </div>
+                <button type="submit" class="fvg-button fvg-button-primary" id="submit-button">Login</button>
+            </div>
+            <button type="button" class="fvg-button fvg-button-primary" id="submit-button" (click)="loginSPID()">
+                Entra con LoginFVG
+            </button>
+            <button type="button" class="fvg-button fvg-button-primary" id="register-btn"
+                ngbTooltip="Registrati" (click)="registraOsaSPID()">Registrati come utente OSA</button>
+        </form>
+    </div>
+</div>
+<footer>
+    <div class="version">
+      v{{version}}
+    </div>
+  </footer>

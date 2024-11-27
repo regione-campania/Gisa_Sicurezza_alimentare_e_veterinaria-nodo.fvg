@@ -1,0 +1,23 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 100%;
+}
+
+#login {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 100%;
+
+  #login-box {
+    width: calc(250px + 10vw);
+    margin: auto;
+  }
+
+  #login-form {
+    display: flex;
+    flex-direction: column;
+  }
+}

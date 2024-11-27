@@ -1,0 +1,73 @@
+<!--
+Copyright (C) AGPL-3.0  
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.-->
+<form [formGroup]="formLinea">
+    <ng-template [ngIf]="tipoOperazione === 'aggiungi'" [ngIfElse]="modDate">
+        <label>Data inizio validità: <span class="text-danger mb-3 ms-1">
+            *
+        </span> </label>
+        <input type="date" id="lenghtDate" class="form-control border" formControlName="data_inizio_validita" [min]="dataMin" [max]="2050-12-31"
+        (blur)="checkDate($event, formLinea)">
+        <!-- <div class="row">
+            <div class="col">
+                <label>Linea Principale: <span class="text-danger mb-3 ms-1">
+                        *
+                    </span> </label>
+                <div *ngIf="!hasLineaPrincipale">
+                    <input type="radio" class="form-check-input ms-4" formControlName="valore" value="si"
+                        autocomplete="off">
+                    <label class="form-check-label"> SI </label>
+                </div>
+                <input type="radio" class="form-check-input ms-4" formControlName="valore" value="no"
+                    autocomplete="off">
+                <label class="form-check-label"> NO </label>
+            </div>
+        </div> -->
+        <!-- <label>Data ultima visita: <span class="text-danger mb-3 ms-1">
+                *
+            </span> </label>
+            <input type="date" class="form-control border" formControlName="data_ultima_visita"
+            [min]="1900-01-01" (blur)="checkDate($event,formLinea)"> -->
+       
+    </ng-template>
+
+    <ng-template #modDate>
+
+        <!-- <div class="row">
+            <div class="col">
+                <label>Linea Principale: <span class="text-danger mb-3 ms-1">
+                        *
+                    </span> </label>
+                <div *ngIf="!hasLineaPrincipale">
+                    <input type="radio" class="form-check-input ms-4" formControlName="valore" value="si"
+                        autocomplete="off">
+                    <label class="form-check-label"> SI </label>
+                </div>
+                <input type="radio" class="form-check-input ms-4" formControlName="valore" value="no"
+                    autocomplete="off">
+                <label class="form-check-label"> NO </label>
+            </div>
+        </div> -->
+        
+        <label>Data inizio validità: <span class="text-danger mb-3 ms-1">
+                *
+            </span> </label>
+        <input type="date" id="lenghtDate" class="form-control border" formControlName="data_inizio_validita" [min]="dataMin"
+            (blur)="checkDate($event, formLinea)">
+
+        <label>Data fine validità: </label>
+        <input type="date" id="lenghtDate" class="form-control border" formControlName="data_fine_validita" [min]="dataMin"
+            (blur)="checkDate($event,formLinea)">
+    </ng-template>
+</form>
+<br>
+<div *ngIf="tipoOperazione === 'aggiungi'">
+    <a-tree-filter [tree]="lineeTree" placeholder="Ricerca Linea..."></a-tree-filter>
+    <a-tree #lineeTree [root]="tipoLineeParsed"></a-tree>
+    <!-- (onClick)="prendiValoreAlbero($event)" -->
+</div>

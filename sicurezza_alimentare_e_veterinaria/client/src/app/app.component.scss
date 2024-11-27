@@ -1,0 +1,85 @@
+:host {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+}
+
+:host,
+.app-section,
+#router-outlet-container {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  overflow: hidden;
+}
+
+#router-outlet-container {
+  overflow: auto;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
+
+.fvg-logo {
+  margin: 1rem auto;
+  max-width: 300px;
+}
+
+#app-header {
+  position: relative;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background: var(--top-bar-bg);
+  box-shadow: var(--top-bar-shadow);
+  flex: 1 0 auto;
+}
+
+#app-aside {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  background: var(--side-bar-bg);
+  box-shadow: var(--side-bar-shadow);
+}
+
+#app-main {
+  position: relative;
+  left: 0;
+  width: 100%;
+  height: calc(100vh - var(--top-bar-height));
+  overflow: auto;
+  flex: 1 1 auto;
+
+  &.desktop-view {
+    height: 100vh;
+    width: 100%;
+    top: 0;
+    left: 0;
+    right: 0;
+
+    &.aside-present {
+      width: calc(100% - var(--side-bar-width));
+      left: var(--side-bar-width);
+    }
+  }
+
+  &.footer-present {
+    height: calc(100vh - var(--top-bar-height) - var(--bottom-bar-height));
+  }
+}
+
+#app-footer {
+  position: relative;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: var(--bottom-bar-bg);
+  box-shadow: var(--bottom-bar-shadow);
+  flex: 1 0 auto;
+}
+
+#app-version {
+  color: var(--fvg-white);
+  height: var(--bottom-bar-height);
+}

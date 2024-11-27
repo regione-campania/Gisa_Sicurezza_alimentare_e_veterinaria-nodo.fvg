@@ -1,0 +1,57 @@
+#configurazioni {
+
+  a.clickable {
+    color: var(--fvg-black);
+    text-decoration: none;
+
+     &:hover {
+      text-decoration: underline;
+     }
+  }
+
+  .buttons-section {
+
+    button {
+      border: 1px solid var(--fvg-black);
+      color: var(--fvg-black);
+
+      &:not(:first-child) {
+        margin-left: .5rem;
+      }
+
+      &.active {
+        background-color: var(--fvg-black);
+        color: var(--fvg-white);
+      }
+    }
+  }
+
+  .checkbox-selection-buttons {
+
+    button {
+      padding: 2px;
+      width: 24px;
+      height: 24px;
+      border-radius: var(--us-border-radius);
+
+      .icon {
+        color: white;
+        width: 18px;
+        height: 18px;
+        vertical-align: baseline;
+      }
+    }
+  }
+}
+
+.btn-black,
+.btn-black:active {
+  background-color: var(--fvg-black);
+  border: 1px solid var(--fvg-black);
+}
+
+.btn-gray,
+.btn-gray:active {
+  background-color: var(--fvg-gray);
+  border: 1px solid var(--fvg-gray);
+}

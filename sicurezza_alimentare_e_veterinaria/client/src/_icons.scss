@@ -1,0 +1,164 @@
+//icone
+.icon {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+}
+
+.png-icon {
+  --icon-color: var(--fvg-black);
+
+  @extend .icon;
+  background-color: var(--icon-color);
+  background-position: center;
+  background-size: cover;
+  mask-position: center;
+  mask-size: cover;
+}
+
+a-sidenav .png-icon {
+  --icon-color: var(--fvg-white);
+}
+
+.png-icon.user-group,
+.nucleo-cu-icon {
+  mask-image: url("assets/icons/user-group.png");
+}
+
+.png-icon.barn,
+.linee-cu-icon {
+  mask-image: url("assets/icons/barn.png");
+}
+
+.png-icon.schedule,
+.piani-cu-icon {
+  mask-image: url("assets/icons/schedule.png");
+}
+
+.png-icon.clipboard-check,
+.oggetti-cu-icon {
+  mask-image: url("assets/icons/clipboard-check.png");
+}
+
+.png-icon.bill,
+.sanzioni-cu-icon {
+  mask-image: url("assets/icons/bill.png");
+}
+
+.png-icon.checklist,
+.lista-cu-icon {
+  mask-image: url("assets/icons/checklist.png");
+}
+
+.png-icon.animals,
+.stabilimenti-cu-icon {
+  mask-image: url("assets/icons/animals.png");
+}
+
+.png-icon.check-mark {
+  --icon-color: auto;
+  background-image: url("assets/icons/check-mark.png");
+}
+
+.png-icon.calendar-clock {
+  --icon-color: auto;
+  background-image: url("assets/icons/calendar-clock.png");
+}
+
+.png-icon.team {
+  --icon-color: auto;
+  background-image: url("assets/icons/team.png");
+}
+
+.png-icon.accounting {
+  --icon-color: auto;
+  background-image: url("assets/icons/accounting.png");
+}
+
+.png-icon.clipboard-check-color {
+  --icon-color: auto;
+  background-image: url("assets/icons/clipboard-check-color.png");
+}
+
+.png-icon.bill-blue {
+  --icon-color: auto;
+  background-image: url("assets/icons/bill-blue.png");
+}
+
+.png-icon.bill-clock {
+  --icon-color: auto;
+  background-image: url("assets/icons/bill-clock.png");
+}
+
+.png-icon.barn-color {
+  --icon-color: auto;
+  background-image: url("assets/icons/barn-color.png");
+}
+
+.svg-icon {
+  @extend .icon;
+  height: 32px;
+  background-position: center;
+  background-size: contain;
+  background-repeat: no-repeat;
+
+  * {
+    fill: inherit !important;
+  }
+}
+
+.svg-icon.beach {
+  background-image: url("assets/icons/beach.svg");
+}
+
+.svg-icon.pencil {
+  background-image: url("assets/icons/pencil.svg");
+}
+
+.svg-icon.thermometer {
+  background-image: url("assets/icons/thermometer.svg");
+}
+
+.svg-icon.coffee-cup {
+  background-image: url("assets/icons/coffee-cup.svg");
+}
+
+.svg-icon.arrow-down-circle {
+  background-image: url("assets/icons/arrow-down-circle.svg");
+}
+
+.svg-icon.pharma {
+  background-image: url("assets/icons/pharma.svg");
+}
+
+.svg-icon.clipboard-circle {
+  background-image: url("assets/icons/clipboard-circle.svg");
+}
+
+.svg-icon.update {
+  background-image: url("assets/icons/update.svg");
+}
+
+.svg-icon.profile {
+  background-image: url("assets/icons/profile.svg");
+}
+
+.svg-icon.handshake {
+  background-image: url("assets/icons/handshake.svg");
+}
+
+.svg-icon.flower {
+  background-image: url("assets/icons/flower.svg");
+}
+
+.svg-icon.factory {
+  background-image: url("assets/icons/factory.svg");
+}
+
+.svg-icon.file-2 {
+  background-image: url("assets/icons/file-2.svg");
+}
+
+.svg-icon.bus {
+  background-image: url("assets/icons/bus.svg");
+}

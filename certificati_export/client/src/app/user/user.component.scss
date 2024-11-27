@@ -1,0 +1,260 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+:root {
+    --fvg-primary: #1e2427;
+    --fvg-secondary: #dfdfdf;
+    --fvg-red: #ff3c4a;
+    --fvg-blue: #098cc4;
+    --fvg-dark-blue: #066289;
+    --fvg-white: #fafafa;
+    --fvg-black: #1e2427;
+    --fvg-gray: #dfdfdf;
+    --fvg-grey: #dfdfdf;
+    --fvg-light-gray: #f2f2f2;
+    --fvg-light-grey: #f2f2f2;
+    --fvg-border-radius: 8px;
+    --box-shadow-3d: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+    --box-shadow-3d-hover: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px;
+    --box-shadow-transition: box-shadow 200ms ease-in-out;
+    --box-border: 1px solid rgb(0 0 0 / 10%);
+}
+
+
+body{
+    margin: 0;
+    padding: 0;
+    font-family: 'Noto Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    color: var(--fvg-black);
+    background-color: var(--fvg-white);
+    position: relative;
+}
+
+.box {
+    border: var(--box-border);
+    border-radius: var(--fvg-border-radius);
+    position: relative;
+    overflow: hidden;
+}
+
+.box-3d {
+    box-shadow: var(--box-shadow-3d);
+}
+
+#login-box {
+    width: 80vw;
+    height: 60vh;
+}
+
+#login-box,
+#roles-box {
+    margin: auto;
+}
+
+#roles-box {
+    display: flex;
+    flex-direction: column;
+    max-width: 80vw;
+}
+
+.box-header {
+    background: var(--fvg-primary);
+    color: var(--fvg-white);
+    text-align: center;
+    padding: .5rem .75rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: 500;
+    height: 12%;
+}
+
+.box-body {
+    background: white;
+    padding: 1rem 1rem;
+    height: 88%;
+}
+
+
+.fvg-header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: var(--fvg-black);
+    padding: 1rem 0;
+    height: 12vh;
+}
+
+.fvg-main {
+    display: flex;
+    height: 82vh;
+}
+
+.fvg-footer {
+    background-color: var(--fvg-black);
+    height: 6vh;
+}
+
+.fvg-logo {
+    padding: .75rem .75rem;
+    background-color: var(--fvg-white);
+    border-radius: var(--fvg-border-radius);
+}
+
+.fvg-logo img {
+    width: 200px;
+}
+
+form, .fvg-form {
+    height: 100%;
+    margin: 0;
+}
+
+#login-form {
+    display: flex;
+    flex-direction: column;
+}
+
+.fvg-control:not(:last-child) {
+    margin-bottom: 1rem;
+}
+
+.fvg-button {
+    --fvg-button-bg: var(--fvg-white);
+    --fvg-button-color: var(--fvg-black);
+    --fvg-button-border-color: var(--fvg-black);
+    --fvg-button-border: 1px solid var(--fvg-button-border-color);
+    --fvg-button-transition: 150ms ease-in-out;
+    text-align: center;
+    padding: .5rem .5rem;
+    border: var(--fvg-button-border);
+    background: var(--fvg-button-bg);
+    color: var(--fvg-button-color);
+    border-radius: var(--fvg-border-radius);
+    transition: var(--fvg-button-transition);
+    margin-bottom: 0.5rem;
+}
+
+.fvg-button-primary {
+    --fvg-button-bg: var(--fvg-blue);
+    --fvg-button-color: var(--fvg-white);
+    --fvg-button-border-color: var(--fvg-blue);
+}
+
+.fvg-button-primary:hover,
+.fvg-button-primary:active,
+.fvg-button-primary:focus {
+    --fvg-button-bg: var(--fvg-dark-blue);
+    --fvg-button-border-color: var(--fvg-dark-blue);
+}
+
+.portal-card {
+    height: 375px;
+    width: 300px;
+    margin: auto;
+    overflow: hidden;
+    box-shadow: var(--box-shadow-3d);
+    transition: var(--box-shadow-transition);
+}
+
+.portal-card:hover {
+    box-shadow: var(--box-shadow-3d-hover);
+}
+
+.portal-card .card-body {
+    padding: 0 !important;
+    overflow: hidden;
+}
+
+.portal-card .card-img {
+    margin: auto;
+}
+
+.portal-card,
+.portal-card .card-body {
+    display: flex;
+    flex-direction: column;
+}
+
+.portal-card .card-footer {
+    font-size: 1.5em;
+    font-weight: 600;
+    text-align: center;
+    background-color: white;
+}
+
+#gestione-attivita-card .card-body {
+    background-color: #73b3e6;
+}
+
+#agenda-card .card-body {
+    background-color: #ffecce;
+}
+
+#matrix-card .card-body {
+    background-color: #9ccc65;
+}
+
+#matrix-formule-card .card-body {
+    background-color: #701510;
+}
+
+#matrix-formule-card img {
+    transform: scale(1.0755);
+}
+
+#roles-wrapper {
+    display: flex;
+}
+
+.role-button {
+    max-width: 300px;
+}
+
+
+/* desktop styles */
+@media only screen and (min-width: 992px) {
+    .body {
+        height: 100vh;
+    }
+
+    .fvg-logo img {
+        width: 300px;
+    }
+
+    .fvg-header {
+        height: 15vh;
+    }
+
+    .fvg-main {
+        height: 77vh;
+    }
+
+    .fvg-footer {
+        height: 8vh;
+    }
+
+    #login-box {
+        width: 400px;
+        height: auto;
+    }
+}
+
+footer {
+    background-color: var(--fvg-blue);
+    height: 6vh;
+    color: silver;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+  
+    .version {
+        position: relative;
+        float: right;
+        top: 20px;
+    }
+  }

@@ -1,0 +1,189 @@
+<!--
+Copyright (C) AGPL-3.0  
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.-->
+<div id="tipologia-stabilimento">
+  <div class="row">
+    <div class="col-lg-5" id="left-section">
+      <div class="structure-name-section d-flex mb-3">
+        <h3 class="structure-name">{{ info?.descr }}</h3>
+      </div>
+      <loading-message
+        *ngIf="TipologiaStabilimentoLoading; else TipologiaStabilimentoReady"
+      ></loading-message>
+      <ng-template #TipologiaStabilimentoReady>
+        <div>
+          <a-smart-table
+            #tabellaTipologiaStabilimento
+            [dataMapping]="dataMapping"
+            *ngIf="ui"
+            [colsInfo]="ui.colonne"
+            [src]="retDati"
+            [autolayout]="false"
+          >
+            <ng-template aTemplate="head">
+              <tr>
+                <th scope="col" *ngFor="let colonna of ui.colonne">
+                  <div class="d-flex align-items-center">
+                    <span class="label">{{ colonna.intestazione }}</span>
+                    <a-table-sorter
+                      [type]="colonna.tipo"
+                      [field]="colonna.campo"
+                    ></a-table-sorter>
+                    <a-table-filter
+                      [type]="colonna.tipo"
+                      [field]="colonna.campo"
+                    ></a-table-filter>
+                  </div>
+                </th>
+              </tr>
+            </ng-template>
+            <ng-template aTemplate="body" let-ar>
+              <tr
+                class="clickable tr-tipoStab"
+                (click)="
+                  showCategorizzazioneRischio(
+                    ar['id_tipologia_struttura'],
+                    $event
+                  )
+                "
+              >
+                <td *ngFor="let colonna of ui.colonne">
+                  <ng-container
+                    *ngIf="colonna.tipo === 'date'; else campoNormale"
+                  >
+                    {{ ar[colonna.campo] | date : "dd/MM/yyyy HH:mm:ss" }}
+                  </ng-container>
+                  <ng-template #campoNormale>
+                    {{ ar[colonna.campo] }}
+                  </ng-template>
+                </td>
+              </tr>
+            </ng-template>
+          </a-smart-table>
+        </div>
+      </ng-template>
+    </div>
+    <div class="col-lg" id="right-section">
+      <div
+        class="structure-name-section d-flex mb-3"
+        *ngIf="strutturaSecondariaAttiva"
+      >
+        <h3 class="structure-name w-50">
+          {{ strutturaSecondariaAttiva.descr }}
+        </h3>
+        <div
+          class="buttons-wrapper w-100 d-flex justify-content-end"
+          *ngIf="strutturaSecondariaAttiva.modality == 'modifica'"
+        >
+          <button
+            type="button"
+            class="btn btn-primary save-button"
+            (click)="salva()"
+            *ngIf="
+              strutturaSecondariaAttiva.trackerModifiche &&
+              !strutturaSecondariaAttiva.trackerModifiche.isSame
+            "
+          >
+            <i class="icon fa-solid fa-floppy-disk"></i>
+            <span class="label">Salva</span>
+          </button>
+        </div>
+      </div>
+      <div *ngIf="!showCategRischio; else elseBlock">
+        Selezionare un elemento dalla lista.
+      </div>
+      <ng-template #elseBlock>
+        <div
+          #slider
+          class="slider overflow-hidden"
+          *ngIf="info"
+          [ngStyle]="{
+            'min-height': 'calc(100vh - ' + slider.offsetTop + 'px)'
+          }"
+        >
+          <div
+            class="slide"
+            *ngIf="infoCategorizzazioneRischio"
+            [ngClass]="{ active: infoCategorizzazioneRischio.active }"
+          >
+            <loading-message
+              *ngIf="
+                CategorizzazioneRischioLoading;
+                else CategorizzazioneRischioReady
+              "
+            ></loading-message>
+            <ng-template #CategorizzazioneRischioReady>
+              <a-smart-table
+                #tabellaCategoriaRischio
+                [dataMapping]="dataMapping"
+                *ngIf="uiCategRischio"
+                [colsInfo]="uiCategRischio.colonne"
+                [src]="retDatiCategRischio"
+                [autolayout]="false"
+              >
+                <ng-template aTemplate="head">
+                  <tr>
+                    <th scope="col" class="selector-th"></th>
+                    <th
+                      scope="col"
+                      *ngFor="let colonna of uiCategRischio.colonne"
+                    >
+                      <div class="d-flex align-items-center">
+                        <span class="label">{{ colonna.intestazione }}</span>
+                        <a-table-sorter
+                          [type]="colonna.tipo"
+                          [field]="colonna.campo"
+                        ></a-table-sorter>
+                        <a-table-filter
+                          [type]="colonna.tipo"
+                          [field]="colonna.campo"
+                        ></a-table-filter>
+                      </div>
+                    </th>
+                  </tr>
+                </ng-template>
+                <ng-template aTemplate="body" let-ar>
+                  <tr>
+                    <!-- per selezionare riga -->
+                    <td class="selector-td">
+                      <input
+                        class="form-check-input"
+                        type="checkbox"
+                        (change)="checkCheckBox(ar)"
+                        [checked]="ar.selected"
+                        [disabled]="
+                          infoCategorizzazioneRischio.modality == 'lettura'
+                        "
+                      />
+                    </td>
+                    <td
+                      *ngFor="let colonna of uiCategRischio.colonne"
+                      [ngClass]="{
+                        'text-end': colonna.intestazione == 'Codice'
+                      }"
+                    >
+                      <ng-container
+                        *ngIf="colonna.tipo === 'date'; else campoNormale"
+                      >
+                        {{ ar[colonna.campo] | date : "dd/MM/yyyy HH:mm:ss" }}
+                      </ng-container>
+                      <ng-template #campoNormale>
+                        {{ ar[colonna.campo] }}
+                      </ng-template>
+                    </td>
+                  </tr>
+                </ng-template>
+              </a-smart-table>
+              <br />
+            </ng-template>
+          </div>
+        </div>
+      </ng-template>
+    </div>
+  </div>
+</div>

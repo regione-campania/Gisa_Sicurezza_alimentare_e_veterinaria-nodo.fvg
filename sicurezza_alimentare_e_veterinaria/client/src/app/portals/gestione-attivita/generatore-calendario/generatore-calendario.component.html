@@ -1,0 +1,86 @@
+<!--
+Copyright (C) AGPL-3.0  
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.-->
+<div id="generatore-calendario">
+  <div class="page-header mb-2">
+    <h2 class="header m-0">Generatore Calendario</h2>
+    <ng-container *ngIf="!elaborazioneBloccata">
+      <ng-container *ngIf="!elaborazioneGenerata; else annullaButton">
+        <button class="btn btn-primary d-block ms-auto" id="genera-button" (click)="generaCalendario()"
+          [disabled]="!generazioneAbilitata || isChildComponentLoading">
+          <span>Genera</span>
+          <i class="icon fa-solid fa-circle-right ms-2 me-0"></i>
+        </button>
+      </ng-container>
+      <ng-template #annullaButton>
+        <button class="btn btn-danger d-block ms-auto" id="back-button" (click)="onAnnullaButtonClick()">
+          <i class="icon fa-solid fa-circle-left ms-0 me-2"></i>
+          <span>Annulla</span>
+        </button>
+      </ng-template>
+    </ng-container>
+  </div>
+  <div class="box-3d rounded p-0" id="generatore-box">
+    <div class="wrapper align-items-center mb-2" id="box-header">
+      <span class="badge bg-primary fs-6" id="descrizione-calendario" ngbTooltip="Descrizione">{{elab?.descr}}</span>
+      <span class="badge bg-primary ms-auto" [ngbTooltip]="elaborazioneBloccata ? 'Bloccato': 'Sbloccato'">
+        <ng-container *ngIf="elaborazioneBloccata; else lockOpen">
+          <svg class="icon" style="fill: white" xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 448 512"><!--! Font Awesome Pro 6.3.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
+            <path
+              d="M144 144v48H304V144c0-44.2-35.8-80-80-80s-80 35.8-80 80zM80 192V144C80 64.5 144.5 0 224 0s144 64.5 144 144v48h26c35.3 0 64 28.7 64 64V448c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V256c0-35.3 28.7-64 64-64H80z" />
+          </svg>
+        </ng-container>
+        <ng-template #lockOpen>
+          <svg class="icon" style="fill: white" xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 576 512"><!--! Font Awesome Pro 6.3.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
+            <path
+              d="M352 144c0-44.2 35.8-80 80-80s80 35.8 80 80v48c0 17.7 14.3 32 32 32s32-14.3 32-32V144C576 64.5 511.5 0 432 0S288 64.5 288 144v48H64c-35.3 0-64 28.7-64 64V448c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V256c0-35.3-28.7-64-64-64H352V144z" />
+          </svg>
+        </ng-template>
+      </span>
+      <span class="badge bg-primary ms-2" id="elaborato" *ngIf="elaborazioneGenerata" ngbTooltip="Elaborato">
+        <i class="icon fa-solid fa-check"></i>
+      </span>
+    </div>
+    <div id="main-content">
+      <aside>
+        <ul class="side-menu">
+          <ng-container *ngFor="let voce of vociMenu; index as i; first as isFirst">
+            <li class="side-menu-item clickable" [id]="voce.id"
+              [ngClass]="{'active': voce === voceSelezionata, 'disabled': voce.disabled}"
+              (click)="$event.stopPropagation(); !voce.disabled && selezionaVoceMenu(voce.id)">{{voce.label}}</li>
+            <hr *ngIf="voce.id === 'linee'">
+          </ng-container>
+        </ul>
+      </aside>
+      <div class="view-container custom-scrollbar">
+        <div class="view" id="strutture-view" [ngClass]="{'active': voceSelezionata.id === 'strutture'}">
+          <gen-strutture [elab]="elab"></gen-strutture>
+        </div>
+        <div class="view" id="settaggi-view" [ngClass]="{'active': voceSelezionata.id === 'settaggi'}">
+          <gen-settaggi [elab]="elab"></gen-settaggi>
+        </div>
+        <div class="view" id="linee-view" [ngClass]="{'active': voceSelezionata.id === 'linee'}">
+          <gen-linee [elab]="elab"></gen-linee>
+        </div>
+        <ng-container *ngIf="elaborazioneGenerata">
+          <div class="view" id="riepilogo-view" [ngClass]="{'active': voceSelezionata.id === 'riepilogo'}">
+            <gen-riepilogo [elab]="elab"></gen-riepilogo>
+          </div>
+          <div class="view pb-0" id="calendario-view" [ngClass]="{'active': voceSelezionata.id === 'calendario'}">
+            <gen-calendario #genCal [elab]="elab"></gen-calendario>
+          </div>
+          <div class="view" id="riversa-view" [ngClass]="{'active': voceSelezionata.id === 'riversa'}">
+            <gen-riversa [elab]="elab" [calendario]="genCal" (onRiversa)="onRiversa()"></gen-riversa>
+          </div>
+        </ng-container>
+      </div>
+    </div>
+  </div>
+</div>

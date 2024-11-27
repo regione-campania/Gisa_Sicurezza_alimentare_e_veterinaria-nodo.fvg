@@ -1,0 +1,156 @@
+<!--
+Copyright (C) AGPL-3.0  
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.-->
+<div id="calendar-container">
+  <div id="info-operatore" *ngIf="calendarInfo">
+    <div class="d-flex align-items-center">
+      <h2 id="nome-operatore">
+        <span>{{ calendarInfo.valori.risorsa }}</span>
+      </h2>
+      <button
+        type="button"
+        class="btn btn-primary ms-auto"
+        style="color: white"
+        (click)="
+          nuovaAttivitaModalRef = openModal(nuovaAttivitaModal, {
+            modalDialogClass: 'system-modal',
+            size: 'xxl',
+            centered: true
+          })
+        "
+        ngbTooltip="Nuova attività"
+      >
+        <i class="icon m-0 fa-solid fa-plus"></i>
+      </button>
+      <button
+        type="button"
+        class="btn btn-info ms-2"
+        style="color: white"
+        (click)="
+          legendaModalRef = openModal(legendaModal, {
+            modalDialogClass: 'system-modal',
+            size: 'xxl',
+            centered: true
+          })
+        "
+        ngbTooltip="Mostra legenda"
+      >
+        <i class="icon m-0 fa-solid fa-circle-info"></i>
+      </button>
+    </div>
+    <div id="riepilogo-operatore">
+      <div class="info">
+        <span class="label">
+          Attività in ore: {{ calendarInfo.valori.eseguite }}/{{
+            calendarInfo.valori.pianificate
+          }}
+        </span>
+        <ngb-progressbar
+          [showValue]="true"
+          type="primary"
+          [value]="calendarInfo.valori.eseguite_ratio * 100"
+        >
+        </ngb-progressbar>
+      </div>
+      <div class="info">
+        <span class="label">Tempo</span>
+        <ngb-progressbar
+          [showValue]="true"
+          type="info"
+          [value]="calendarInfo.valori.tempo_perc"
+        >
+        </ngb-progressbar>
+      </div>
+      <div class="info">
+        <span class="label">Efficacia</span>
+        <ngb-progressbar
+          [showValue]="true"
+          type="success"
+          [value]="calendarInfo.valori.eff_perc"
+        >
+        </ngb-progressbar>
+      </div>
+      <div class="info">
+        <span class="label">Consuntivo</span>
+        <ngb-progressbar
+          [showValue]="true"
+          type="warning"
+          [value]="calendarInfo.valori.cons_perc"
+        >
+        </ngb-progressbar>
+      </div>
+      <div class="info">
+        <span class="label"
+          >k={{ calendarInfo.valori.k | number : "1.1-1" }}</span
+        >
+      </div>
+    </div>
+  </div>
+  <full-calendar #calendar [options]="calendarOptions"></full-calendar>
+</div>
+
+<ng-template #legendaModal>
+  <div class="modal-header">
+    <button
+      type="button"
+      class="btn btn-close"
+      (click)="legendaModalRef?.close()"
+    ></button>
+  </div>
+  <div class="modal-body" style="height: 600px; overflow: auto">
+    <h2>Legenda</h2>
+    <a-smart-table
+      *ngIf="statoEventi; else error"
+      [src]="statoEventi.dati"
+      [colsInfo]="statoEventi.ui.colonne"
+      [exportable]="false"
+      [printable]="false"
+    >
+      <ng-template aTemplate="head">
+        <tr>
+          <th scope="col" *ngFor="let col of statoEventi.ui.colonne">
+            {{ col.intestazione }}
+          </th>
+        </tr>
+      </ng-template>
+      <ng-template aTemplate="body" let-stato>
+        <tr>
+          <td *ngFor="let col of statoEventi.ui.colonne">
+            <ng-container *ngIf="col.tipo == 'color'; else normalField">
+              <div
+                class="colore-stato"
+                [ngStyle]="{ background: stato.colore }"
+                style="width: 100px; height: 40px; border-radius: 4px"
+              ></div>
+            </ng-container>
+            <ng-template #normalField>{{ stato[col.campo] }}</ng-template>
+          </td>
+        </tr>
+      </ng-template>
+    </a-smart-table>
+    <ng-template #error>
+      <p>Errore caricamento legenda.</p>
+    </ng-template>
+  </div>
+</ng-template>
+
+<ng-template #nuovaAttivitaModal>
+  <div class="modal-header">
+    <div>Nuova Attività</div>
+    <button
+      type="button"
+      class="btn btn-close d-inline-block ms-auto"
+      (click)="nuovaAttivitaModalRef?.close()"
+    ></button>
+  </div>
+  <div class="modal-body p-0">
+    <inserimento-nuova-attivita
+      (onSave)="nuovaAttivitaModalRef?.close(); _initCalendar()"
+    ></inserimento-nuova-attivita>
+  </div>
+</ng-template>

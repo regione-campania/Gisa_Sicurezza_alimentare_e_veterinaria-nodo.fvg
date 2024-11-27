@@ -1,0 +1,36 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  height: 100vh;
+}
+
+.offcanvas-header {
+  max-height: min(100px, 20%);
+}
+
+.offcanvas-body {
+  height: 80%;
+  overflow: auto;
+}
+
+.logo {
+  max-width: 250px;
+}
+
+.spacer {
+  background-color: var(--fvg-primary);
+}
+
+.offcanvas-body-section {
+  margin: .5rem 0;
+
+  .section-title,
+  .section-body {
+    padding: .5rem;
+  }
+
+  .section-title {
+    font-weight: 700;
+  }
+}

@@ -1,0 +1,71 @@
+<!--
+Copyright (C) AGPL-3.0  
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.-->
+<div id="piani">
+    <h2> Strutture ASL </h2>
+    <div class="row" id="piani-main-content">
+        <a-tree-filter [tree]="aslTree" placeholder="Ricerca ASL..."></a-tree-filter>
+        <div class="scrollbox h-100 overflow-auto custom-scrollbar" id="piano-tree-scrollbox">
+            <a-tree #struttureAslComponent [root]="struttureAslTree"></a-tree>
+        </div>
+    </div>
+</div>
+<ng-template #templateFormAsl>
+    <div class="system-modal">
+        <div class="modal-header d-flex">
+            <span class="modal-title">{{headerModaleASl}}</span>
+            <button type="button" class="btn btn-close ms-auto" (click)="modalRef?.close()"></button>
+        </div>
+        <div class="modal-body">
+            <div class="row">
+            <!-- <div class="row g-0"> -->
+                <div class="col">
+                <!-- <div class="col-9"> -->
+                    <form [formGroup]="formASl!">
+                        <div class="form-group">
+                            <label for="Piano" class="form-label">Descrizione</label>
+                            <input type="text" id="descrizione" class="form-control" formControlName="descrizione">
+                            <label for="Piano" class="form-label">Descrizione breve</label>
+                            <input type="text" id="descrizione_breve" class="form-control"
+                                formControlName="descrizione_breve">
+                            <div class="form-group mb-2">
+                                <label>Data inizio validità: <span class="text-danger mb-3 ms-1">
+                                        *
+                                    </span> </label>
+                                <input type="date" class="form-control border"
+                                    formControlName="data_inizio_validita" [max]="maxInizio"
+                                    (blur)="checkDate($event, formASl)">
+                            </div>
+
+                            <div class="form-group mb-2" *ngIf="headerModaleASl == 'Modifica ASL'">
+                                <label>Data fine validità: </label>
+                                <input type="date"  class="form-control border"
+                                    formControlName="data_fine_validita" [min]="maxFine"
+                                    (blur)="checkDate($event,formASl)">
+                            </div>
+                        </div>
+                    </form>
+                    <button type="button" class="btn btn-primary d-block ms-auto mt-2" [disabled]="!formASl?.valid"
+                        (click)="insStrutturaAsl()">Salva</button>
+                </div>
+                <!-- <div class="col-md-2 ms-auto" style="width: auto;">
+                    <div class="row">
+                        <button type="button" class="btn btn-primary" style="width: auto;" (click)="spostaPiano($event)" value="up" ><i class="fa-solid fa-arrow-up"
+                                aria-hidden="true"></i> Sposta Piano
+                        </button>
+                    </div>
+                    <div class="row">
+                        <button type="button" class="btn btn-primary" style="width: auto; margin-top: 100%;" value="down"><i class="fa fa-arrow-down"
+                                aria-hidden="true"></i> Sposta Piano
+                        </button>
+                    </div>
+                </div> -->
+            </div>
+        </div>
+    </div>
+</ng-template>

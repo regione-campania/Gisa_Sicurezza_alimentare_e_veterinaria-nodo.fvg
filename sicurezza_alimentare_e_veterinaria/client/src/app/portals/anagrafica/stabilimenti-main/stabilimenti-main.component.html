@@ -1,0 +1,141 @@
+<!--
+Copyright (C) AGPL-3.0  
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.-->
+<div id="stabilimenti-main">
+  <div *ngIf="!selezionaStab">
+    <h2 class="d-flex align-items-center">Stabilimenti</h2>
+    <div class="form-box box rounded shadow-sm p-0">
+      <div class="form-container">
+        <div class="form-column border-end rounded-start" style="background-color: var(--us-gray-1);">
+          <div class="d-flex flex-column gap-2">
+            <a-form [src]="formConfig" flexDirection="column" (onSubmit)="ricercaStabilimenti($event)"></a-form>
+            <button class="btn btn-primary" (click)="goToAggiungiStabilimento()" *ngIf="isUserResponsabile">
+              <i class="icon fa-solid fa-plus"></i>
+              <span>Aggiungi</span>
+            </button>
+          </div>
+        </div>
+        <div class="result-column">
+          <ng-container *ngIf="stabilimenti; else message">
+            <a-smart-table [colsInfo]="ui_stabilimenti.colonne" [src]="stabilimenti">
+              <ng-template aTemplate="head">
+                <tr>
+                  <th scope="col" *ngFor="let colonna of ui_stabilimenti.colonne">
+                    <div class="d-flex align-items-center">
+                      <span class="label">{{ colonna.intestazione }}</span>
+                      <a-table-sorter [type]="colonna.tipo" [field]="colonna.campo"></a-table-sorter>
+                      <a-table-filter [type]="colonna.tipo" [field]="colonna.campo" [options]="colonna.filterOptions"></a-table-filter>
+                    </div>
+                  </th>
+                  <th scope="col"></th>
+                </tr>
+              </ng-template>
+              <ng-template aTemplate="body" let-ar>
+                <tr>
+                  <td [ngClass]="{'align-middle': colonna.campo === 'verificato'}" *ngFor="let colonna of ui_stabilimenti.colonne">
+                    <ng-container *ngIf="colonna.tipo === 'date'; else campoNormale">
+                      {{ ar[colonna.campo] | date : "dd/MM/yyyy" }}
+                    </ng-container>
+                    <ng-template #campoNormale>
+                      <ng-container *ngIf="colonna.campo === 'verificato'; else campoNormale2">
+                        <ng-container *ngIf="ar['verificato']; else verificatoNo">
+                          <i class="fa-solid fa-check-square d-block m-auto" aria-hidden="true" style="color:green;"></i>
+                        </ng-container>
+                        <ng-template #verificatoNo>
+                          <i class="fa-solid fa-window-close d-block m-auto" aria-hidden="true" style="color:red;"></i>
+                        </ng-template>
+                      </ng-container>
+                      <ng-template #campoNormale2>
+                        {{ ar[colonna.campo] }}
+                      </ng-template>
+                    </ng-template>
+                  </td>
+                  <td>
+                    <button class="btn btn-secondary" (click)="goToDettaglio(ar['id_stabilimento'])">
+                      <span>Dettaglio</span>
+                    </button>
+                  </td>
+                </tr>
+              </ng-template>
+            </a-smart-table>
+          </ng-container>
+          <ng-template #message>
+            <div class="h-100 d-flex align-items-center justify-content-center">
+              <p *ngIf="!loadingStabilimenti">I risultati della ricerca saranno visualizzati qui.</p>
+              <loading-message *ngIf="loadingStabilimenti" message="Caricamento stabilimenti"></loading-message>
+            </div>
+          </ng-template>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div *ngIf="selezionaStab">
+    <h4 class="d-flex align-items-center">Ricerca Stabilimenti</h4>
+    <div class="form-box box rounded shadow-sm p-0">
+      <div class="form-container">
+        <div class="form-column border-end rounded-start" style="background-color: var(--us-gray-1);">
+          <div class="d-flex flex-column gap-2">
+            <a-form [src]="formConfig" flexDirection="column" (onSubmit)="ricercaStabilimenti($event)"></a-form>
+          </div>
+        </div>
+        <div class="result-column">
+          <ng-container *ngIf="stabilimenti; else message">
+            <a-smart-table [colsInfo]="ui_stabilimenti.colonne" [src]="stabilimenti">
+              <ng-template aTemplate="head">
+                <tr>
+                  <th scope="col" *ngFor="let colonna of ui_stabilimenti.colonne">
+                    <div class="d-flex align-items-center">
+                      <span class="label">{{ colonna.intestazione }}</span>
+                      <a-table-sorter [type]="colonna.tipo" [field]="colonna.campo"></a-table-sorter>
+                      <a-table-filter [type]="colonna.tipo" [field]="colonna.campo" [options]="colonna.filterOptions"></a-table-filter>
+                    </div>
+                  </th>
+                  <th scope="col"></th>
+                </tr>
+              </ng-template>
+              <ng-template aTemplate="body" let-ar>
+                <tr>
+                  <td [ngClass]="{'align-middle': colonna.campo === 'verificato'}" *ngFor="let colonna of ui_stabilimenti.colonne">
+                    <ng-container *ngIf="colonna.tipo === 'date'; else campoNormale">
+                      {{ ar[colonna.campo] | date : "dd/MM/yyyy" }}
+                    </ng-container>
+                    <ng-template #campoNormale>
+                      <ng-container *ngIf="colonna.campo === 'verificato'; else campoNormale2">
+                        <ng-container *ngIf="ar['verificato']; else verificatoNo">
+                          <i class="fa-solid fa-check-square d-block m-auto" aria-hidden="true" style="color:green;"></i>
+                        </ng-container>
+                        <ng-template #verificatoNo>
+                          <i class="fa-solid fa-window-close d-block m-auto" aria-hidden="true" style="color:red;"></i>
+                        </ng-template>
+                      </ng-container>
+                      <ng-template #campoNormale2>
+                        {{ ar[colonna.campo] }}
+                      </ng-template>
+                    </ng-template>
+                  </td>
+                  <td>
+                    <button id="riga_{{ar['id_stabilimento']}}" class="btn btn-secondary"
+                      (click)="selezionaImpresa(ar['id_stabilimento'])">
+                      <span>Seleziona</span>
+                    </button>
+                  </td>
+                </tr>
+              </ng-template>
+            </a-smart-table>
+          </ng-container>
+          <ng-template #message>
+            <div class="h-100 d-flex align-items-center justify-content-center">
+              <p *ngIf="!loadingStabilimenti">I risultati della ricerca saranno visualizzati qui.</p>
+              <loading-message *ngIf="loadingStabilimenti" message="Caricamento stabilimenti"></loading-message>
+            </div>
+          </ng-template>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

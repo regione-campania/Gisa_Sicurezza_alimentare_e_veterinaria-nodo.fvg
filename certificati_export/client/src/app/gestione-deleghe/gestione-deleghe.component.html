@@ -1,0 +1,196 @@
+<!--
+Copyright (C) AGPL-3.0  
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.-->
+<div id="gestione-deleghe">
+  <div class="row align-items-center">
+    <div class="col">
+      <h1>Gestione Abilitazioni</h1>
+    </div>
+    <div class="col">
+      <button class="btn btn-sm btn-primary float-end" ngbTooltip="Aggiungi abilitazione" (click)="openNewDelegaForm()">
+        <i class="fa fa-plus" aria-hidden="true"></i>
+      </button>
+    </div>
+  </div>
+  <!-- Info Stabilimento -->
+  <!-- <div class="row">
+    <div class="col">
+      <div class="sezione box-3d text-center rounded p-0">
+        <div class="row align-items-center">
+          <div class="col-md">
+            <div class="info">
+              <span class="label">Ragione Sociale</span>
+            </div>
+          </div>
+          <div class="col-md">
+            <div class="info">
+              <span class="label">Provincia</span>
+            </div>
+          </div>
+          <div class="col-md">
+            <div class="info">
+              <span class="label">Comune</span>
+            </div>
+          </div>
+          <div class="col-md">
+            <div class="info">
+              <span class="label">Indirizzo</span>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md">
+            <div class="info">
+              <span class="value">{{this.userData?.ragione_sociale}}</span>
+            </div>
+          </div>
+          <div class="col-md">
+            <div class="info">
+              <span class="value">{{this.userData?.provincia_stab}}</span>
+            </div>
+          </div>
+          <div class="col-md">
+            <div class="info">
+              <span class="value">{{this.userData?.comune}}</span>
+            </div>
+          </div>
+          <div class="col-md">
+            <div class="info">
+              <span class="value">{{this.userData?.indirizzo}}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div> -->
+  <!-- Tabella delegati -->
+  <div class="row" *ngIf="this.usersStabilimento.length > 0">
+    <div class="col">
+      <div class="table-container box-3d rounded p-0">
+        <a-smart-table [autolayout]="false" [exportable]="false" [src]="this.usersStabilimento"
+          [colsInfo]="this.ui.colonne">
+          <ng-template aTemplate="head">
+            <tr>
+              <th scope="col" *ngFor="let colonna of this.ui.colonne">
+                <div class="d-flex">
+                  <span class="label">{{colonna.intestazione}}</span>
+                  <a-table-filter [type]="colonna.tipo" [field]="colonna.campo"></a-table-filter>
+                  <a-table-sorter [type]="colonna.tipo" [field]="colonna.campo"></a-table-sorter>
+                </div>
+              </th>
+              <th scope="col">Opzioni</th>
+            </tr>
+          </ng-template>
+          <ng-template aTemplate="body" let-user>
+            <tr>
+              <td *ngFor="let colonna of this.ui.colonne">
+                <ng-container
+                  *ngIf="user.editMode === true && colonna.campo != 'responsabile' && colonna.campo != 'dt' && colonna.campo != 'superuser'; else noInputMode">
+                  <input id="{{colonna.campo}}" class="{{user['inputClass']}}" type="{{colonna.tipo}}"
+                    value="{{colonna.tipo == 'date' ? user[colonna.campo].split('T')[0] : user[colonna.campo]}}" 
+                    [attr.maxlength]="colonna.campo == 'codice_fiscale' ? 16 : 99">
+                </ng-container>
+                <ng-template #noInputMode>
+                  {{colonna.tipo === 'date' ? (user[colonna.campo] | date: 'dd/MM/yyyy') : user[colonna.campo]}}
+                </ng-template>
+              </td>
+              <td>
+                <div class="buttons" *ngIf="user.editMode === false; else editModeButtons">
+                  <button *ngIf="user['modificabile'] === true" class="btn btn-sm btn-primary" ngbTooltip="Modifica"
+                    (click)="enableAndDisableEditMode(user)">
+                    <i class="fa fa-pencil" aria-hidden="true"></i>
+                  </button>
+                  <button *ngIf="user['cancellabile'] === true" class="btn btn-sm btn-danger" ngbTooltip="Elimina"
+                    (click)="deleteDelegato(user, $event)">
+                    <i class="fa fa-trash" aria-hidden="true"></i>
+                  </button>
+                </div>
+                <ng-template #editModeButtons>
+                  <div class="buttons">
+                    <button class="btn btn-sm btn-primary" ngbTooltip="Salva" (click)="editDelegato(user)">
+                      <i class="icon fa-solid fa-floppy-disk"></i>
+                    </button>
+                    <button class="btn btn-sm btn-danger" ngbTooltip="Annulla" (click)="enableAndDisableEditMode(user)">
+                      <i class="fa fa-eraser" aria-hidden="true"></i>
+                    </button>
+                  </div>
+                </ng-template>
+              </td>
+            </tr>
+          </ng-template>
+        </a-smart-table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Template Form Nuova Delega -->
+<ng-template #templateNewDelega>
+  <div class="system-modal">
+    <div class="modal-header d-flex">
+      <span class="modal-title">
+        Nuova abilitazione
+      </span>
+      <button type="button" class="btn btn-close ms-auto" (click)="modalRef?.close()"></button>
+    </div>
+    <div class="modal-body">
+      <form [formGroup]="formDelega!" (ngSubmit)="addDelega()">
+        <div class="form-group mb-2">
+          <label for="nome" class="form-label">Nome</label>
+          <input type="text" name="nome" class="form-control" (dataChange)="selectDelegato($event)" placeholder="Nome"
+            aria-label="nome" aria-describedby="nome" [autofiller]="this.allContacts" autofillerKey="nome"
+            formControlName="nome">
+          <span class="text-danger" *ngIf="formDelegaControls['nome'].errors?.['required']">
+            Nome Obbligatorio
+          </span>
+        </div>
+        <div class="form-group mb-2">
+          <label for="cognome" class="form-label">Cognome</label>
+          <input type="text" name="cognome" class="form-control" (dataChange)="selectDelegato($event)"
+            placeholder="Cognome" aria-label="cognome" aria-describedby="cognome" [autofiller]="this.allContacts"
+            autofillerKey="cognome" formControlName="cognome">
+          <span class="text-danger" *ngIf="formDelegaControls['cognome'].errors?.['required']">
+            Cognome Obbligatorio
+          </span>
+        </div>
+        <div class="form-group mb-2">
+          <label for="codice_fiscale" class="form-label">Codice Fiscale</label>
+          <input type="text" name="codice_fiscale" class="form-control" (dataChange)="selectDelegato($event)"
+            placeholder="Codice Fiscale" aria-label="codice_fiscale" aria-describedby="codice_fiscale"
+            [autofiller]="this.allContacts" autofillerKey="codice_fiscale" formControlName="codice_fiscale"
+            onkeyup="this.value = this.value.toUpperCase();"
+            pattern="^[a-zA-Z]{6}[0-9]{2}[a-zA-Z][0-9]{2}[a-zA-Z][0-9]{3}[a-zA-Z]$">
+          <span class="text-danger" *ngIf="formDelegaControls['codice_fiscale'].errors?.['required']">
+            Codice Fiscale Obbligatorio
+          </span>
+        </div>
+        <div class="form-group mb-2">
+          <label for="data_da" class="form-label">Valido da</label>
+          <input type="date" name="data_da" class="form-control" aria-label="data_da" aria-describedby="data_da"
+            formControlName="data_da">
+          <span class="text-danger" *ngIf="formDelegaControls['data_da'].errors?.['required']">
+            Valido da Obbligatorio
+          </span>
+        </div>
+        <div class="form-group mb-2">
+          <label for="data_a" class="form-label">Valido a</label>
+          <input type="date" name="data_a" class="form-control" aria-label="data_a" aria-describedby="data_a"
+            formControlName="data_a">
+          <span class="text-danger" *ngIf="formDelegaControls['data_a'].errors?.['required']">
+            Valido a Obbligatorio
+          </span>
+        </div>
+        <div>
+          <input type="checkbox" name="superuser" formControlName="superuser">
+          <label for="superuser" class="form-label">Permessi di scrittura su tutti i certificati</label>
+        </div>
+        <button type="submit" class="btn btn-primary d-block ms-auto mt-2">Salva</button>
+      </form>
+    </div>
+  </div>
+</ng-template>

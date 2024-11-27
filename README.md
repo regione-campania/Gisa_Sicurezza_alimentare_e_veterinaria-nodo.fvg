@@ -1,161 +1,214 @@
 <p align="center">
-<img src="https://github.com/regione-campania/GISA/blob/main/gisa_controlli_ufficiali/docs/logo-regione-campania.png">
+<img src="docs/gisa_fvg.png">
 </p>
 
-# SISTEMA GISA Campania - Sicurezza Alimentare e Veterinaria
+# GISA Friuli Venezia Giulia
 - [1. Descrizione e finalità del software](#1-descrizione-e-finalità-del-software)
-	- [1.1 Descrizione della struttura repository](#11-descrizione-della-struttura-repository)
-- [2. Licenza](#2-licenza)
-	- [2.1 Indirizzo e-mail segnalazioni di sicurezza](#21-indirizzo-e-mail-segnalazioni-di-sicurezza)
-	- [2.2 Titolarità: Regione Campania](#22-titolarità-regione-campania)
+  - [1.1 Descrizione della struttura repository](#11-descrizione-della-struttura-repository)
+  - [1.2 Interoperabilità con i sistemi esterni](#12-interoperabilità-con-i-sistemi-esterni)
+  - [1.3 Link a pagine istituzionali relative al progetto](#13-link-a-pagine-istituzionali-relative-al-progetto)
+  - [1.4 Interfaccia web](#14-interfaccia-web)
+- [2. Riuso ed installazione](#2-riuso-ed-installazione)
+  - [2.1 Creazione e import database](#21-creazione-e-import-database)
+  - [2.2 Modello file di configurazione “environment.ts” e “config.js”](#22-modello-di-configurazione-envirormens.ts-e-config.js)
+  - [2.3 Installazione in un ambiente di sviluppo](#23-installazione-in-un-ambiente-di-sviluppo)
+  - [2.4 Installazione in un ambiente di produzione](#24-installazione-in-un-ambiente-di-produzione)
+- [3. Licenza](#3-licenza)
+  - [3.1 GisaFVG](#31-GisaFvg)
+  - [3.2 Indirizzo e-mail segnalazioni di sicurezza](#32-indirizzo-e-mail-segnalazioni-di-sicurezza)
+  - [3.3 Titolarità](#33-titolarità)
 
 # **1. Descrizione e finalità del software**
-
-
-Il ***Sistema*** ***GISA Campania - Sicurezza Alimentare e Veterinaria*** è composto da diversi componenti tra cui:
-
-- Autenticazione tramite ***SPID/CIE*** 
-- ***Gestione Integrata Notifiche Sanitarie***: modulo di gestione delle pratiche di registrazione/riconoscimento degli OSA (Operatore del Settore Alimentare) provenienti dai SUAP con possibilità di alimentazione tramite cooperazione applicativa.
-- ***MATRIX***: modulo di gestione della programmazione a livello regionale, con il *Documento di programmazione Annuale Regionale (DPAR)*, e a livello territoriale, con il *Documento di programmazione Annuale Territoriale (DPAT)*. Esso consente di stimare il fabbisogno delle risorse umane necessarie a compiere le attività programmate.
-- ***Gestione Controlli Ufficiali***: registrazione di tutti i dati relativi ai controlli ufficiali (tipo AUDIT, Ispezioni Semplici, Ispezioni in Sorveglianza), comprese le non conformità riscontrate, sanzioni amministrative applicate con generazione Avvisi di Pagamento PagoPA, sequestri, notizie di reato, follow up, ecc… con stampa della documentazione ufficiale precompilata (verbale ispezione, verbali di campionamenti, ecc…).
-- ***Gestione Allerte Alimentari***: Registrazione di tutti i dati relativi ai controlli ufficiali effettuati per il sistema europeo RASFF (Rapid Alert System Food and Feed).
-- ***Registro Trasgressori*** e ***Gestione degli illeciti amministrativi*** e delle ***Ordinanze regionali*** in cooperazione applicativa con PagoPA.
-- ***Reportistica Avanzata***: cruscotto per la rendicontazione delle attività programmate con possibilità di verificare il lavoro svolto dalle singole strutture territoriali afferenti ai Dipartimenti di Prevenzione delle AA.SS.LL.
-- ***Macellazioni***: modulo di gestione dei dati relativi alle singole sedute di macellazione (controllo documentale, visita *Ante Mortem*, visita *Post Mortem*, libero consumo, ecc…) con possibilità di stampa di documentazione ufficiale (Registro macellazione, articolo 17, modello 10, ecc…).
-- Cooperazione Applicativa tra ecosistema ***GISA*** e ***Sistemi Nazionali*** per scambio dati su:
-  - dati OSM 
-  - dati checklist BA
-  - dati scorta farmaci
-  - dati anagrafe animali da compagnia 
-  - dati checklist biosicurezza
-  - dati checklist farmaco-sorveglianza
-  - anagrafiche SINTESIS
-  - anagrafiche Allevamenti
-- ***Sistema di Autovalutazione** **del** **rischio***: modulo software che consente a imprese e operatori del settore alimentare e/o veterinari di migliorare la conduzione della propria attività, sia nelle modalità decisionali che gestionali, acquisendo consapevolezza dei punti di forza e di debolezza relativi alla/e propria/e attività. In particolare, consente di individuare e valutare il proprio livello di rischio rispondendo alle domande di una *check list* che fa parte del Sistema Ufficiale di Valutazione del Rischio delle imprese e che è utilizzata durante i controlli ufficiali delle AA.SS.LL. con riferimento alla propria linea di attività. L’accesso come ospite all’Autovalutazione può essere utile a coloro che hanno intenzione di avvicinarsi alle linee di attività del settore alimentare e/o veterinari e che desiderano conoscere le check list che verranno utilizzate dagli ispettori per i controlli.
-- ***Veterinary Activity Management (VAM):*** Sistema per la gestione delle principali funzionalità relative ad ospedali e ambulatori veterinari pubblici della Regione Campania e di tutte le attività prestazionali effettuate su animali d’affezione e sinantropi. Il sistema gestisce il percorso clinico e chirurgico di ogni animale (cane, gatto e sinantropo) e in particolare:
-  - Accettazione
-  - Trasferimenti
-  - Cartelle cliniche
-  - Fascicoli sanitari
-  - Registro tumori animali
-  - Interazione con la Banca Dati Regionale dell’Anagrafe cani, gatti e furetti.
-- ***Anagrafe Animali da compagnia (cani, gatti e furetti):*** Sistema dotato di:
-  - **Accesso libero**
-    che consente di verificare la registrazione nell’Anagrafe regionale di un’animale da compagnia identificato con microchip (transponder);
-  - **Accesso riservato agli utenti autorizzati e adeguatamente profilati**
-    che permette di gestire le informazioni anagrafiche degli animali e dei loro proprietari/detentori e le relative registrazioni.
-- ***BDA-R***: Banca dati apistica regionale integrata in cooperazione applicativa con la Banca dati apistica Nazionale ***BDA-N***.
-
-
-![screen](./gisa_controlli_ufficiali/docs/Aspose.Words.cf9e318a-c0df-40c2-8eee-7557ad70dba9.002.png)
-
-
-Figura 3. Schema su Piano Regionale Integrato
-
-
-L’intero ecosistema prevede diverse tipologie di utenti che possono essere schematizzati nelle seguenti macrocategorie:
-
-- Utenti istituzionali Regionali
-- Utenti istituzionali afferenti ai Dipartimenti di Prevenzione delle AA.SS.LL.
-- Utenti istituzionali non appartenenti alle AA.SS.LL. : Forze dell’ordine, Esercito, Università, CRIUV, ecc…
-- Utenti liberi professionisti: Veterinari Liberi Professionisti o delegati apicoltori, ecc…
-- Utenti imprenditori: apicoltori, trasportatori, ecc...
-- Privati cittadini: utenti che accedono alla componente di *Autovalutazione*.
-
-Più precisamente le tipologie di utenti che possono registrarsi in GISA sono le seguenti:
-
-- **ASL**
-- **Regione**
-- **Centri Riferimento Regionali**
-- **IZSM**
-- **ARPAC**
-- **Osservatori Regionali**
-- **Forze dell'Ordine (Polizia stradale, Polizia municipale, Carabinieri, NAS, NAC, ICQ, Guardia forestale)**
-- **Esercito**
-- **Guardie Zoofile Prefettizie**
-- **Guardie Zoofile Regionali**
-- **Gestori Acque di rete**
-- **Apicoltore Autoconsumo**
-- **Apicoltore Commerciale**
-- **Delegato Apicoltore / Associazione**
-- **Gestore Trasporti**
-- **Gestore Distributori (erogatori cibi e bevande)**
-- **Medico Veterinario libero professionista**
-- **Operatore Settore Alimentare per autovalutazione**
-- **Direttore Sanitario Canile** 
-- **Privati cittadini**
-
-
-Il totale stimato degli attuali utilizzatori è di circa **11.000** utenti (peraltro in continua crescita) distribuiti variamente sui sottosistemi.
-
-
-
-![screen](./gisa_controlli_ufficiali/docs/Aspose.Words.cf9e318a-c0df-40c2-8eee-7557ad70dba9.001.png)
-
-Figura 4. Schematizzazione dei moduli di GISA Campania - Sicurezza alimentare e veterinaria
-
-
-
-
+L’applicativo G.I.S.A. FVG è una piattaforma web per la gestione delle attività dei Dipartimenti di Prevenzione, in particolare per la Sicurezza Alimentare e la Profilassi di competenza veterinaria. 
+La soluzione supporta l’ASL, i dipartimenti e i distretti in tutte le fasi che riguardano la definizione e la gestione delle attività degli ispettori. Si parte dalla configurazione dei carichi di lavoro, si passa per la generazione delle attività che andranno a coprire gli obiettivi regionali e si arriva ad una gestione di un calendario personale con la possibilità di visualizzare gli appuntamenti.
+Tra le principali funzionalità di G.I.S.A. FVG è inclusa la capacità di dimensionare, pianificare, monitorare, rendicontare e tariffare le attività del dipartimento. Questo è possibile grazie a delle configurazioni preliminari delle risorse disponibili, considerando gli obiettivi ministeriali e la pianificazione territoriale. 
+Il sistema è già integrato con alcune anagrafiche esterne (BDN, Istituto Zooprofilattico, Anagrafica degli Assistiti, Parix, Eagle) e l’accesso è consentito mediante le varie modalità di LoginFVG.
 
 ## **1.1 Descrizione della struttura repository**
 
-Per ogni applicativo facente parte di GISA Campania - Sicurezza alimentare e veterinaria è presente il Repository dedicato:
+Il repository è diviso per applicazioni software distinte. Al momento sono presenti:
+- Gisa Sicurezza Alimentare e veterinaria, composta dai seguenti moduli:
+  - Funzioni Generali
+  - Agenda
+  - Tariffazione
+  - Gestione delle anagrafiche
+  - Gestione dei controlli ufficiali area A/C
+  - Gestione dei piani di profilassi come garantiti oggi dall'attuale sistema di gestione informatizzata della veterinaria regionale
+  - Gestione dei controlli ufficiali sicurezza alimentare
+  - Integrazioni (SICER,BDN, IZS…)
+  
+ - Gisa Certificati Export
 
-  - _./gisa_controlli_ufficiali_  
-  
+Per le prime due è presente nel repository presenta questa struttura:
 
-  - _./autovalutazione_
-  
+  - *./db*   schema del database : ⚠️questa parte è attualmente assente in quanto in fase di verifica lato SonarQube ⚠️
 
-  - _./gestione_utenti_centralizzata_      
+  - *./server*   sorgenti per la componente server 
   
+  - *./client*    sorgenti per l'applicativo web 
+	
+## **1.2 Interoperabilità con i sistemi esterni**
 
-  - _./sca_      
-  
-  
-  - _./anagrafe_animali_da_compagnia_ 
-  
+**GISA FVG** si integra con sistemi esterni quali:
 
-  - _./vam_
- 
+- LoginFvg
 
-  - _./modulo_registrazione_spid_cie_ 
-  
-  
-  - _./matrix_reportisitica_avanzata_
-  
-  
+- BDN
 
- 
+- SANAN
+
+- Istituto Zooprofillattico delle Venezie
+
+- Anagrafe Unica FVG
+
+- Eagle FVG
+
+- Parix
+
+- Sicer
 
 
-# **2. Licenza**
+## **1.3 Link a pagine istituzionali relative al progetto**
+
+- [GISA Sicurezza Alimentare e Veterinaria](https://gisa.sanita.fvg.it/)
+
+- [GISA Certificati export](https://gisa.sanita.fvg.it/certificati-export)
+
+
+## **1.4 Interfaccia web**
+
+**GISA FVG** è dotato di un interfaccia web semplice e intuitiva. Tutti i componenti sono pensati per essere facilmente utilizzati e coerenti in tutti gli applicativi.
+Questi ultimi sono responsive e la maggior parte dell'ecosistema è fruibile anche da smartphone o tablet.
+
+
+![screen](./docs/portali.png)
+
+
+![screen](./docs/portali_responsive.png)
+
+
+# **2. Riuso ed installazione**
+
+Nei prossimi paragrafi sono descritti i passaggi necessari per l'installazione e la configurazione di ogni singolo applicativo. 
+Gli applicativi al momento presenti sono:
+- sicurezza_alimentare_e_veterinaria 
+- certificati_export
+
+Da questo momento in poi il nome dell'applicativo da installare sarà chiamato **nome_applicativo**.
+
+**GISA FVG** gira in ambiente Linux quindi le sintassi utilizzate negli step successivi fanno riferimento alla sintazzi tipica degli ambienti Linux.
+
+Per prima cosa è necessario eseguire il checkout del'applicativo di interesse:
+
+    git clone \
+      --depth 1  \
+      --filter=blob:none  \
+      --sparse \
+      https://github.com/regione-campania/Gisa_Sicurezza_alimentare_e_veterinaria-nodo.fvg \
+    ;
+    cd {nome_applicativo}
+    git sparse-checkout set {nome_applicativo}
+
+
+Una volta eseguito il checkout del progetto è possibile proseguire con le fasi di installazione e configurazione.
+
+
+## 2.1 Creazione e import database
+
+**NOTA** : ⚠️questa parte è attualmente assente in quanto in fase di verifica lato SonarQube⚠️
+
+**GISA FVG** utilizza PostgreSQL come dbms. Di seguito gli step per la creazione e l'import dello schema del database.
+
+    psql -U <dbuser> -h <dbhost> -c "create database {nome_applicativo}"
+    cd {nome_applicativo}
+    psql -U <dbuser> -h <dbhost> -d {nome_applicativo} < db/*.sql
+
+I capitoli successivi riporteranno gli step per la parte di installazione delle componenti sviluppate esclusivamente per la Regione Friuli Venezia Giulia:
+- sicurezza_alimentare_e_veterinaria 
+- certificati_export
+
+## 2.2 Modello file di configurazione “environment.ts” e “config.js”
+
+Gli applicativi facenti parti del progetto **GISA FVG** sono composti da una componente client sviluppata in Angular e una componente server sviluppata in NodeJS.
+
+Per le componenti Angular è necessario creare il file **environment.ts** presente sotto *{nome_applicativo}/client/scr/environments/* con i corretti puntamenti alla componente server. Come template di configurazione è possibile utilizzare il file **environment.ts.sample**.
+
+Per le componenti NodeJS è necessario configurare il file **config.js** presente sotto *{nome_applicativo}/server/config/* con i corretti parametri di configurazione. Come template di configurazione è possibile utilizzare il file **config.js.sample**.
+
+## 2.3 Installazione in un ambiente di sviluppo
+
+- Clonare il repository (paragrafo 2)
+
+- Creare e importare i database (paragrafo 2.1)
+
+- Configurare correttamente l'applicativo (paragrafo 2.2)
+
+- Installare un IDE di sviluppo
+
+Installare le dipendenze con *npm* sia per la parte server che client
+
+    npm install
+
+Lanciare server NodeJS:
+
+    cd {nome_applicativo}/server/
+    node main.js
+
+Lanciare il client Angular in modalità sviluppatore:
+
+    cd {nome_applicativo}/client/
+    ng serve
+
+## 2.3 Installazione in un ambiente di produzione
+
+ Configurare correttamente l'applicativo per il proprio ambiente di produzione
+
+ Installare PM2 (https://pm2.keymetrics.io/)
+
+    npm install pm2 -g
+
+Lanciare il server NodeJS con PM2:
+
+    pm2 start main.js -i max --name {nome_progetto} --time --production
+
+ Compilare il client Angular:
+
+    ng build --configuration=production
+
+Deployare l'artefatto sul webserver di produzione.
+
+# **3. Licenza**
+
+## **3.1 Gestione Informatizzata Servizi e Attività**
+
+Stato Software : Stabile
+
+Versione: 1.1
+
+**Soggetti incaricati del mantenimento del progetto open source**
+
+US srl 
+## **3.2 Indirizzo e-mail segnalazioni di sicurezza**
+Ogni segnalazione relativa al software presente in questo repository, deve essere inoltrata rispettivamente a:
+- per problemi di sicurezza informatica a assistenza.sanita@insiel.it
+- per bug applicativi a assistenza.sanita@insiel.it
+
+NOTA: Le segnalazioni non vanno inviate attraverso l'issue tracker pubblico ma devono essere inviate confidenzialmente agli indirizzi e-mail indicati.
+Lo strumento issue tracker può essere utilizzato per le richieste di modifiche necessarie per implementare nuove funzionalità.
+
+## **3.3 Titolarità: [Regione Friuli Venezia Giulia](http://www.regione.fvg.it/)**
 Concesso in licenza a norma di: **AGPL versione 3**;
-
-## **2.1 Titolarità: [Regione Campania](http://www.regione.campania.it/)**
 
 E' possibile utilizzare l'opera unicamente nel rispetto della Licenza.
 
 Una copia della Licenza è disponibile al seguente indirizzo: <https://www.gnu.org/licenses/agpl-3.0.txt>
 
-In caso di riuso, in toto o in parte, del sistema software GISA Campania - Sicurezza Alimentare e Veterinaria, è obbligatorio notificare l’adozione in riuso tramite l’apertura di un ticket (o analogo meccanismo quale una pull request) in questo repository. Inoltre, al contempo per gli aspetti organizzativi utili a potenziare i benefici derivanti dalla pratica del riuso tra PP.AA., come la partecipazione al **Centro di competenza e di supporto al riuso e al ciclo di vita del software GISA Campania** per la condivisione di eventuali modifiche/integrazioni o innovazioni, è necessario darne tempestiva comunicazione alle seguenti e-mail:
+**NOTE:**
 
-[cinzia.matonti@regione.campania.it]()	
+In caso di riuso, in toto o in parte di **GISA FVG**, è necessario notificare l'adozione in riuso tramite l'apertura di un ticket (o analogo meccanismo quale una pull request) in questo repository. Inoltre, al contempo per gli aspetti organizzativi utili a potenziare i benefici derivanti dalla pratica del riuso tra PP.AA., come la partecipazione al **Centro di competenza e di supporto al riuso e al ciclo di vita del software GISA Campania** per la condivisione di eventuali modifiche/integrazioni o innovazioni, è necessario darne tempestiva comunicazione alle seguenti e-mail:
 
-[massimo.bisogno@regione.campania.it]()
+[ivan.poli@regione.fvg.it]()	
 
-Gli enti che aderiscono al riuso di GISA Campania - Sicurezza Alimentare e Veterinaria entreranno a far parte del "Centro di competenza e di supporto al riuso e al ciclo di vita del software GISA Campania" per condividere e partecipare all’evoluzione del sistema insieme alle altre PP.AA.
+[matteo.moretti@insiel.it]()	
 
-# **3. Indirizzo e-mail segnalazioni di sicurezza**
-**Soggetti incaricati del mantenimento del progetto open source**
-
-U.S. s.r.l. 
-
-Ogni segnalazione relativa al software presente in questo repository, deve essere inoltrata rispettivamente a:
-- per problemi di sicurezza informatica a sicurezza.informatica@regione.campania.it
-- per bug applicativi a gisahelpdesk@usmail.it
-
-NOTA: Le segnalazioni non vanno inviate attraverso l’issue tracker pubblico ma devono essere inviate confidenzialmente agli indirizzi e-mail presenti nel security.txt.
-
-Lo strumento issue tracker può essere utilizzato per le richieste di modifiche necessarie per implementare nuove funzionalità.
+Gli enti che aderiscono al riuso di GISA entreranno a far parte del "Centro di competenza e di supporto al riuso e al ciclo di vita del software GISA Campania" per condividere e partecipare all'evoluzione di GISA insieme alle altre PP.AA.

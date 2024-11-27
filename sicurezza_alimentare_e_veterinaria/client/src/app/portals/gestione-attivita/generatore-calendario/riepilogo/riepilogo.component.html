@@ -1,0 +1,125 @@
+<!--
+Copyright (C) AGPL-3.0  
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.-->
+<div id="riepilogo">
+  <h2 class="mb-3">Riepilogo</h2>
+  <div class="loading-box" *ngIf="loading; else ready">
+    <loading-message message="Caricamento riepilogo..."></loading-message>
+  </div>
+  <ng-template #ready>
+    <a-tabber *ngIf="riepiloghi; else message">
+      <ng-template aTab="Risorse">
+        <div class="table-container rounded" *ngIf="risorse">
+          <a-smart-table [colsInfo]="risorse.ui.colonne" [src]="risorse.dati" [autolayout]="false">
+            <ng-template aTemplate="head">
+              <tr>
+                <th scope="col" [ngStyle]="{'width': col.type === 'number' ? '5%' : '90%'}"
+                  *ngFor="let col of risorse.ui.colonne">
+                  <div class="wrapper y-centered">
+                    <span>{{col.name}}</span>
+                    <a-table-filter [type]="col.type" [field]="col.field"></a-table-filter>
+                    <a-table-sorter [type]="col.type" [field]="col.field"></a-table-sorter>
+                  </div>
+                </th>
+              </tr>
+            </ng-template>
+            <ng-template aTemplate="body" let-record>
+              <tr>
+                <td *ngFor="let colonna of risorse.ui.colonne" [ngClass]="{'text-end': colonna.tipo == 'number'}">
+                  <ng-container *ngIf="colonna.tipo == 'date'; else elseBlock">
+                    {{record[colonna.campo] | date: 'dd/MM/yyyy'}}
+                  </ng-container>
+                  <ng-template #elseBlock>
+                    <ng-container *ngIf="colonna.tipo == 'number'; else normalFormat">
+                      {{record[colonna.campo] | numberPipe}}
+                    </ng-container>
+                    <ng-template #normalFormat>
+                      {{record[colonna.campo]}}
+                    </ng-template>
+                  </ng-template>
+                </td>
+              </tr>
+            </ng-template>
+          </a-smart-table>
+        </div>
+      </ng-template>
+      <ng-template aTab="ASL">
+        <div class="table-container rounded" *ngIf="uos">
+          <a-smart-table [colsInfo]="uos.ui.colonne" [src]="uos.dati" [autolayout]="false">
+            <ng-template aTemplate="head">
+              <tr>
+                <th scope="col" [ngStyle]="{'width': col.type === 'number' ? '5%' : '90%'}"
+                  *ngFor="let col of uos.ui.colonne">
+                  <div class="wrapper y-centered">
+                    <span>{{col.name}}</span>
+                    <a-table-filter [type]="col.type" [field]="col.field"></a-table-filter>
+                    <a-table-sorter [type]="col.type" [field]="col.field"></a-table-sorter>
+                  </div>
+                </th>
+              </tr>
+            </ng-template>
+            <ng-template aTemplate="body" let-record>
+              <tr>
+                <td *ngFor="let colonna of uos.ui.colonne" [ngClass]="{'text-end': colonna.tipo == 'number'}">
+                  <ng-container *ngIf="colonna.tipo == 'date'; else elseBlock">
+                    {{record[colonna.campo] | date: 'dd/MM/yyyy'}}
+                  </ng-container>
+                  <ng-template #elseBlock>
+                    <ng-container *ngIf="colonna.tipo == 'number'; else normalFormat">
+                      {{record[colonna.campo] | numberPipe}}
+                    </ng-container>
+                    <ng-template #normalFormat>
+                      {{record[colonna.campo]}}
+                    </ng-template>
+                  </ng-template>
+                </td>
+              </tr>
+            </ng-template>
+          </a-smart-table>
+        </div>
+      </ng-template>
+      <ng-template aTab="Linee">
+        <div class="table-container rounded" *ngIf="linee">
+          <a-smart-table [colsInfo]="linee.ui.colonne" [src]="linee.dati" [autolayout]="false">
+            <ng-template aTemplate="head">
+              <tr>
+                <th scope="col" *ngFor="let col of linee.ui.colonne">
+                  <div class="wrapper y-centered" [ngClass]="{'justify-content-end': col.type == 'number'}">
+                    <span>{{col.name}}</span>
+                    <a-table-filter [type]="col.type" [field]="col.field"></a-table-filter>
+                    <a-table-sorter [type]="col.type" [field]="col.field"></a-table-sorter>
+                  </div>
+                </th>
+              </tr>
+            </ng-template>
+            <ng-template aTemplate="body" let-record>
+              <tr>
+                <td *ngFor="let colonna of linee.ui.colonne" [ngClass]="{'text-end': colonna.tipo == 'number'}">
+                  <ng-container *ngIf="colonna.tipo == 'date'; else elseBlock">
+                    {{record[colonna.campo] | date: 'dd/MM/yyyy'}}
+                  </ng-container>
+                  <ng-template #elseBlock>
+                    <ng-container *ngIf="colonna.tipo == 'number'; else normalFormat">
+                      {{record[colonna.campo] | numberPipe}}
+                    </ng-container>
+                    <ng-template #normalFormat>
+                      {{record[colonna.campo]}}
+                    </ng-template>
+                  </ng-template>
+                </td>
+              </tr>
+            </ng-template>
+          </a-smart-table>
+        </div>
+      </ng-template>
+    </a-tabber>
+    <ng-template #message>
+      <div>Nessun riepilogo trovato.</div>
+    </ng-template>
+  </ng-template>
+</div>

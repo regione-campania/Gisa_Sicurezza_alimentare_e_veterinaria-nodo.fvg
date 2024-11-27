@@ -1,0 +1,142 @@
+<!--
+Copyright (C) AGPL-3.0  
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.-->
+<div class="tariffe-forfettarie">
+  <h3 class="list-title">Tariffe Forfettarie</h3>
+  <div class="row" id="tariffe-forfettarie-main-content">
+    <!-- Albero Masterlist -->
+    <div class="col-md h-100" id="colonna-tariffe-forfettarie" *ngIf="masterlistParsed">
+      <a-tree-filter [tree]="tree" placeholder="Ricerca Tariffa..."></a-tree-filter>
+      <div class="scrollbox h-100 overflow-auto custom-scrollbar" id="tariffe-forfettarie-tree-scrollbox">
+        <a-tree #tree [root]="masterlistParsed" (onClick)="selectVoice($event)"></a-tree>
+      </div>
+    </div>
+    <div class="col-md h-100 position-relative custom-scrollbar">
+      <h5 class="header">{{selectedVoice?.data.descrizione}}</h5>
+      <!-- Input Row -->
+      <div class="settings box-3d rounded mb-3" *ngIf="formRow">
+        <form [formGroup]="formRow">
+          <div class="row align-items-center">
+            <div class="col">
+              <div class="input-group input-group-sm">
+                <span class="input-group-text">DA:</span>
+                <input type="date" id="inputDa" name="data_inizio" class="form-control" placeholder="Da"
+                  aria-label="Data Inizio" aria-describedby="data_inizio" formControlName="data_inizio" [min]="tomorrow"
+                  [max]="maxDate" (blur)="onBlur($event)">
+              </div>
+            </div>
+            <div id="headerRowButtons" class="col">
+              <button type="button" class="btn btn-primary px-2 py-1 float-end" (click)="saveRowVoices()"
+                ngbTooltip="Salva">
+                <i class="icon fa-solid fa-floppy-disk m-0"></i>
+              </button>
+            </div>
+          </div>
+          <hr>
+          <div class="row my-2">
+            <div class="col">
+              <div class="row">
+                <div class="col">
+                  <h4 class="text-center">Livello di Rischio</h4>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col">
+                  <div class="table-container">
+                    <table summary="table summary"class="table table-striped border" id="tableVoices">
+                      <thead>
+                        <tr class="text-center">
+                          <th scope="col" *ngFor="let trf of tariffe.value">{{trf.liv}}</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr class="text-center" formArrayName="tariffe">
+                          <td *ngFor="let trf of tariffe.controls; let i = index" [formGroupName]="i">
+                            <number-input class="text-end" formControlName="valore" [min]="0" required [value]="0"
+                              (change)="noBlank($event)"></number-input>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+      <!-- Showing Row -->
+      <ng-container *ngIf="this.dataRow?.dati?.length > 0">
+        <h3 class="header">Storico</h3>
+        <div class="settings box-3d rounded">
+          <div class="row align-items-center">
+            <div class="col-1">
+              <button *ngIf="!isLast" type="button" class="btn btn-sm btn-primary mb-1" (click)="goBack()"><i
+                  class="fa fa-arrow-left" aria-hidden="true"></i></button>
+            </div>
+            <div class="col">
+              <div class="input-group input-group-sm">
+                <span class="input-group-text">DA:</span>
+                <output class="form-control">
+                  {{ this.getCurrentRow()?.valida_da?.split('T')[0] }}
+                </output>
+                <span class="input-group-text">A:</span>
+                <output class="form-control">
+                  {{ this.getCurrentRow()?.valida_a?.split('T')[0] }}
+                </output>
+              </div>
+            </div>
+            <div class="col-1">
+              <button *ngIf="!isFirst" type="button" class="btn btn-primary btn-sm mb-1" (click)="goAhead()"><i
+                  class="fa fa-arrow-right" aria-hidden="true"></i></button>
+            </div>
+            <div class="col-1">
+              [{{currentStorico}}/{{totaleStorico}}]
+            </div>
+            <div class="col-1" *ngIf="this.getCurrentRow()?.cancellabile">
+              <button type="button" class="btn btn-danger btn-sm mb-1 float-end" (click)="deleteRowVoice()"
+                ngbTooltip="Elimina"><i class="fa fa-trash m-0" aria-hidden="true"></i></button>
+            </div>
+          </div>
+          <hr>
+          <div class="row my-2">
+            <div class="col">
+              <div class="row">
+                <div class="col">
+                  <h4 class="text-center">Livello di Rischio</h4>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col">
+                  <div class="table-container">
+                    <table summary="table summary"class="table table-striped border" id="row-storico">
+                      <thead>
+                        <tr class="text-center">
+                          <th scope="col" *ngFor="let tariffa of this.getCurrentRow()?.tariffe">
+                            {{tariffa.liv}}
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr class="text-center">
+                          <td *ngFor="let tariffa of this.getCurrentRow()?.tariffe">
+                            {{tariffa.valore}}
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+    </div>
+  </div>
+</div>

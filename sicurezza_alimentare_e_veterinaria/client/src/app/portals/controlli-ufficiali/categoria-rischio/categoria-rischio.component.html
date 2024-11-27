@@ -1,0 +1,27 @@
+<!--
+Copyright (C) AGPL-3.0  
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.-->
+<div class="row">
+    <div class="col">
+        <h2 class="d-flex align-items-center">Categoria Rischio</h2>
+    </div>
+</div>
+<div class="row">
+    <div class="col">
+        <a-tree-filter [tree]="categ_rischio_tree" placeholder="Ricerca Categoria..."></a-tree-filter>
+    </div>
+    <!-- <div class="col">
+        <button [disabled]="!id_categ" class="float-end btn btn-primary" (click)="salva()">
+            <i class="icon fa-solid fa-save"></i>
+            <span>Salva</span>
+        </button>
+    </div> -->
+    <a-tree #categ_rischio_tree [src]="_categ_rischio" [mapping]="mappaturaAlberi"
+        (onClick)="onTreeNodeClick($event)"></a-tree>
+
+</div>

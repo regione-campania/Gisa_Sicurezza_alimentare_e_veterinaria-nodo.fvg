@@ -1,0 +1,107 @@
+.default-theme {
+  //colors
+  --fvg-primary: var(--us-blue) !important;
+  --fvg-body-color: var(--bs-body-color) !important;
+  --fvg-white: #ffffff !important;
+
+  //icons
+  --top-bar-icon-width: 28px;
+  --top-bar-icon-color: var(--fvg-white);
+  --bottom-bar-icon-width: 28px;
+  --bottom-bar-icon-color: var(--fvg-white);
+  --side-bar-icon-width: 28px;
+  --side-bar-icon-color: var(--fvg-white);
+  --offcanvas-icon-width: 28px;
+  --offcanvas-icon-color: var(--fvg-black);
+
+  //borders
+  --border-radius-light: 4px;
+  --border-radius-medium: 8px;
+  --border-radius-strong: 12px;
+
+  //components
+  --body-bg: var(--fvg-white);
+  --body-color: var(--fvg-body-color);
+  --home-bg: var(--fvg-primary);
+  --top-bar-bg: var(--fvg-primary);
+  --top-bar-color: var(--fvg-white);
+  --top-bar-height: 60px;
+  --top-bar-shadow: 0 1px 2px 0 rgb(0 0 0 / 30%), 0 2px 6px 2px rgb(0 0 0 / 15%);
+  --bottom-bar-bg: var(--fvg-primary);
+  --bottom-bar-color: var(--fvg-white);
+  --bottom-bar-height: 60px;
+  --bottom-bar-shadow: 0 -1px 2px 0 rgb(0 0 0 / 30%), 0 -2px 6px 2px rgb(0 0 0 / 15%);
+  --side-bar-bg: var(--fvg-primary);
+  --side-bar-color: var(--fvg-white);
+  --side-bar-width: 60px;
+  --side-bar-shadow: 1px 0px 2px 0 rgb(0 0 0 / 30%), 2px 0px 6px 2px rgb(0 0 0 / 15%);
+  --table-primary-bg: var(--fvg-primary);
+  --primary-btn-bg: var(--fvg-primary);
+  --modal-header-bg: var(--fvg-primary);
+  --modal-header-color: var(--fvg-white);
+  //offcanvas
+  --offcanvas-header-bg: var(--fvg-primary);
+  --offcanvas-header-color: var(--fvg-white);
+  --offcanvas-body-bg: var(--fvg-white);
+  --offcanvas-body-color: var(--fvg-body-color);
+
+  //components
+  a-sidenav {
+    .a-sidenav-preview,
+    .a-sidenav-container,
+    .a-sidenav-menu {
+      background-color: var(--side-menu-bg) !important;
+    }
+  }
+
+  .a-smart-table,
+  table:not([class^="fc"]) {
+    --table-thead-bg: var(--table-primary-bg) !important;
+    --table-footer-bg: var(--table-primary-bg) !important;
+    --table-toolbar-bg: var(--table-primary-bg) !important;
+    --table-toolbar-color: var(--fvg-white) !important;
+    --table-paginator-bg: var(--table-primary-bg) !important;
+    --table-paginator-color: var(--fvg-white) !important;
+    --table-row-hover-bg: var(--fvg-gray) !important;
+    --table-row-hover-color: var(--fvg-black) !important;
+    --table-control-color: var(--fvg-white) !important;
+    --table-control-hover-color: var(--fvg-blue) !important;
+  }
+
+  .a-data-paginator {
+    --data-paginator-bg: var(--table-primary-bg) !important;
+    --data-paginator-color: var(--fvg-white) !important;
+    --data-paginator-arrow-color: var(--fvg-white) !important;
+    --data-paginator-arrow-hover-bg: var(--fvg-white) !important;
+    --data-paginator-arrow-hover-color: var(--table-primary-bg) !important;
+  }
+
+  .custom-scrollbar {
+    --scrollbar-color: var(--us-gray-4);
+  }
+
+  .system-modal .modal-header,
+  .modal-header {
+    background-color: var(--modal-header-bg);
+    color: var(--modal-header-color);
+  }
+
+  .side-menu-item:not(.disabled):active,
+  .side-menu-item:not(.disabled).active {
+    --side-menu-item-active-bg: var(--fvg-primary) !important;
+  }
+
+  .app-menu-offcanvas {
+    border: none;
+
+    .offcanvas-header {
+      background-color: var(--offcanvas-header-bg);
+      color: var(--offcanvas-header-color);
+    }
+
+    .offcanvas-body {
+      background-color: var(--offcanvas-body-bg);
+      color: var(--offcanvas-body-color);
+    }
+  }
+}

@@ -1,0 +1,95 @@
+<!--
+Copyright (C) AGPL-3.0  
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.-->
+<div id="indirizzi">
+    <form [formGroup]="formModificaIndirizzo">
+        <div class="row">
+            <div class="col">
+                <label>Estero: <span class="text-danger mb-3 ms-1">
+                    *
+                </span> </label>
+                <input type="radio" class="form-check-input ms-4" formControlName="valore" value="si"
+                autocomplete="off" (change)="checkValore($event)">
+                <label class="form-check-label"> SI </label>
+                <input type="radio" class="form-check-input ms-4" formControlName ="valore" value="no"
+                autocomplete="off" (change)="checkValore($event)">
+                <label class="form-check-label"> NO </label>
+            </div>
+        </div>
+        <div *ngIf="valoreCheckbox === 'si'">
+            <label>Nazione: <span class="text-danger mb-3 ms-1">
+                *
+            </span> </label>
+            <input type="text" class="form-control border" formControlName="nazione">
+            
+            <label>Stato/Provincia: <span class="text-danger mb-3 ms-1">
+                *
+            </span> </label>
+            <input type="text" class="form-control border" formControlName="stato_provincia">
+
+            <label>Comune: <span class="text-danger mb-3 ms-1">
+                *
+            </span> </label>
+            <input type="text" class="form-control border" formControlName="comune_estero">
+            <label>Toponimo: <span class="text-danger mb-3 ms-1">
+                *
+            </span> </label>
+            <input type="text" class="form-control border" formControlName="toponimo_estero">
+    
+            <label>Indirizzo: <span class="text-danger mb-3 ms-1">
+                *
+            </span> </label>
+            <input type="text" class="form-control border" formControlName="indirizzo_estero">
+            
+            <label>Civico: <span class="text-danger mb-3 ms-1">
+                *
+            </span> </label>
+            <input type="text" class="form-control border" formControlName="civico_estero">
+    
+            <label>CAP: <span class="text-danger mb-3 ms-1">
+                *
+            </span> </label>
+            <input type="text" class="form-control border" formControlName="cap_estero">
+        </div>
+
+        <div *ngIf="valoreCheckbox === 'no'">
+            <label>Comune: <span class="text-danger mb-3 ms-1">
+                *
+            </span> </label>
+            <input type="text" class="form-control border" formControlName="comune" [autofiller]="datiComuni" autofillerKey="denominazione_it"
+            (valueChange)="patchValue($event, 'comune')">
+            <label>Toponimo: <span class="text-danger mb-3 ms-1">
+                *
+            </span> </label>
+            <input type="text" class="form-control border" formControlName="toponimo">
+    
+            <label>Indirizzo: <span class="text-danger mb-3 ms-1">
+                *
+            </span> </label>
+            <input type="text" class="form-control border" formControlName="indirizzo">
+            
+            <label>Civico: <span class="text-danger mb-3 ms-1">
+                *
+            </span> </label>
+            <input type="text" class="form-control border" formControlName="civico">
+    
+            <label>CAP: <span class="text-danger mb-3 ms-1">
+                *
+            </span> </label>
+            <input type="text" class="form-control border" formControlName="cap">
+        </div>
+
+
+    </form>
+    <div class="modal-footer">
+        <button class="btn btn-primary float-end" ngbTooltip="Modifica dati indirizzo"
+            (click)="updIndirizzo()" [disabled]="!this.formModificaIndirizzo.valid">
+            {{ labelBottone }}
+        </button>
+    </div>
+</div>

@@ -1,0 +1,165 @@
+<!--
+Copyright (C) AGPL-3.0  
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.-->
+<div id="container">
+  <div class="row">
+    <div class="col">
+      <h1>Dettaglio Certificato</h1>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col">
+      <ul *ngIf="this.thisCertificato?.info" class="w-50 p-3 list-group list-group-flush">
+        <li class="list-group-item" *ngIf="this.thisCertificato.info.ragione_sociale">Stabilimento:
+          {{this.thisCertificato.info.ragione_sociale}} - {{this.thisCertificato.info.comune}} {{this.thisCertificato.info.provincia_stab}}, {{this.thisCertificato.info.indirizzo}}
+        </li>
+        <li class="list-group-item" *ngIf="this.thisCertificato.info.descr_modulo">Tipo Certificato:
+          {{this.thisCertificato.info.descr_modulo}}</li>
+        <li class="list-group-item" *ngIf="this.thisCertificato.info.descr_stato_certificato_compilato">Stato Attuale:
+          {{this.thisCertificato.info.descr_stato_certificato_compilato}}</li>
+        <li class="list-group-item" *ngIf="this.thisCertificato.info.descr">Denominazione:
+          {{this.thisCertificato.info.descr}}</li>
+        <li class="list-group-item" *ngIf="this.thisCertificato.info.tipo_denominazione_prodotto">
+          Tipo Prodotto: {{this.thisCertificato.info.tipo_denominazione_prodotto}}
+        </li>
+        <li class="list-group-item" *ngIf="this.thisCertificato.info.data_proposta">Data Proposta:
+          {{this.thisCertificato.info.data_proposta | date: 'dd/MM/yyyy'}}</li>
+        <li class="list-group-item" *ngIf="startDate && (startDate!.length > 0 && endDate!.length > 0)">
+          Orario Proposto:
+          {{startDate | date:'H:mm'}} - {{endDate | date:'H:mm'}}
+        </li>
+        <li class="list-group-item" *ngIf="this.thisCertificato.info.data_controllo">Data Controllo:
+          {{this.thisCertificato.info.data_controllo | date: 'dd/MM/yyyy'}}</li>
+        <li class="list-group-item" *ngIf="startDateControllo && (startDateControllo!.length > 0 && startDateControllo!.length > 0)">
+          Orario Controllo:
+          {{startDateControllo | date:'H:mm'}} - {{endDateControllo | date:'H:mm'}}
+        </li>
+        <li class="list-group-item" *ngIf="this.thisCertificato.info.ore_controllo">Durata controllo:
+          {{this.thisCertificato.info.ore_controllo}} minuti</li>
+        <li class="list-group-item" *ngIf="this.thisCertificato.info.motivo_integrazione">
+          <strong>
+            Integrazione richiesta:
+            {{this.thisCertificato.info.motivo_integrazione}}
+          </strong>
+        </li>
+        <li class="list-group-item" *ngIf="this.thisCertificato.info.motivo_annullamento">
+          <strong>
+            Motivo annullamento:
+            {{this.thisCertificato.info.motivo_annullamento}}
+          </strong>
+        </li>
+        <li class="list-group-item" *ngIf="this.thisCertificato.info.minuti_tariffazione_standard">
+          Minuti Tariffazione Standard:
+          {{this.thisCertificato.info.minuti_tariffazione_standard}}
+        </li>
+        <li class="list-group-item" *ngIf="this.thisCertificato.info.minuti_tariffazione_maggiorata">
+          Minuti Tariffazione Maggiorata:
+          {{this.thisCertificato.info.minuti_tariffazione_maggiorata}}
+        </li>
+      </ul>
+    </div>
+  </div>
+  <div *ngIf="this.getStato == 'new'">
+    <div class="row">
+      <div class="col">
+        <label id="paese">Paese Esportazione / Tracciabilità:</label>
+        <select id="paesi" class="ms-2" (change)="changePaese($event)">
+          <option selected disabled>Seleziona...</option>
+          <option *ngFor="let paese of paesi" value="{{paese.id}}">{{paese.descr}}</option>
+        </select>
+      </div>
+      <div class="col" *ngIf="paeseSelezionato < 0">
+        <label id="paese">Paese:</label>
+        <select id="paesi" class="ms-2">
+          <option selected disabled>Seleziona...</option>
+          <option *ngFor="let paese of paesiTracciabilita" value="{{paese.id}}">{{paese.descr}}</option>
+        </select>
+      </div>
+    </div>
+    <div class="row align-items-center">
+      <div class="col">
+        <label id="tipoCertificato">Tipo certificato:</label>
+        <select id="tipiCertificato" class="ms-2" (change)="changeCertificato($event)">
+          <option selected disabled>Seleziona...</option>
+          <option *ngFor="let cert of certificatiArray" value="{{cert.id_modulo_corrente}}">{{cert.descr}}</option>
+        </select>
+      </div>
+    </div>
+    <div class="row align-items-center">
+      <div class="col">
+        <label id="tipoAllegato">Tipo Allegato:</label>
+        <select id="tipoAllegato" class="ms-2" (change)="changeAllegato($event)">
+          <option selected value="-1">Seleziona...</option>
+          <option *ngFor="let cert of allegatiArray" value="{{cert.id_modulo_corrente}}">{{cert.descr}}</option>
+        </select>
+        <button type="button" class="btn btn-sm btn-primary" ngbTooltip="Aggiungi allegato"
+         *ngIf="this.idAllegatoCorrente && this.idAllegatoCorrente != -1" (click)="addAllegato()"> <i class="fa fa-plus" aria-hidden="true"></i>
+         </button>
+      </div>
+    </div>
+    <!--<div class="row">
+      <div class="col">
+        <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal"
+          data-bs-target="#tipo-prodotto-modal">
+          Tipo Prodotto
+        </button>
+        <span *ngIf="selectedProduct" class="ms-2">: {{selectedProduct.name}}</span>
+      </div>
+    </div>-->
+  </div>
+  <div class="row align-items-center">
+    <div *ngIf="this.checkUploadPDFPermission" class="col-md-auto">
+      <b>Aggiungi il PDF firmato:</b>
+    </div>
+    <div *ngIf="this.checkUploadPDFPermission" class="col">
+      <input class="form-control" type="file" accept="application/pdf" (change)="allegaVerbaleCompleto($event)">
+    </div>
+    <div class="col" *ngIf="checkDownloadButton">
+      <button class="btn btn-primary float-end" (click)="downloadPDF()">
+        <span>Download</span><i style="margin-left: 0.5rem !important;" class="fa fa-download" aria-hidden="true"></i>
+      </button>
+    </div>
+    <div class="col" *ngIf="_thisCertificato && this.thisStatiProssimi?.length > 0 && getValueChange === true">
+      <div *ngFor="let stato of this.thisStatiProssimi">
+        <button class="btn float-end btn-action"
+          [ngClass]="stato.finale_stato_prossimo == true ? 'btn-danger' : 'btn-primary'" *ngIf="this.userPermissions?.[stato.permission]
+          && ((this.getStato == 'new' && stato.iniziale_stato_prossimo) || this.getStato != 'new')
+          && ((this.getStato == 'new' && this.preview.canSave) || this.getStato != 'new')"
+          (click)="updateCertificato(this.thisCertificato, stato, checkModificabile)">
+          {{stato.descr_azione_stato_prossimo}}
+          <i class={{stato.icona_stato_prossimo}} aria-hidden="true"></i>
+        </button>
+      </div>
+      <button *ngIf="showEmailButton" class="ms-2 btn btn-success float-end" (click)="sendEmailUrgenza()">Comunica urgenza<i
+          class="ms-2 fa fa-paper-plane"></i>
+      </button>
+      <button *ngIf="checkModificabile" class="ms-2 btn btn-secondary float-end" (click)="downloadPDF('preview')">
+        Anteprima<i class="ms-2 fa fa-download"></i>
+      </button>
+      <button *ngIf="showDuplicaButton" class="ms-2 btn btn-secondary float-end" (click)="duplicaCertificato()">
+        Duplica<i class="ms-2 fa fa-clone"></i>
+      </button>
+      <button *ngIf="_showRicalendarizzaBtn" type="button" class="ms-2 btn btn-warning float-end" (click)="recalendarizzaDataControllo()">
+        Ricalendarizza
+        <i class="ms-1 fa fa-calendar" aria-hidden="true"></i>
+        <i class="ms-2 fa fa-repeat" aria-hidden="true"></i>
+      </button>
+    </div>
+  </div>
+  <div class="row">
+    <div *ngIf="checkModificabile" class="col-6 col-container">
+      <app-compila-certificato [certificatoModificabile]="checkModificabile" [idCertificatoCompilato]="idCertificatoCompilato" (canSave)="canSave($event)"
+        (sendPdfPath)="setPdfPath($event.toString())" (idModulo)="setIdModulo($event.toString())"
+        (_valueChange)="valueChange($event)" #compilaCertificato></app-compila-certificato>
+    </div>
+    <div class="col col-container">
+      <app-preview-certificato [_stato]="this.getStato" [_id_certificato_compilato]="this.idCertificatoCompilato"
+        [certificatoModificabile]="checkModificabile" #previewCertificato></app-preview-certificato>
+    </div>
+  </div>
+</div>

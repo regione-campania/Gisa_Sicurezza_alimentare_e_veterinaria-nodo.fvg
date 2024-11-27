@@ -1,0 +1,29 @@
+<!--
+Copyright (C) AGPL-3.0  
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.-->
+<h2 class="d-flex align-items-center">{{labelBottone}} {{sede}} - Nome: {{nome}}
+    <button *ngIf="mostra_parix && !parix_sede" class="btn btn-secondary ms-auto" (click)="goToPARIX()">
+        Allineamento PARIX
+    </button>
+</h2>
+<br>
+<app-form-sedi #formSedi></app-form-sedi>
+<br>
+<h3 class="d-flex align-items-center"> Indirizzo</h3>
+<div *ngIf="id_indirizzo_nuovo || labelBottone == 'Aggiungi' || _id_sede_parix">
+    <app-form-indirizzo-main #formIndirizzo [_id_indirizzo_preso]="id_indirizzo_nuovo"
+        [_id_stabilimento_preso]="_id_stabilimento ?? _id_stabilimento_parix" [_labelBottone]="labelBottone"
+        [_id_impresa_preso]="_id_impresa ?? _id_impresa_parix" [showButton]="false"></app-form-indirizzo-main>
+</div>
+<button class="btn btn-primary ms-2 float-end" (click)="updSede()"
+    [disabled]="!this._formSedi?.formSede?.valid || !this._formIndirizzo?.formModificaIndirizzo?.valid">
+    <!-- <i class="icon fa-solid fa-plus"></i>
+    <span>{{labelBottone}}</span> -->
+    <i class="icon fa-solid fa-save"></i>
+    <span>Salva</span>
+</button>

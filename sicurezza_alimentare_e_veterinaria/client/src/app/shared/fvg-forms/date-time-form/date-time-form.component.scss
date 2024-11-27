@@ -1,0 +1,20 @@
+.form-group {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.date-time-group {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+
+  .group-label {
+    flex-basis: 100%;
+    text-align: center;
+    border-bottom: 1px solid var(--fvg-gray);
+    margin-bottom: .5rem;
+    //border-radius: var(--us-border-radius);
+    //background-color: white;
+  }
+}

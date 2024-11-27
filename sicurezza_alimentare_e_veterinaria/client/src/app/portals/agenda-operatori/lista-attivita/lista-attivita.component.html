@@ -1,0 +1,51 @@
+<!--
+Copyright (C) AGPL-3.0  
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.-->
+<div id="lista-attivita">
+  <h2>Lista Attività</h2>
+  <lista-attivita-toolbar [tabella]="tabellaAttivita" [disabled]="!isModificaEnabled()" (onChange)="initAttivita()"></lista-attivita-toolbar>
+  <a-smart-table #tabellaAttivita id="tabella-attivita" *ngIf="infoAttivita else message" class="table-striped" [src]="infoAttivita.dati"
+    [autolayout]="false" [colsInfo]="infoAttivita.ui.colonne" [selection]="true">
+    <ng-template aTemplate="head">
+      <tr>
+        <th scope="col" class="delete-th"></th>
+        <th scope="col" class="selector-th"></th>
+        <th scope="col" *ngFor="let col of infoAttivita.ui.colonne">
+          <div class="d-flex align-items-center">
+            <span class="label">{{col.intestazione}}</span>
+            <a-table-filter [type]="col.tipo" [field]="col.campo" [options]="col.filterOptions"></a-table-filter>
+            <a-table-sorter [type]="col.tipo" [field]="col.campo"></a-table-sorter>
+          </div>
+        </th>
+      </tr>
+    </ng-template>
+    <ng-template aTemplate="body" let-att>
+      <tr>
+        <td class="delete-td align-middle">
+          <button *ngIf="att.eliminabile" type="button" class="btn btn-sm btn-danger" (click)="askBeforeElimina(att)" ngbTooltip="Elimina attività" container="body">
+            <i class="icon m-0 fa-solid fa-xmark"></i>
+          </button>
+        </td>
+        <td class="selector-td align-middle">
+          <a-table-selector *ngIf="att.selezionabile" [data]="att"></a-table-selector>
+        </td>
+        <td *ngFor="let col of infoAttivita.ui.colonne">
+          <ng-container *ngIf="col.tipo === 'date' else elseBlock">
+            {{att[col.campo] | italianDate}}
+          </ng-container>
+          <ng-template #elseBlock>
+            {{att[col.campo]}}
+          </ng-template>
+        </td>
+      </tr>
+    </ng-template>
+  </a-smart-table>
+  <ng-template #message>
+    <p>Nessuna attività trovata.</p>
+  </ng-template>
+</div>

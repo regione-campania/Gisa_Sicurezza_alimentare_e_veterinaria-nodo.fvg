@@ -1,0 +1,33 @@
+.row {
+  margin-bottom: 0.5rem !important;
+  margin-top: 0.5rem !important;
+}
+
+.col {
+  padding: 0;
+}
+
+.col-container{
+    border: lightgray;
+    border-style: solid;
+    border-radius: 5px;
+    border-width: 1px;
+    padding: 0;
+}
+
+#tipoCertificato {
+    margin-right: 0.25rem !important;
+}
+
+div.modal-body {
+    // min-height: 750px;
+    width: 100%;
+}
+
+.btn-action {
+  margin-left: 0.5rem !important;
+}
+
+ul {
+  list-style-type: none;
+}

@@ -1,0 +1,152 @@
+<!--
+Copyright (C) AGPL-3.0  
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.-->
+<div id="configurazione-tariffe">
+  <h2>Configurazione Tariffe</h2>
+  <div class="view-slider">
+    <div class="slide" [ngClass]="{'active': activeSlide === 'tariffe'}" id="tariffe-slide">
+      <p>Selezionare una tariffa</p>
+      <a-tree-filter [tree]="tariffeTree" placeholder="Ricerca una tariffa..."></a-tree-filter>
+      <a-tree #tariffeTree (onClick)="onTreeNodeClick($event)"></a-tree>
+    </div>
+    <div class="slide" [ngClass]="{'active': activeSlide === 'regole'}" id="regole-slide">
+      <div class="d-flex justify-content-end my-3">
+        <button type="button" class="btn btn-secondary me-auto" (click)="goBack()">
+          <i class="icon fa-solid fa-arrow-left"></i>
+          <span class="label">Indietro</span>
+        </button>
+        <button type="button" class="btn btn-danger me-2" (click)="annullaModifiche()"
+          *ngIf="!loadingRegole && areRegoleModified">
+          <i class="icon fa-solid fa-trash-can"></i>
+          <span class="label">Annulla modifiche</span>
+        </button>
+        <button type="button" class="btn btn-success me-2" (click)="salvaPendingRegole()"
+          *ngIf="!loadingRegole && areRegoleModified">
+          <i class="icon fa-solid fa-floppy-disk"></i>
+          <span class="label">Salva regole</span>
+        </button>
+        <button type="button" class="btn btn-primary" (click)="openModal(modaleNuovaRegola)">
+          <i class="icon fa-solid fa-plus"></i>
+          <span class="label">Nuova regola</span>
+        </button>
+      </div>
+      <h3>Regole</h3>
+      <loading-message *ngIf="loadingRegole; else showRegole"></loading-message>
+      <ng-template #showRegole>
+        <div class="mt-2" id="sezione-regole">
+          <table summary="table summary"class="table table-striped" *ngIf="regole else avviso">
+            <thead>
+              <tr>
+                <th scope="col"></th>
+                <th scope="col">Sigla</th>
+                <th scope="col">Descrizione</th>
+                <th scope="col">Operazione</th>
+                <th scope="col">Operandi</th>
+              </tr>
+            </thead>
+            <tbody id="regole-precaricate">
+              <tr *ngFor="let regola of operazioni">
+                <td class="align-middle">
+                  <button  type="button" class="btn btn-danger" *ngIf="isLastRegola(regola)" (click)="eliminaLastRegola()">
+                    <i class="icon fa-solid fa-xmark"></i>
+                  </button>
+                </td>
+                <td>{{regola.sigla}}</td>
+                <td>{{regola.descr}}</td>
+                <td>{{regola.op}}</td>
+                <td>
+                  <span class="badge operando me-1" *ngFor="let operando of regola.operandi"
+                    [ngbTooltip]="operando.sigla + ' (' + operando.descr + ')'" placement="top">
+                    {{operando.descr}}
+                  </span>
+                </td>
+              </tr>
+              <tr *ngFor="let regola of pendingRegole" class="pending-regola">
+                <td class="align-middle">
+                  <button  type="button" class="btn btn-danger" *ngIf="isLastRegola(regola)" (click)="eliminaLastRegola()">
+                    <i class="icon fa-solid fa-xmark"></i>
+                  </button>
+                </td>
+                <td>{{regola.sigla}}</td>
+                <td>{{regola.descr}}</td>
+                <td>{{regola.op}}</td>
+                <td>
+                  <span class="badge operando me-1" *ngFor="let operando of regola.operandi"
+                    [ngbTooltip]="operando.sigla + ' (' + operando.descr + ')'" placement="top">
+                    {{operando.descr}}
+                  </span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <ng-template #avviso>
+            <p>Nessuna regola definita.</p>
+          </ng-template>
+        </div>
+      </ng-template>
+    </div>
+  </div>
+</div>
+
+
+<ng-template #modaleNuovaRegola>
+  <div class="modal-header d-flex">
+    <span>Creazione nuova regola</span>
+    <button type="button" class="btn-close ms-auto" (click)="closeModal()"></button>
+  </div>
+  <div class="modal-body">
+    <div class="d-flex align-items-center" [formGroup]="formNuovaRegola">
+      <div class="form-group d-flex flex-column">
+        <label for="elemento-da-calolare" class="me-2">Elemento da calcolare:</label>
+        <select class="form-select w-auto" id="elemento-da-calolare" formControlName="elemento">
+          <option></option>
+          <option *ngFor="let el of elementiCalcolabili" [value]="el.sigla">{{el.sigla}}</option>
+        </select>
+      </div>
+      <span class="mx-2 mt-4">=</span>
+      <div class="form-group d-flex flex-column">
+        <label for="operazione" class="me-2">Operazione</label>
+        <select class="form-select w-auto" id="operazione" formControlName="operazione">
+          <option></option>
+          <option *ngFor="let op of regole?.tipi_op" [value]="op.codice">{{op.codice}}</option>
+        </select>
+      </div>
+    </div>
+    <p class="mb-0 mt-2">Operandi:</p>
+    <small>(per selezionare gli operandi trascinarli nel box "Selezionati")</small>
+    <div class="d-flex justify-content-around my-3">
+      <div>
+        <div class="text-center">Non Selezionati</div>
+        <div class="drop-zone box rounded" id="operandi-disponibili"
+          (dragover)="onDragOver($event)" (drop)="onDrop($event)" (dragstart)="onDragStart($event)">
+          <div class="badge operando w-100 draggable" [id]="el.id" draggable="true"
+            *ngFor="let el of elementiCalcolati">
+            {{el.sigla}}
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="text-center">Selezionati</div>
+        <div class="drop-zone box rounded" id="operandi-selezionati"
+          (dragover)="onDragOver($event)" (drop)="onDrop($event)" (dragstart)="onDragStart($event)"
+          (dragenter)="onDragEnter($event)" (dragleave)="onDragLeave($event)">
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer mt-2">
+      <button
+        type="button"
+        class="btn btn-primary d-block m-auto"
+        [disabled]="formNuovaRegola.invalid || operandiNuovaRegola.length == 0"
+        (click)="salvaPendingRegola(); closeModal()"
+        style="width:200px">
+        Salva
+      </button>
+    </div>
+  </div>
+</ng-template>

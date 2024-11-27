@@ -1,0 +1,134 @@
+<!--
+Copyright (C) AGPL-3.0  
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.-->
+<div id="risorse">
+  <div class="row">
+    <div class="col-lg-5" id="left-section">
+      <div class="structure-name-section d-flex mb-3">
+        <h3 class="structure-name">{{info?.descr}}</h3>
+      </div>
+      <loading-message *ngIf="risorseLoading; else risorseReady"></loading-message>
+      <ng-template #risorseReady>
+        <a-tree-filter [tree]="t1" placeholder="Ricerca Risorsa..."></a-tree-filter>
+        <div #scrollbox class="box scrollbox custom-scrollbar mt-2 overflow-y-auto p-0 rounded shadow-sm"
+          [ngStyle]="{'max-height': 'calc(100vh - ' + utils.getAbsoluteOffsetTop(scrollbox) + 'px)'}">
+          <a-tree #t1 [root]="risorseTree?.root" (onClick)="initStruttureSecondarie($event)"></a-tree>
+        </div>
+      </ng-template>
+    </div>
+    <div class="col-lg" id="right-section">
+      <div class="structure-name-section d-flex mb-3" *ngIf="strutturaSecondariaAttiva">
+        <h3 class="structure-name w-50">{{strutturaSecondariaAttiva.descr}}</h3>
+        <div class="buttons-wrapper w-100 d-flex justify-content-end"
+          *ngIf="strutturaSecondariaAttiva.modality == 'modifica'">
+          <button type="button" class="btn btn-primary save-button" (click)="salva()"
+            *ngIf="strutturaSecondariaAttiva.trackerModifiche && !strutturaSecondariaAttiva.trackerModifiche.isSame">
+            <i class="icon fa-solid fa-floppy-disk"></i>
+            <span class="label">Salva</span>
+          </button>
+          <button type="button" class="btn btn-primary copy-button ms-2"
+            (click)="modaleDuplicaPiani = openModal(duplicaPiani)"
+            *ngIf="selectedRisorsa && strutturaSecondariaAttiva.descr == 'Piani'">
+            <i class="icon fa-regular fa-copy"></i>
+            <span class="label">Duplica</span>
+          </button>
+        </div>
+      </div>
+      <div *ngIf="!selectedRisorsa; else elseBlock">Selezionare un elemento dalla lista.</div>
+      <ng-template #elseBlock>
+        <div #slider class="slider"
+          [ngClass]="{'overflow-hidden': !infoComuni?.active, 'box scrollbox custom-scrollbar mt-2 overflow-y-auto p-0 rounded shadow-sm': infoComuni?.active}"
+          *ngIf="info" [ngStyle]="{'min-height': 'calc(100vh - ' + slider.offsetTop + 'px)'}">
+          <div class="slide" *ngIf="infoComuni" [ngClass]="{'active': infoComuni.active}">
+            <loading-message *ngIf="comuniLoading; else comuniReady"></loading-message>
+            <ng-template #comuniReady>
+              <letter-list [data]="comuni" labelKey="comune"
+                [selectionEnabled]="infoComuni.modality == 'modifica'"></letter-list>
+            </ng-template>
+          </div>
+          <div class="slide" *ngIf="infoPiani" [ngClass]="{'active': infoPiani.active}">
+            <loading-message *ngIf="pianiLoading; else pianiReady"></loading-message>
+            <ng-template #pianiReady>
+              <a-tree-filter [tree]="t" placeholder="Ricerca Piano..."></a-tree-filter>
+              <div #scrollbox2 class="box scrollbox custom-scrollbar mt-2 overflow-y-auto p-0 rounded shadow-sm"
+                [ngStyle]="{'max-height': 'calc(100vh - ' + utils.getAbsoluteOffsetTop(scrollbox2) + 'px)'}">
+                <a-tree #t [root]="pianiTree?.root" (onLoad)="onPianiTreeLoad($event)"
+                  (onClick)="onPianiTreeClick()"></a-tree>
+              </div>
+            </ng-template>
+          </div>
+          <div class="slide" *ngIf="infoLinee" [ngClass]="{'active': infoLinee.active}">
+            <loading-message *ngIf="lineeLoading; else lineeReady"></loading-message>
+            <ng-template #lineeReady>
+              <a-smart-table #risorseLineeTable [dataMapping]="dataMapping" *ngIf="lineeTableSrc; else lineeNonTrovate"
+                [src]="lineeTableSrc.dati" [selection]="infoLinee.modality === 'modifica'"
+                [colsInfo]="lineeTableSrc.ui?.colonne">
+                <ng-template aTemplate="head">
+                  <tr>
+                    <th scope="col" class="selector-th">
+                    </th>
+                    <th scope="col" *ngFor="let colonna of lineeTableSrc.ui?.colonne">
+                      <div class="d-flex align-items-center">
+                        <span class="label">{{colonna.intestazione}}</span>
+                        <a-table-sorter [type]="colonna.tipo" [field]="colonna.campo"></a-table-sorter>
+                        <a-table-filter [type]="colonna.tipo" [field]="colonna.campo" [options]="colonna.filterOptions"></a-table-filter>
+                      </div>
+                    </th>
+                  </tr>
+                </ng-template>
+                <ng-template aTemplate="body" let-record>
+                  <tr>
+                    <td>
+                      <a-table-selector [data]="record" [disabled]="!risorseLineeTable.selectionEnabled"></a-table-selector>
+                    </td>
+                    <td *ngFor="let colonna of lineeTableSrc.ui?.colonne"
+                      [ngClass]="{'text-end': colonna.tipo == 'number'}">
+                      <ng-container *ngIf="colonna.tipo == 'date'; else elseBlock">
+                        {{record[colonna.campo] | date: 'dd/MM/yyyy'}}
+                      </ng-container>
+                      <ng-template #elseBlock>
+                        <ng-container *ngIf="colonna.tipo == 'number'; else normalFormat">
+                          {{record[colonna.campo] | numberPipe}}
+                        </ng-container>
+                        <ng-template #normalFormat>
+                          {{record[colonna.campo]}}
+                        </ng-template>
+                      </ng-template>
+                    </td>
+                  </tr>
+                </ng-template>
+              </a-smart-table>
+              <ng-template #lineeNonTrovate>
+                <div class="error-message">Linee non trovate per la risorsa selezionata.</div>
+              </ng-template>
+            </ng-template>
+          </div>
+        </div>
+      </ng-template>
+    </div>
+  </div>
+</div>
+
+<ng-template #duplicaPiani>
+  <div class="modal-header d-flex">
+    <div>Duplica Piani</div>
+    <button type="button" class="btn btn-close ms-auto" (click)="modaleDuplicaPiani?.close()"></button>
+  </div>
+  <div class="modal-body custom-scrollbar overflow-auto" style="height: 600px;">
+    <p>Selezionare le risorse su cui duplicare i piani.</p>
+    <a-tree-filter [tree]="t2" placeholder="Ricerca Risorsa..."></a-tree-filter>
+    <a-tree #t2 [root]="risorseSelezionabiliTree?.root"></a-tree>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-primary d-block ms-auto" (click)="duplica(t2)"
+      [disabled]="t2.getSelectedLeafNodes().length == 0">
+      <i class="icon fa-regular fa-copy"></i>
+      <span class="label">Duplica</span>
+    </button>
+  </div>
+</ng-template>

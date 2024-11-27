@@ -1,0 +1,216 @@
+<!--
+Copyright (C) AGPL-3.0  
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.-->
+<div id="nuovo-intervento">
+  <h1>Nuovo Intervento</h1>
+  <div class="row align-items-center">
+    <div class="col">
+      <div class="input-group mb-3">
+        <span class="input-group-text" id="data-inizio-intervento">Data Inizio</span>
+        <input type="datetime-local" id="dt_inizio" class="form-control" [min]="minDate" [max]="maxDate" [formControl]="_startDate"
+          (blur)="onBlur($event)" (change)="onChange($event)">
+      </div>
+    </div>
+    <div class="col ps-0">
+      <div class="input-group mb-3">
+        <span class="input-group-text" id="data-fine-intervento">Data Fine</span>
+        <input type="datetime-local" id="dt_fine" class="form-control" [formControl]="_endDate"
+          (blur)="onBlur($event)" [min]="minDate" [max]="maxDate">
+      </div>
+    </div>
+     <!-- <div class="col">
+      <div class="input-group mb-3">
+        <span class="input-group-text" id="data-inizio-intervento">Ora Inizio</span>
+        <input type="time" id="dt_inizio" class="form-control" [formControl]="_startOra">
+      </div>
+    </div>
+    <div class="col">
+      <div class="input-group mb-3">
+        <span class="input-group-text" id="data-inizio-intervento">Ora Fine</span>
+        <input type="time" id="dt_inizio" class="form-control" [formControl]="_endOra">
+      </div>
+    </div>  -->
+    <div class="col" *ngIf="showCreaButton">
+      <button type="button" class="btn btn-primary" ngbTooltip="Crea nuovo intervento" (click)="creaIntervento()">Crea<i
+          class="fa fa-plus-circle ms-2" aria-hidden="true"></i></button>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col">
+      <h3>Piani</h3>
+    </div>
+    <div class="col">
+      <button [disabled]="tablePiani?.selectedData?.length === 0" type="button" class="btn btn-primary float-end"
+        (click)="getAllevamentiPiani()">
+        Avanti<i class="ms-2 fa-solid fa-arrow-right"></i>
+      </button>
+    </div>
+  </div>
+  <!-- Lista Piani -->
+  <ng-template [ngIf]="piani" [ngIfElse]="noPiani">
+    <div class="box-3d rounded p-0">
+      <a-smart-table #tabellaPiani [colsInfo]="ui_piani.colonne" class="table-striped" [src]="piani"
+        [autolayout]="false" [selection]="true">
+        <ng-template aTemplate="head">
+          <tr>
+            <th scope="col" class="selector-th"></th>
+            <th scope="col" *ngFor="let colonna of ui_piani.colonne">
+              <div class="d-flex align-items-center justify-content-center">
+                <span class="label">{{colonna.intestazione}}</span>
+                <a-table-sorter [type]="colonna.tipo" [field]="colonna.campo"></a-table-sorter>
+                <a-table-filter [type]="colonna.tipo" [field]="colonna.campo"></a-table-filter>
+              </div>
+            </th>
+          </tr>
+        </ng-template>
+        <ng-template aTemplate="body" let-piano>
+          <!-- <tr class="clickable" (click)="getAllevamentiPiano(piano, $event)"> -->
+          <tr>
+            <td class="align-middle">
+              <a-table-selector [data]="piano"></a-table-selector>
+            </td>
+            <td *ngFor="let colonna of ui_piani.colonne">
+              <ng-container *ngIf="colonna.tipo === 'date'; else elseField">
+                {{piano[colonna.campo] | date: 'dd/MM/yyyy'}}
+              </ng-container>
+              <ng-template #elseField>
+                <ng-container *ngIf="colonna.tipo === 'number'; else normalField">
+                  {{piano[colonna.campo] | numberPipe}}
+                </ng-container>
+                <ng-template #normalField>
+                  {{piano[colonna.campo]}}
+                </ng-template>
+              </ng-template>
+            </td>
+          </tr>
+        </ng-template>
+      </a-smart-table>
+    </div>
+  </ng-template>
+  <ng-template #noPiani>
+    <span>Non sono presenti dati nella tabella</span>
+  </ng-template>
+</div>
+
+<!-- Modale Allevamenti -->
+<div class="modal fade" id="allevamenti-modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+  aria-labelledby="allevamenti-modal-label" aria-hidden="true">
+  <div class="system-modal modal-dialog modal-fullscreen modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="allevamenti-modal-label">Lista Aziende</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="close"
+          (click)="resetPiano()"></button>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <ng-template [ngIf]="allevamenti" [ngIfElse]="noAllevamenti">
+            <a-smart-table #tabellaAllevamenti [colsInfo]="ui_allevamenti.colonne" class="table-striped"
+              [src]="allevamenti" [autolayout]="false">
+              <ng-template aTemplate="head">
+                <tr>
+                  <th scope="col" *ngFor="let colonna of ui_allevamenti.colonne">
+                    <div class="d-flex">
+                      <span class="label">{{colonna.intestazione}}</span>
+                      <a-table-sorter [type]="colonna.tipo" [field]="colonna.campo"></a-table-sorter>
+                      <a-table-filter [type]="colonna.tipo" [field]="colonna.campo" [options]="{'minValue': 0}"></a-table-filter>
+                    </div>
+                  </th>
+                </tr>
+              </ng-template>
+              <ng-template aTemplate="body" let-allevamento>
+                <tr class="clickable tr-allevamenti" (click)="selezionaAllevamento(allevamento, $event)">
+                  <td *ngFor="let colonna of ui_allevamenti.colonne">
+                    <ng-container *ngIf="colonna.tipo === 'date'; else elseField">
+                      {{allevamento[colonna.campo] | date: 'dd/MM/yyyy'}}
+                    </ng-container>
+                    <ng-template #elseField> {{allevamento[colonna.campo]}} </ng-template>
+                  </td>
+                </tr>
+              </ng-template>
+            </a-smart-table>
+          </ng-template>
+          <ng-template #noAllevamenti>
+            <span>Non sono presenti dati nella tabella</span>
+          </ng-template>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modale Veterinari -->
+<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+  aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="staticBackdropLabel">Lista Veterinari</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="close"
+          (click)="resetPiano()"></button>
+      </div>
+      <div class="modal-body">
+        <p *ngIf="isLivelloUos else notLivelloUos">
+          Seleziona un partner (opzionale).
+        </p>
+        <ng-template #notLivelloUos>
+          <p>
+            *Seleziona un veterinario.
+          </p>
+        </ng-template>
+        <div class="container-fluid">
+          <div class="row">
+            <ng-template [ngIf]="veterinari" [ngIfElse]="noVeterinari">
+              <a-smart-table #tableVeterinari [colsInfo]="colsInfoVeterinari" [src]="veterinari" [autolayout]="false"
+                [selection]="true" class="table-bordered border-light table-striped">
+                <ng-template aTemplate="head">
+                  <tr>
+                    <th scope="col" class="selector-th"></th>
+                    <th scope="col">
+                      <div class="d-flex justify-content-center">
+                        <span class="label">Veterinario</span>
+                        <a-table-sorter [type]="'text'" [field]="'name'"></a-table-sorter>
+                        <a-table-filter [type]="'text'" [field]="'name'"></a-table-filter>
+                      </div>
+                    </th>
+                    <th scope="col" class="text-center" *ngFor="let dt of ui_veterinari">{{dt}}</th>
+                  </tr>
+                </ng-template>
+                <ng-template aTemplate="body" let-e>
+                  <tr class="text-center">
+                    <td class="align-middle">
+                      <a-table-selector [data]="e" (change)="onTableVetChange(e)" #selector></a-table-selector>
+                    </td>
+                    <td scope="row">
+                      <p class="m-0 p-0 fw-semibold">{{e.name}}</p>
+                      <p class="m-0 p-0 fst-italic" [ngStyle]="{'font-size': '0.8rem'}">{{e.struttura}}</p>
+                    </td>
+                    <td class="align-middle" *ngFor="let v of e.value"
+                      [ngStyle]="{'background': v.colore, 'color': 'white'}">{{v.durata_perc ? v.durata_perc + '%' :
+                      '0%'}}
+                    </td>
+                  </tr>
+                </ng-template>
+              </a-smart-table>
+            </ng-template>
+            <ng-template #noVeterinari>
+              <span>Non sono presenti veterinari</span>
+            </ng-template>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" ngbTooltip="Crea nuovo intervento"
+          (click)="creaIntervento()">Crea<i class="fa fa-plus-circle ms-2" aria-hidden="true"></i></button>
+        <button *ngIf="_id_all_shared === null" type="button" class="btn btn-primary"
+          ngbTooltip="Torna agli allevamenti" data-bs-toggle="modal" data-bs-target="#allevamenti-modal">Torna
+          indietro<i class="fa fa-arrow-left ms-2" aria-hidden="true"></i></button>
+      </div>
+    </div>
+  </div>
+</div>

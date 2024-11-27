@@ -1,0 +1,29 @@
+table {
+    width: 100%;
+
+    thead {
+      background-color: var(--fvg-blue);
+      color: var(--fvg-white);
+    }
+}
+
+.row {
+  margin-bottom: 0.5rem !important;
+}
+
+.container {
+  background: var(--fvg-blue);
+  border-style: solid;
+  border-radius: 10px;
+  padding: 0.5rem !important;
+  margin-top: 0.5rem !important;
+  margin-bottom: 0.5rem !important;
+}
+
+.col-container {
+  border: var(--fvg-blue);
+}
+
+.input-compilatore {
+  width: -webkit-fill-available;
+}

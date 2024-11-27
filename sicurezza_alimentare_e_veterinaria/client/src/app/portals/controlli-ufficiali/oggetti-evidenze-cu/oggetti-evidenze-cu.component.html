@@ -1,0 +1,312 @@
+<!--
+Copyright (C) AGPL-3.0  
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.-->
+<div id="oggetti-cl-container">
+    <div class="row align-items-center">
+        <div class="col">
+            <h5 class="d-flex align-items-center">
+                <ng-container *ngIf="cu">
+                    <span>Dettaglio Controllo n° {{cu.codice}}</span>
+                </ng-container>
+            </h5>
+        </div>
+    </div>
+    <div class="row align-items-center">
+        <div class="col" *ngIf="info">
+            <div class="card">
+                <div class="card-header">
+                    <b>{{info.descr_oggetto}}</b>
+                </div>
+                <div class="card-body">
+                    <h6 class="d-flex align-items-center">
+                        <span>{{info.descr_requisito}}</span>
+                    </h6>
+                    <ng-container *ngIf="info.enum_list && info.enum_list.descrizione as descrizione">
+                        <enum-list [id]="'1'" [start]="descrizione.enumList.start"
+                            [items]="descrizione.enumList.items"></enum-list>
+                    </ng-container>
+                    <ng-container *ngIf="info.tabella && info.tabella.descrizione as descrizione">
+                        <table class="table table-std">
+                            <thead>
+                                <tr *ngFor="let col of descrizione.table.cols">
+                                    <th class="align-middle" *ngFor="let cell of col">{{cell}}</th>
+                                </tr>
+                            </thead>
+                            <tbody class="border">
+                                <tr *ngFor="let row of descrizione.table.rows">
+                                    <td *ngFor="let cell of row">{{cell}}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </ng-container>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br>
+    <div class="row align-items-center">
+        <div class="col">
+            <h2 class="d-flex align-items-center">
+                <span>Evidenze</span>
+                <!--
+                <ng-container *ngIf="chiuso else btnChiudi">
+                    <button class="btn btn-secondary ms-auto" (click)="apri()">
+                        <i class="icon fa-solid fa-lock-open"></i>
+                        <span>Apri</span>
+                    </button>
+                </ng-container>
+                <ng-template #btnChiudi>
+                    <button class="btn btn-secondary ms-auto" (click)="chiudi()">
+                        <i class="icon fa-solid fa-lock"></i>
+                        <span>Chiudi</span>
+                    </button>
+                </ng-template>
+                -->
+                <button [disabled]="!chiuso && btnDelete ? null : true" type="button" class="btn btn-danger ms-auto"
+                    (click)="delete()">
+                    <i class="icon fa-solid fa-minus"></i>
+                    <span>Elimina</span>
+                </button>
+                <button [disabled]="btnMode || controllo_chiuso || chiuso || follow_up" type="button"
+                    class="btn btn-primary ms-2" (click)="openModal('add', null)">
+                    <i class="icon fa-solid fa-plus"></i>
+                    <span>Aggiungi</span>
+                </button>
+            </h2>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col" *ngIf="ui">
+            <a-smart-table #tabella [colsInfo]="ui.colonne" class="table-striped" [src]="evidenze" [autolayout]="false"
+                [selection]="true">
+                <!-- definire head -->
+                <ng-template aTemplate="head">
+                    <tr>
+                        <th scope="col" widht="5%" class="selector-th"></th>
+                        <th scope="col" *ngFor="let colonna of ui.colonne">
+                            <ng-container *ngIf="colonna.tipo === 'number'; else campoTestuale">
+                                <div class="d-flex align-items-center justify-content-end">
+                                    <span class="label">{{colonna.intestazione}}</span>
+                                    <a-table-sorter [type]="colonna.tipo" [field]="colonna.campo"></a-table-sorter>
+                                    <a-table-filter [type]="colonna.tipo" [field]="colonna.campo"
+                                        [options]="colonna.filterOptions"></a-table-filter>
+                                </div>
+                            </ng-container>
+                            <ng-template #campoTestuale>
+                                <div class="d-flex align-items-center">
+                                    <span class="label">{{colonna.intestazione}}</span>
+                                    <a-table-sorter [type]="colonna.tipo" [field]="colonna.campo"></a-table-sorter>
+                                    <a-table-filter [type]="colonna.tipo" [field]="colonna.campo"
+                                        [options]="colonna.filterOptions"></a-table-filter>
+                                </div>
+                            </ng-template>
+                        </th>
+                        <th scope="col" width="15%"></th>
+                    </tr>
+                </ng-template>
+                <!-- definire body -->
+                <ng-template aTemplate="body" let-ar>
+                    <tr>
+                        <td class="selector-td">
+                            <a-table-selector [data]="ar"></a-table-selector>
+                        </td>
+                        <td *ngFor="let colonna of ui.colonne">
+                            <ng-container *ngIf="colonna.tipo == 'date' else elseField">
+                                {{ar[colonna.campo] | date:'dd/MM/yyyy'}}
+                            </ng-container>
+                            <ng-template #elseField>
+                                <ng-container *ngIf="colonna.tipo == 'number' else normalField">
+                                    <div class="d-flex align-items-center justify-content-end">
+                                        <span>{{ar[colonna.campo] | numberPipe}}</span>
+                                    </div>
+                                </ng-container>
+                                <ng-template #normalField>
+                                    {{ar[colonna.campo]}}
+                                </ng-template>
+                            </ng-template>
+
+                        </td>
+                        <td>
+                            <div class="d-flex">
+                                <button [disabled]="btnMode || controllo_chiuso || chiuso ? true : null"
+                                    class="btn btn-secondary ms-auto" (click)="openModal('upd',ar)">
+                                    <i class="icon fa-solid fa-edit"></i>
+                                </button>
+                                <button type="button" class="btn btn-secondary ms-2" (click)="openAllegati(ar)">
+                                    <i class="icon fa-solid fa-paperclip"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                </ng-template>
+            </a-smart-table>
+        </div>
+    </div>
+</div>
+
+
+<!-- modal -->
+<div class="modal fade" id="modal-add" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable" role="document">
+        <div class="modal-content">
+            <!-- modal-header -->
+            <div class="modal-header">
+                <ng-container *ngIf="tipoModale === 'add' else headerUpd">
+                    <h2 class="modal-title">Aggiungi</h2>
+                    <div class="justify-content-end">
+                        <button [disabled]="formNuovaEvidenza.invalid" type="button" class="btn btn-secondary ms-auto"
+                            (click)="insert()">
+                            <i class="icon fa-solid fa-save"></i>
+                            <span>Salva</span>
+                        </button>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="close"></button>
+                    </div>
+                </ng-container>
+                <ng-template #headerUpd>
+                    <h2 class="modal-title">Modifica</h2>
+                    <div class="justify-content-end">
+                        <button [disabled]="formNuovaEvidenza.invalid" type="button" class="btn btn-secondary ms-auto"
+                            (click)="update()">
+                            <i class="icon fa-solid fa-save"></i>
+                            <span>Salva</span>
+                        </button>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="close"></button>
+                    </div>
+                </ng-template>
+            </div>
+
+            <!-- modal-body -->
+            <div class="modal-body">
+                <div [formGroup]="formNuovaEvidenza">
+                    <div class="d-flex align-items-center">
+                        <div class="form-group d-flex flex-column w-100">
+                            <label for="id_cu_linee" class="me-2">Linee:</label>
+                            <!-- <ng-container *ngFor="let el of linee_cu">
+                                <label for="id_cu_linee" class="me-2">
+                                    <input type="checkbox" [value]="el.id_cu_linea" formControlName="id_cu_linee"
+                                        (change)="toggleLinee($event)">
+                                    {{el.desc_tipo_linea}}
+                                </label>
+                            </ng-container> -->
+                            <ng-container *ngFor="let el of linee_cu">
+                                <div class="float-end">
+                                    <button id="riga_{{el.id_cu_linea}}" type="button"
+                                        class="btn btn-secondary ms-auto " (click)="selezionaLinea(el.id_cu_linea)">
+                                        <i class="fa-regular fa-square"></i>
+                                    </button>
+                                    {{el.desc_tipo_linea}}
+                                </div>
+                            </ng-container>
+                        </div>
+                    </div>
+                    <br>
+                    <div class="d-flex align-items-center">
+                        <div class="form-group d-flex flex-column w-100">
+                            <!--sostituito "Classe" con "Risultanza"-->
+                            <label for="id_cu_classe_evidenza" class="me-2">Risultanza:</label>
+                            <select class="form-select" id="id_cu_classe_evidenza"
+                                formControlName="id_cu_classe_evidenza" (change)="checkClasse($event)">
+                                <option></option>
+                                <option *ngFor="let el of classi_evidenze" [value]="el.id">{{el.descr}}
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center">
+                        <div class="form-group d-flex flex-column w-100">
+                            <!--sostituito "Grado" con "Valutazione della non conformità"-->
+                            <label for="id_cu_grado_evidenza" class="me-2">Valutazione:</label>
+                            <select class="form-select" id="id_cu_grado_evidenza"
+                                formControlName="id_cu_grado_evidenza">
+                                <option></option>
+                                <option *ngFor="let el of gradi_evidenze" [value]="el.id">{{el.descr}}
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center">
+                        <div class="form-group d-flex flex-column w-100">
+                            <label for="evidenza" class="me-2">Evidenza:</label>
+                            <input type="text" class="form-control border" id="evidenza" formControlName="evidenza">
+                        </div>
+                    </div>
+                    <!-- <div class="d-flex align-items-center">
+                        <div class="form-group d-flex flex-column w-100">
+                            <label for="risultanza" class="me-2">Risultanza:</label>
+                            <input type="text" class="form-control border" id="risultanza" formControlName="risultanza">
+                        </div>
+                    </div> -->
+                </div>
+            </div>
+
+            <!-- modal-footer -->
+            <div class="modal-footer"></div>
+        </div>
+    </div>
+</div>
+
+<!-- modal -->
+<div class="modal fade" id="modal-allegati-evidenza" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-scrollable modal-xl" role="document">
+        <div class="modal-content">
+            <!-- modal-header -->
+            <div class="modal-header">
+                <h2 class="modal-title">Allegati</h2>
+                <div class="justify-content-end">
+                    <!-- <button [disabled]="controllo_chiuso || chiuso ? true : null" type="button" class="btn btn-primary ms-2">
+                        <i class="icon fa-solid fa-plus"></i> -->
+                    <!-- <span>Aggiungi</span>
+                    </button> -->
+
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="close"></button>
+                </div>
+            </div>
+
+            <!-- modal-body -->
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col">
+                        <input class="form-control" type="file" accept="application/pdf"
+                            (change)="allegaVerbaleDaConfigurare($event, arApp)" multiple
+                            [disabled]="controllo_chiuso || chiuso ? true : null" #inputFile>
+                    </div>
+                    <div class="col">
+                        <button type="button" class="btn btn-primary ms-auto" (click)="uploadFile()"
+                            [disabled]="btnMode || controllo_chiuso || chiuso ? true : null">
+                            <i class="icon fa-solid fa-upload" aria-hidden="true"></i>
+                            <span>Carica PDF</span>
+                        </button>
+                    </div>
+                </div>
+                <div>
+                    <table>
+                        <tr>
+                            <th scope="col"></th>
+                            <th scope="col"></th>
+                        </tr>
+                        <tr *ngFor="let listaNomi of nomeFile">
+                            <td> {{listaNomi.filename}}
+                                <button class="btn btn-danger float-end ms-2" (click)="delAllegato(listaNomi.id,arApp)"
+                                    [disabled]="btnMode || controllo_chiuso || chiuso ? true : null">
+                                    <i class="icon fa-solid fa-trash" aria-hidden="true"></i>
+                                </button>
+                            </td>
+                            <td>
+                                <button class="btn btn-primary float-end ms-2"
+                                    (click)="downloadPDF(listaNomi.id)">Download
+                                </button>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            <!-- modal-footer -->
+            <div class="modal-footer"></div>
+        </div>
+    </div>
+</div>

@@ -1,1 +1,0 @@
-seleziona albero;

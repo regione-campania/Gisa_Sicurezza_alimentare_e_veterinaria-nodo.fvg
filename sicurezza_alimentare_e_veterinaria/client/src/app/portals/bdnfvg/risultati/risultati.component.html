@@ -1,0 +1,156 @@
+<!--
+Copyright (C) AGPL-3.0  
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.-->
+<div id="risultati" class="container-fluid">
+  <div class="row">
+    <div class="col">
+      <h1 class="header">Risultati</h1>
+    </div>
+    <div class="col">
+      <div *ngFor="let r of disponibileRdp">
+        <button style="margin: 1px;" type="button" class="btn btn-primary float-end ms-2" (click)="scaricaRdp(r.rdp_cod)">RDP {{r.name}}<i
+          class="fa fa-file-pdf ms-2" aria-hidden="true"></i></button>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col">
+      <p class="fs-6 fw-semibold">
+        Piani: {{piano}} <br>
+      </p>
+    </div>
+  </div>
+  <div class="row mb-2">
+    <div class="col">
+      <ng-container *ngFor="let elem of qualificheSanitarieGrouped">
+        <span class="fs-6 fw-semibold">{{elem[0].piano}}:</span>
+        <div class="row mb-1">
+          <div class="col">
+            <ng-container *ngFor="let qs of elem">
+              <button style="margin: 1px;" type="button" class="btn me-2" [ngClass]="qs.qualifica_corrente ? 'btn-success' : 'btn-primary'"
+                (click)="chooseEsito($event, qs, elem[0].id_piano)"
+                [disabled]="!isPropertyFalseForAll(elem, 'qualifica_corrente')">
+                {{qs.qualifica}}
+              </button>
+            </ng-container>
+          </div>
+        </div>
+      </ng-container>
+    </div>
+
+  </div>
+    <div class="row align-items-end mb-1">
+      <div class="col">
+        <button type="button" class="btn btn-primary float-end" (click)="SendDataToSanan()"
+          [disabled]="rdp_id_sanan">Invia Dati al SANAN<i class="fa fa-paper-plane ms-2" aria-hidden="true"></i>
+        </button>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col">
+        <!-- Tabella Risultati -->
+        <a-smart-table #risTable [colsInfo]="ui.colonne" class="table-striped" [src]="risultati" [selection]="false"
+          [autolayout]="false" [exportable]="false" [printable]="false" [responsive]="false">
+          <ng-template aTemplate="head">
+            <tr>
+              <th scope="col" *ngFor="let colonna of colonne">
+                <div class="d-flex justify-content-center">
+                  <span class="label">{{colonna.intestazione}}</span>
+                   <a-table-sorter [type]="colonna.tipo" [field]="colonna.campo"></a-table-sorter>
+                  <a-table-filter [type]="colonna.tipo" [field]="colonna.campo"></a-table-filter>
+                </div>
+              </th>
+              <th scope="col" class="text-center">Risultato</th>
+            </tr>
+          </ng-template>
+
+          <ng-template aTemplate="body" let-ris let-rigaIndex="index">
+            <tr class="text-center">
+              <td *ngFor="let colonna of colonne">
+                <ng-container *ngIf="colonna.tipo === 'date'; else elseField">
+                  {{ris[colonna.campo] | date: 'dd/MM/yyyy'}}
+                </ng-container>
+                <ng-template #elseField>
+                  {{ris[colonna.campo] != '-1' ? ris[colonna.campo] : ''}}
+                </ng-template>
+              </td>
+              <td>
+                <div *ngFor="let piano of ris.id_piani; let pianoIndex=index">
+                  <!-- {{res.value | json}} -->
+                  <div>
+                    <div class="row">
+                      <div class="col">
+                        {{ris['descr_piani_array'][pianoIndex]}}
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col" style="display: ruby;">
+
+                        <input type="radio" id="res-n-{{ris.id + '_' + ris['descr_piani_array'][pianoIndex]}}" class="btn-check"
+                          [attr.id_capo_intervento]="ris.id" [attr.esito_analitico]="ris['esito_analitico_array'][pianoIndex]"
+                          [attr.id_piano]="ris.id_piani" (change)="changeRisultati($event, pianoIndex, ris.tipo)"
+                          name="res-{{ris.id + '_' + ris['descr_piani_array'][pianoIndex]}}" value="N" autocomplete="off" [checked]="ris['risultati_array'][pianoIndex] == 'OK'"
+                          [disabled]="((ris.metodo_izsve[pianoIndex]) && !ris.unlock_risultati) || isPianoConQualifica(ris['id_piani'][pianoIndex])">
+                        <label class="btn btn-outline-success me-2"
+                          for="res-n-{{ris.id + '_' + ris['descr_piani_array'][pianoIndex]}}" ngbTooltip="Negativo">N</label>
+
+                        <div *ngIf="(ris.metodo_izsve[pianoIndex])">
+                          <input type="radio" id="res-i-{{ris.id + '_' + ris['descr_piani_array'][pianoIndex]}}" class="btn-check"
+                            [checked]="ris['risultati_array'][pianoIndex] == 'I'" value="I"
+                            [disabled]="!ris.unlock_risultati || isPianoConQualifica(ris['id_piani'][pianoIndex])"
+                            (change)="changeRisultati($event, pianoIndex, ris.tipo)"
+                            [attr.id_capo_intervento]="ris.id"
+                            [attr.id_piano]="ris.id_piani"
+                            name="res-{{ris.id + '_' + ris['descr_piani_array'][pianoIndex]}}">
+                          <label class="btn btn-outline-dubbio me-2"
+                            for="res-i-{{ris.id + '_' + ris['descr_piani_array'][pianoIndex]}}" ngbTooltip="Inadatto">I</label>
+                        </div>
+                        <input type="radio" id="res-d-{{ris.id + '_' + ris['descr_piani_array'][pianoIndex]}}" class="btn-check"
+                            [checked]="ris['risultati_array'][pianoIndex] == 'D'" value="D"
+                            [disabled]="((ris.metodo_izsve[pianoIndex]) && !ris.unlock_risultati) || isPianoConQualifica(ris['id_piani'][pianoIndex])"
+                            (change)="changeRisultati($event, pianoIndex, ris.tipo)"
+                            [attr.id_piano]="ris.id_piani"
+                            [attr.id_capo_intervento]="ris.id"
+                            name="res-{{ris.id + '_' + ris['descr_piani_array'][pianoIndex]}}">
+                          <label class="btn btn-outline-dubbio me-2"
+                            for="res-d-{{ris.id + '_' + ris['descr_piani_array'][pianoIndex]}}" ngbTooltip="Dubbio">D</label>
+                            
+                        <input type="radio" id="res-p-{{ris.id + '_' + ris['descr_piani_array'][pianoIndex]}}" class="btn-check"
+                          [attr.id_capo_intervento]="ris.id" [attr.esito_analitico]="ris['esito_analitico_array'][pianoIndex]"
+                          [attr.id_piano]="ris.id_piani" (change)="changeRisultati($event, pianoIndex, ris.tipo)"
+                          name="res-{{ris.id + '_' + ris['descr_piani_array'][pianoIndex]}}" value="P" autocomplete="off" [checked]="ris['risultati_array'][pianoIndex] == 'KO'"
+                          [disabled]="((ris.metodo_izsve[pianoIndex]) && !ris.unlock_risultati) || isPianoConQualifica(ris['id_piani'][pianoIndex])">
+                        <label class="btn btn-outline-danger me-2"
+                          for="res-p-{{ris.id + '_' + ris['descr_piani_array'][pianoIndex]}}" ngbTooltip="Positivo">P</label>
+                          
+                          <button [disabled]="isPianoConQualifica(ris['id_piani'][pianoIndex])" *ngIf="(ris.metodo_izsve[pianoIndex]) && !ris.unlock_risultati" (click)="unlock(ris.id, ris.tipo)" class="btn btn-danger" ngbTooltip="Riverifica risultati Izsve">
+                            <span>
+                              <i class="fa fa-lock" aria-hidden="true" ></i>
+                            </span>
+                          </button>
+                          <button [disabled]="true" *ngIf="(ris.metodo_izsve[pianoIndex]) && ris.unlock_risultati" class="btn btn-danger">
+                            <span>
+                              <i class="fa fa-lock-open" aria-hidden="true"></i>
+                            </span>
+                          </button>
+                      </div>
+
+                    </div>
+                    <div class="row" style="margin-bottom: 10px;" *ngIf="ris['esito_analitico_array'][pianoIndex]">
+                      <div class="col">
+                        <b>Esito Analitico:</b> <br> {{ris['esito_analitico_array'][pianoIndex]}}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </td>
+            </tr>
+          </ng-template>
+        </a-smart-table>
+      </div>
+    </div>
+</div>

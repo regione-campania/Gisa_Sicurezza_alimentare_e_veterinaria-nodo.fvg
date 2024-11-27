@@ -1,0 +1,68 @@
+<!--
+Copyright (C) AGPL-3.0  
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.-->
+<div id="lista-certificati">
+  <div class="row align-items-center">
+    <div class="col">
+      <h1>Lista Certificati</h1>
+    </div>
+    <div class="col">
+      <button *ngIf="this.canCreate" type="button" id="newCertificato" class="btn btn-primary float-end" [queryParams]="{stato: 'new'}" routerLink="certificati">
+        Nuovo Certificato<i class="ms-2 fa fa-plus" aria-hidden="true"></i>
+      </button>
+    </div>
+  </div>
+  <div class="row" *ngIf="listaCertificati.length > 0">
+    <div class="col">
+    <div class="table-container box-3d rounded p-0">
+      <a-smart-table [autolayout]="false" [exportable]="false" [src]="listaCertificati" [colsInfo]="this.ui.colonne">
+        <ng-template aTemplate="head">
+          <tr>
+            <th scope="col" *ngFor="let colonna of this.ui.colonne">
+              <div class="d-flex">
+                <span class="label">{{colonna.intestazione}}</span>
+                <a-table-filter [type]="colonna.tipo" [field]="colonna.campo"></a-table-filter>
+                <a-table-sorter [type]="colonna.tipo" [field]="colonna.campo"></a-table-sorter>
+              </div>
+            </th>
+            <th scope="col" style="width: 1%;"></th>
+          </tr>
+        </ng-template>
+        <ng-template aTemplate="body" let-certificato>
+          <!-- *ngIf="certificato['id_stato_certificato_compilato'] != '5'" -->
+          <tr>
+            <td *ngFor="let colonna of this.ui.colonne">
+              <ng-container *ngIf="colonna.campo.includes('data') || colonna.campo == 'entered'; else elseField">
+                {{certificato[colonna.campo] | date: 'dd/MM/yyyy'}}
+              </ng-container>
+              <ng-template #elseField> {{certificato[colonna.campo]}}  {{certificato[colonna.tipo]}} </ng-template>
+            </td>
+            <td>
+              <ng-template [ngIf]="this.canCreate && certificato.modificabile" [ngIfElse]="onlyView">
+                <button class="btn btn-primary" routerLink="certificati" ngbTooltip="Modifica" [queryParams]="{id_certificato_compilato: certificato.id_certificato_compilato, stato: 'edit_or_view'}">
+                  <i class="fa fa-pencil" aria-hidden="true"></i>
+                </button>
+              </ng-template>
+              <ng-template #onlyView>
+                <button class="btn btn-primary" routerLink="certificati" ngbTooltip="Visualizza" [queryParams]="{id_certificato_compilato: certificato.id_certificato_compilato, stato: 'edit_or_view'}">
+                  <i class="fa fa-search" aria-hidden="true"></i>
+                </button>
+              </ng-template>
+              <ng-template [ngIf]="this.canCreate">
+                <button class="btn btn-primary" (click)="duplicaCertificato(certificato.id_certificato_compilato)" ngbTooltip="Duplica">
+                  <i class="fa fa-copy" aria-hidden="true"></i>
+                </button>
+              </ng-template>
+            </td>
+          </tr>
+        </ng-template>
+      </a-smart-table>
+    </div>
+    </div>
+  </div>
+</div>

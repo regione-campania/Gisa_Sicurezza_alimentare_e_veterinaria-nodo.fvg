@@ -1,0 +1,26 @@
+<!--
+Copyright (C) AGPL-3.0  
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.-->
+<div id="selezione-ruolo">
+  <div class="box-3d rounded p-0 overflow-hidden" id="selezione-ruolo-box">
+    <div class="box-header">
+      <div class="box-title fs-4">Seleziona ruolo</div>
+    </div>
+    <div class="box-body">
+      <div id="roles-wrapper">
+        <button type="button" class="btn btn-primary role-button" *ngFor="let r of ruoli"
+          (click)="selezionaRuolo(r)">
+          <!-- {{ r.nome + ' ' + r.ruolo + (r.combUOCUOS != null ? (' - ' + r.combUOCUOS) : '') }} -->
+          {{ r.nome + ' ' + r.cognome }}
+          <br>{{ r.descr_qualifica + ' - '+ r.ruolo_descr }}
+          <br>{{ r.descrizione_breve }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

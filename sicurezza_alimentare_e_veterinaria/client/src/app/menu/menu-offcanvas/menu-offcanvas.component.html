@@ -1,0 +1,72 @@
+<!--
+Copyright (C) AGPL-3.0  
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.-->
+<div class="offcanvas-header">
+  <h2 class="offcanvas-title">
+    <div class="logo fvg-logo">
+      <img alt="logo-regione" src="assets/img/fvg-logo.png" />
+    </div>
+  </h2>
+  <button
+    type="button"
+    class="btn-close text-reset"
+    aria-label="Close"
+    (click)="requestClose()"
+  ></button>
+</div>
+<div class="offcanvas-body">
+  <div class="offcanvas-body-section user-section mt-0" *ngIf="userInfo">
+    <div class="section-title">UTENTE</div>
+    <div class="section-body">
+      <span>{{ userInfo.nome + " " + userInfo.cognome }}</span>
+      <br />
+      <span>{{ userInfo.descr_qualifica + " - " + userInfo.ruolo_descr }}</span>
+      <br />
+      <span>{{ userInfo.descrizione_breve }}</span>
+    </div>
+  </div>
+  <div class="spacer pt-1"></div>
+  <div class="offcanvas-body-section menu-section">
+    <div class="section-title">MENU</div>
+    <div class="section-body">
+      <app-menu (menuItemClicked)="requestClose()"></app-menu>
+    </div>
+  </div>
+  <div class="spacer pt-1"></div>
+  <div class="offcanvas-body-section nav-section">
+    <div class="section-title">NAVIGAZIONE</div>
+    <div class="section-body">
+      <ul class="menu-items">
+        <li class="menu-item">
+          <back-button
+            buttonClass="menu-item-button"
+            [showLabel]="true"
+            [showTooltip]="false"
+            (click)="requestClose()"
+          ></back-button>
+        </li>
+        <li class="menu-item">
+          <back-home-button
+            buttonClass="menu-item-button"
+            [showLabel]="true"
+            [showTooltip]="false"
+            (click)="requestClose()"
+          ></back-home-button>
+        </li>
+        <li class="menu-item">
+          <logout-button
+            buttonClass="menu-item-button"
+            [showLabel]="true"
+            [showTooltip]="false"
+            (click)="requestClose()"
+          ></logout-button>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>

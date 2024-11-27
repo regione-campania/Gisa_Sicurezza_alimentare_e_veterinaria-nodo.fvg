@@ -1,0 +1,133 @@
+<!--
+Copyright (C) AGPL-3.0  
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.-->
+<div>
+    <div class="row align-items-center">
+        <div class="col">
+            <h5 class="d-flex align-items-center">
+                <ng-container *ngIf="cu">
+                    <span>Dettaglio Controllo n° {{cu.codice}} - Verifica Provvedimenti</span>
+                </ng-container>
+            </h5>
+        </div>
+    </div>
+    <div class="row align-items-center">
+        <div class="col">
+            <h2 class="d-flex align-items-center">
+                <span>Provvedimenti</span>
+            </h2>
+        </div>
+    </div>
+    <div class="row">
+        <a-smart-table *ngIf="ui_provv" [colsInfo]="ui_provv.colonne" class="table-striped" [src]="provv"
+            [autolayout]="false" [paginator]="false">
+            <!-- definire head -->
+            <ng-template aTemplate="head">
+                <tr>
+                    <th scope="col" *ngFor="let colonna of ui_provv.colonne">
+                        <ng-container *ngIf="colonna.tipo === 'number'; else campoTestuale">
+                            <div class="d-flex align-items-center justify-content-end">
+                                <span class="label">{{colonna.intestazione}}</span>
+                                <a-table-sorter [type]="colonna.tipo" [field]="colonna.campo"></a-table-sorter>
+                                <a-table-filter [type]="colonna.tipo" [field]="colonna.campo" [options]="colonna.filterOptions"></a-table-filter>
+                            </div>
+                        </ng-container>
+                        <ng-template #campoTestuale>
+                            <div class="d-flex align-items-center">
+                                <span class="label">{{colonna.intestazione}}</span>
+                                <a-table-sorter [type]="colonna.tipo" [field]="colonna.campo"></a-table-sorter>
+                                <a-table-filter [type]="colonna.tipo" [field]="colonna.campo" [options]="colonna.filterOptions"></a-table-filter>
+                            </div>
+                        </ng-template>
+                    </th>
+                    <th scope="col" width="10%"></th>
+                </tr>
+            </ng-template>
+            <!-- definire body -->
+            <ng-template aTemplate="body" let-ar>
+                <tr>
+                    <td *ngFor="let colonna of ui_provv.colonne">
+                        <ng-container *ngIf="colonna.tipo == 'date' else elseField">
+                            {{ar[colonna.campo] | date:'dd/MM/yyyy'}}
+                        </ng-container>
+                        <ng-template #elseField>
+                            <ng-container *ngIf="colonna.tipo == 'number' else normalField">
+                                <div class="d-flex align-items-center justify-content-end">
+                                    <span>{{ar[colonna.campo] | numberPipe}}</span>
+                                </div>
+                            </ng-container>
+                            <ng-template #normalField>
+                                {{ar[colonna.campo]}}
+                            </ng-template>
+                        </ng-template>
+
+                    </td>
+                    <td>
+                        <div class="d-flex align-items-center">
+                            <button [disabled]="btnMode || controllo_chiuso" class="btn btn-secondary ms-auto"
+                                (click)="openModal(ar['id'])">
+                                <i class=" icon fa-solid fa-pen-to-square"></i>
+                                <span>Risolvi</span>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            </ng-template>
+        </a-smart-table>
+    </div>
+</div>
+
+<div class="modal fade" id="modal-risoluzione" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-scrollable" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Nuovo Stato</h2>
+                <div class="justify-content-end">
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="close"></button>
+                </div>
+            </div>
+            <div class="modal-body">
+                <div>
+                    <div class="d-flex align-items-center">
+                        <table class="table table-striped">
+                            <thead>
+                                <th scope="col"></th>
+                                <th scope="col"></th>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Risolto</td>
+                                    <td>
+                                        <div class="float-end">
+                                            <button type="button" class="btn btn-primary ms-auto"
+                                                (click)="updProvv(true)">
+                                                <span>Seleziona</span>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Non Risolto</td>
+                                    <td>
+                                        <div class="float-end">
+                                            <button type="button" class="btn btn-primary ms-auto"
+                                                (click)="updProvv(false)">
+                                                <span>Seleziona</span>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer"></div>
+        </div>
+    </div>
+</div>
