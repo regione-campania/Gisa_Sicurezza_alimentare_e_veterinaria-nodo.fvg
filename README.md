@@ -194,8 +194,8 @@ Versione: 1.1
 US srl 
 ## **3.2 Indirizzo e-mail segnalazioni di sicurezza**
 Ogni segnalazione relativa al software presente in questo repository, deve essere inoltrata rispettivamente a:
-- per problemi di sicurezza informatica a assistenza.sanita@insiel.it
-- per bug applicativi a assistenza.sanita@insiel.it
+- per problemi di sicurezza informatica a [assistenza.sanita@insiel.it](mailto:assistenza.sanita@insiel.it)
+- per bug applicativi a [assistenza.sanita@insiel.it](mailto:assistenza.sanita@insiel.it)
 
 NOTA: Le segnalazioni non vanno inviate attraverso l'issue tracker pubblico ma devono essere inviate confidenzialmente agli indirizzi e-mail indicati.
 Lo strumento issue tracker può essere utilizzato per le richieste di modifiche necessarie per implementare nuove funzionalità.
@@ -211,10 +211,10 @@ Una copia della Licenza è disponibile al seguente indirizzo: <https://www.gnu.o
 
 In caso di riuso, in toto o in parte di **GISA FVG**, è necessario notificare l'adozione in riuso tramite l'apertura di un ticket (o analogo meccanismo quale una pull request) in questo repository. Inoltre, al contempo per gli aspetti organizzativi utili a potenziare i benefici derivanti dalla pratica del riuso tra PP.AA., come la partecipazione al **Centro di competenza e di supporto al riuso e al ciclo di vita del software GISA Campania** per la condivisione di eventuali modifiche/integrazioni o innovazioni, è necessario darne tempestiva comunicazione alle seguenti e-mail:
 
-[cinzia.matonti@regione.campania.it]()
+[cinzia.matonti@regione.campania.it](mailto:cinzia.matonti@regione.campania.it)
 
-[ivan.poli@regione.fvg.it]()
+[ivan.poli@regione.fvg.it](mailto:ivan.poli@regione.fvg.it)
 
-[matteo.moretti@insiel.it]()	
+[matteo.moretti@insiel.it](mailto:matteo.moretti@insiel.it)	
 
 Gli enti che aderiscono al riuso di GISA entreranno a far parte del "Centro di competenza e di supporto al riuso e al ciclo di vita del software GISA Campania" per condividere e partecipare all'evoluzione di GISA insieme alle altre PP.AA.
