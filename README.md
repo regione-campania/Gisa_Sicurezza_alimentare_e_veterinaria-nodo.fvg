@@ -37,7 +37,9 @@ Il repository è diviso per applicazioni software distinte. Al momento sono pres
   - Gestione dei controlli ufficiali sicurezza alimentare
   - Integrazioni (SICER,BDN, IZS…)
   
- - Gisa Certificati Export
+- Gisa Certificati Export
+
+- Matrix e Reportistica Avanzata
 
 Per le prime due è presente nel repository presenta questa struttura:
 
@@ -45,7 +47,9 @@ Per le prime due è presente nel repository presenta questa struttura:
 
   - *./server*   sorgenti per la componente server 
   
-  - *./client*    sorgenti per l'applicativo web 
+  - *./client*    sorgenti per l'applicativo web
+
+Per Matrix e Reportistica Avanzata si faccia riferimento alla cartella [matrix_reportistica_avanzata](https://github.com/regione-campania/Gisa_Sicurezza_alimentare_e_veterinaria/tree/main/matrix_reportistica_avanzata) del main di Regione Campania
 	
 ## **1.2 Interoperabilità con i sistemi esterni**
 
@@ -207,7 +211,9 @@ Una copia della Licenza è disponibile al seguente indirizzo: <https://www.gnu.o
 
 In caso di riuso, in toto o in parte di **GISA FVG**, è necessario notificare l'adozione in riuso tramite l'apertura di un ticket (o analogo meccanismo quale una pull request) in questo repository. Inoltre, al contempo per gli aspetti organizzativi utili a potenziare i benefici derivanti dalla pratica del riuso tra PP.AA., come la partecipazione al **Centro di competenza e di supporto al riuso e al ciclo di vita del software GISA Campania** per la condivisione di eventuali modifiche/integrazioni o innovazioni, è necessario darne tempestiva comunicazione alle seguenti e-mail:
 
-[ivan.poli@regione.fvg.it]()	
+[cinzia.matonti@regione.campania.it]()
+
+[ivan.poli@regione.fvg.it]()
 
 [matteo.moretti@insiel.it]()	
 
