@@ -43,7 +43,7 @@ Il repository è diviso per applicazioni software distinte. Al momento sono pres
 
 Per le prime due è presente nel repository presenta questa struttura:
 
-  - *./db*   schema del database : ⚠️questa parte è attualmente assente in quanto in fase di verifica lato SonarQube ⚠️
+  - *./db*   schema del database
 
   - *./server*   sorgenti per la componente server 
   
@@ -118,8 +118,6 @@ Una volta eseguito il checkout del progetto è possibile proseguire con le fasi 
 
 
 ## 2.1 Creazione e import database
-
-**NOTA** : ⚠️questa parte è attualmente assente in quanto in fase di verifica lato SonarQube⚠️
 
 **GISA FVG** utilizza PostgreSQL come dbms. Di seguito gli step per la creazione e l'import dello schema del database.
 

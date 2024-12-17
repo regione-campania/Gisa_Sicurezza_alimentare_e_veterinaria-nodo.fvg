@@ -39,6 +39,3 @@
 
 #sonar
 **/.scannerwork/**
-
-#parte db attualmente oggetta di problemi di sicurezza
-**/db/
